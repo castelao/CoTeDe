@@ -1,0 +1,7 @@
+{'temperature':{
+    'global_range':{ \
+        'minval': -4,
+        'maxval': 50,
+        }
+    }
+}
