@@ -1,0 +1,6 @@
+include distribute_setup.py
+include *.txt
+#recursive-include docs *.txt
+prune dist
+#recursive-include src/cnv/rules *
+include ctdqc/defaults
