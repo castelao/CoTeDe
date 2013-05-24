@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from distribute_setup import use_setuptools
 use_setuptools()
 
@@ -6,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='ctdqc',
-    version='0.1',
+    version='0.1.1',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['ctdqc'],
@@ -19,4 +21,6 @@ setup(
         'Programming Language :: Python :: 2',
         ],
     keywords='CTD SeaBird QualityControl Oceanography Hydrography',
+    #package_dir = {'': './'},
+    include_package_data=True,
 )
