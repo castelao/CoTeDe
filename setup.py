@@ -8,11 +8,11 @@ from setuptools import setup
 
 setup(
     name='cotede',
-    version='0.1.1',
+    version='0.1.2',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
-    packages=['ctdqc'],
-    url='http://ctdqc.castelao.net',
+    packages=['cotede'],
+    url='http://cotede.castelao.net',
     license='See LICENSE.txt',
     description='Quality Control of CTD profiles',
     long_description=open('README.rst').read(),
