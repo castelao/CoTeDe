@@ -1,7 +1,19 @@
 {'temperature':{
     'global_range':{ \
-        'minval': -4,
-        'maxval': 50,
-        }
+        'minval': -2.5,
+        'maxval': 45,
+        },
+    'spike': 6.0,
+    'gradient': 9.0,
+    'digit_roll_over': 10,
+    },
+'salinity':{
+    'global_range':{ \
+        'minval': 0,
+        'maxval': 60,
+        },
+    'spike': 0.9,
+    'gradient': 1.5,
+    'digit_roll_over': 5,
     }
 }
