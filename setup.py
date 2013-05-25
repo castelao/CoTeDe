@@ -7,7 +7,7 @@ from setuptools import setup
 
 
 setup(
-    name='ctdqc',
+    name='cotede',
     version='0.1.1',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
