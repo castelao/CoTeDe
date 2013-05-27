@@ -5,6 +5,7 @@
         },
     },
 'temperature':{
+    'woa_comparison': None,
     'global_range':{ \
         'minval': -2.5,
         'maxval': 45,
