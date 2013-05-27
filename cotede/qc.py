@@ -2,6 +2,7 @@
 """
 
 import pkg_resources
+from datetime import datetime
 
 import numpy as np
 from numpy import ma
@@ -29,6 +30,9 @@ class ProfileQC(object):
         self.load_cfg(cfg)
         self.flags = {}
 
+        if 'valid_datetime' in self.cfg['main']:
+            self.flags['valid_datetime'] = \
+                    type(self.data.attributes['datetime'])==datetime
         if 'at_sea' in self.cfg['main']:
             lon = self.data.attributes['longitude']
             lat = self.data.attributes['latitude']
