@@ -29,7 +29,18 @@ class ProfileQC(object):
         self.load_cfg(cfg)
         self.flags = {}
 
-        import pdb; pdb.set_trace()
+        if 'at_sea' in self.cfg['main']:
+            lon = self.data.attributes['longitude']
+            lat = self.data.attributes['latitude']
+            if 'url' in self.cfg['main']['at_sea']:
+                depth = get_depth_from_DAP(np.array([lat]), 
+                        np.array([lon]),
+                        url=self.cfg['main']['at_sea']['url'])
+                #flag[depth<0] = True
+                #flag[depth>0] = False
+                #self.flags['at_sea'] = flag
+                self.flags['at_sea'] = depth[0]<0
+
         for v in self.data.keys():
             if v in self.cfg.keys():
                 self.test_var(v)
@@ -86,3 +97,33 @@ class ProfileQC(object):
             flag[ma.absolute(step)>threshold] = False
             flag[ma.absolute(step)<=threshold] = True
             self.flags[v]['digit_roll_over'] = flag
+
+
+def get_depth_from_DAP(lat, lon, url):
+    """
+
+    ATENTION, conceptual error on the data near by Greenwich.
+    url='http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf'
+    """
+    from pydap.client import open_url
+    import pydap.lib
+    pydap.lib.CACHE = '.cache'
+    from scipy.interpolate import RectBivariateSpline, interp1d
+
+    if lat.shape != lon.shape:
+                print "lat and lon must have the same size"
+    dataset = open_url(url)
+    etopo = dataset.ROSE
+    x = etopo.ETOPO05_X[:]
+    if lon.min()<0:
+        ind = lon<0
+        lon[ind] = lon[ind]+360
+    y = etopo.ETOPO05_Y[:]
+    iini = max(0, (np.absolute(lon.min()-x)).argmin()-2)
+    ifin = (np.absolute(lon.max()-x)).argmin()+2
+    jini = max(0, (np.absolute(lat.min()-y)).argmin()-2)
+    jfin = (np.absolute(lat.max()-y)).argmin()+2
+    z = etopo.ROSE[jini:jfin, iini:ifin]
+    interpolator = RectBivariateSpline(x[iini:ifin], y[jini:jfin], z.T)
+    depth = ma.array([interpolator(xx, yy)[0][0] for xx, yy in zip(lon,lat)])
+    return depth

@@ -1,4 +1,9 @@
-{'temperature':{
+{'main':{
+    'at_sea': {
+        'url': 'http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
+        },
+    },
+'temperature':{
     'global_range':{ \
         'minval': -2.5,
         'maxval': 45,
