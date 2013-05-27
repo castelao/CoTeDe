@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='cotede',
-    version='0.1.2',
+    version='0.2.0',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],
@@ -17,7 +17,7 @@ setup(
     description='Quality Control of CTD profiles',
     long_description=open('README.rst').read(),
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 2',
         ],
     keywords='CTD SeaBird QualityControl Oceanography Hydrography',
