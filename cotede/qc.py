@@ -103,13 +103,14 @@ class ProfileQC(object):
             self.flags[v]['digit_roll_over'] = flag
 
         if 'woa_comparison' in self.cfg[v]:
-            import pdb; pdb.set_trace()
-            woa = woa_profile_from_dap(v, 
+            woa_an, woa_sd = woa_profile_from_dap(v, 
                     int(self.data.attributes['datetime'].strftime('%j')),
                     self.data.attributes['latitude'], 
                     self.data.attributes['longitude'], 
                     self.data['pressure'])
-            woa_anom = self.data[v] - woa
+            woa_anom = (self.data[v] - woa_an) / woa_sd
+            self.flags[v]['woa_comparison'] = \
+                    woa_anom < 3
 
 
 def get_depth_from_DAP(lat, lon, url):
@@ -161,7 +162,6 @@ def woa_profile_from_dap(var, doy, lat, lon, depth):
     import pydap.lib
     pydap.lib.CACHE = '.cache'
     from scipy.interpolate import RectBivariateSpline, interp1d
-    #import pdb; pdb.set_trace()
 
     if lon<0: lon = lon+360
     if var == 'temperature':
@@ -180,12 +180,12 @@ def woa_profile_from_dap(var, doy, lat, lon, depth):
     data = {}
     if var == 'temperature':
         an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
-        #sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
+        sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
         #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
         #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
     elif var == 'salinity':
         an = ma.masked_values(dataset.s_an.s_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_an.attributes['_FillValue'])
-        #sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
+        sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
     zwoa = ma.array(dataset.depth[:])
 
     ind=depth<=zwoa.max()
@@ -194,11 +194,11 @@ def woa_profile_from_dap(var, doy, lat, lon, depth):
     an_interp = ma.masked_all(depth.shape)
     an_interp[ind] = f(depth[ind])
     # The stdev profile
-    #f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
-    #sd_interp = ma.masked_all(depth.shape)
-    #sd_interp[ind] = f(depth[ind])
+    f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
+    sd_interp = ma.masked_all(depth.shape)
+    sd_interp[ind] = f(depth[ind])
 
-    #return an_interp, sd_interp
-    return an_interp
+    return an_interp, sd_interp
+    #return an_interp
 
 
