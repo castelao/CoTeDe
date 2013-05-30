@@ -116,6 +116,32 @@ class ProfileQC(object):
             except:
                 print "Couldn't make woa_comparison of %s" % v
 
+class ProfileQCed(ProfileQC):
+    """
+    """
+    def __init__(self, input, cfg={}):
+
+        super(ProfileQCed, self).__init__(input, cfg)
+
+        self.name = 'ProfileQCed'
+
+    def keys(self):
+        """ Return the available keys in self.data
+        """
+        return self.input.keys()
+
+    def __getitem__(self, key):
+        """ Return the key array from self.data
+        """
+        if key not in self.flags.keys():
+            return self.input[key]
+        else:
+            f = ma.array([self.flags[key][f] for f in self.flags[key]]).T
+            mask = self.input[key].mask | (~f).any(axis=1)
+            return ma.masked_array(self.input[key].data, mask)
+
+        raise KeyError('%s not found' % key)
+
 
 def get_depth_from_DAP(lat, lon, url):
     """

@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='cotede',
-    version='0.2.1',
+    version='0.3.0',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],
