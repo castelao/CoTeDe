@@ -10,7 +10,7 @@ from numpy import ma
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, data, cfg={}):
+    def __init__(self, input, cfg={}):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -26,16 +26,16 @@ class ProfileQC(object):
             - Is the best return another dictionary?
         """
 
-        self.data = data
+        self.input = input
         self.load_cfg(cfg)
         self.flags = {}
 
         if 'valid_datetime' in self.cfg['main']:
             self.flags['valid_datetime'] = \
-                    type(self.data.attributes['datetime'])==datetime
+                    type(self.input.attributes['datetime'])==datetime
         if 'at_sea' in self.cfg['main']:
-            lon = self.data.attributes['longitude']
-            lat = self.data.attributes['latitude']
+            lon = self.input.attributes['longitude']
+            lat = self.input.attributes['latitude']
             if 'url' in self.cfg['main']['at_sea']:
                 depth = get_depth_from_DAP(np.array([lat]), 
                         np.array([lon]),
@@ -47,7 +47,7 @@ class ProfileQC(object):
 
         # Must have a better way to do this!
         import re
-        for v in self.data.keys():
+        for v in self.input.keys():
             c = re.sub('2$','', v)
             if c in self.cfg.keys():
                 self.test_var(v, self.cfg[c])
@@ -69,12 +69,12 @@ class ProfileQC(object):
 
         self.flags[v] = {}
         if 'global_range' in cfg:
-            f = (self.data[v] >= cfg['global_range']['minval']) & (self.data[v] <= cfg['global_range']['maxval'])
+            f = (self.input[v] >= cfg['global_range']['minval']) & (self.input[v] <= cfg['global_range']['maxval'])
             self.flags[v]['global_range'] = f
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
-            x = self.data[v]
+            x = self.input[v]
             g = ma.masked_all(x.shape)
             g[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
             flag = ma.masked_all(x.shape, dtype=np.bool)
@@ -84,7 +84,7 @@ class ProfileQC(object):
 
         if 'spike' in cfg:
             threshold = cfg['spike']
-            x = self.data[v]
+            x = self.input[v]
             s = ma.masked_all(x.shape)
             s[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - np.abs((x[2:] - x[:-2])/2.0)
             flag = ma.masked_all(x.shape, dtype=np.bool)
@@ -94,7 +94,7 @@ class ProfileQC(object):
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
-            x = self.data[v]
+            x = self.input[v]
             d = ma.masked_all(x.shape)
             step = ma.masked_all(x.shape, dtype=np.float)
             step[1:] = ma.absolute(ma.diff(x))
@@ -106,11 +106,11 @@ class ProfileQC(object):
         if 'woa_comparison' in cfg:
             try:
                 woa_an, woa_sd = woa_profile_from_dap(v, 
-                    int(self.data.attributes['datetime'].strftime('%j')),
-                    self.data.attributes['latitude'], 
-                    self.data.attributes['longitude'], 
-                    self.data['pressure'])
-                woa_anom = (self.data[v] - woa_an) / woa_sd
+                    int(self.input.attributes['datetime'].strftime('%j')),
+                    self.input.attributes['latitude'], 
+                    self.input.attributes['longitude'], 
+                    self.input['pressure'])
+                woa_anom = (self.input[v] - woa_an) / woa_sd
                 self.flags[v]['woa_comparison'] = \
                     woa_anom < 3
             except:
