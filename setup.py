@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='cotede',
-    version='0.2.0',
+    version='0.2.1',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],
@@ -20,7 +20,7 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 2',
         ],
-    keywords='CTD SeaBird QualityControl Oceanography Hydrography',
+    keywords='CTD SeaBird QualityControl oceanography hydrography',
     #package_dir = {'': './'},
     include_package_data=True,
 )

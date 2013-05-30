@@ -15,6 +15,7 @@
     'digit_roll_over': 10,
     },
 'salinity':{
+    'woa_comparison': None,
     'global_range':{ \
         'minval': 0,
         'maxval': 60,
