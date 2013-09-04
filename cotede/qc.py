@@ -53,7 +53,7 @@ class ProfileQC(object):
         for v in self.input.keys():
             c = re.sub('2$','', v)
             if c in self.cfg.keys():
-                self.test_var(v, self.cfg[c])
+                self.evaluate(v, self.cfg[c])
 
     def load_cfg(self, cfg):
         """ Load the user's config and the default values
@@ -68,7 +68,7 @@ class ProfileQC(object):
         for k in cfg:
             self.cfg[k] = cfg[k]
 
-    def test_var(self, v, cfg):
+    def evaluate(self, v, cfg):
 
         self.flags[v] = {}
         if 'global_range' in cfg:
@@ -77,33 +77,36 @@ class ProfileQC(object):
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
-            x = self.input[v]
-            g = ma.masked_all(x.shape)
-            g[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
-            flag = ma.masked_all(x.shape, dtype=np.bool)
+            #x = self.input[v]
+            #g = ma.masked_all(x.shape)
+            #g[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
+            g = gradient(self.input[v])
+            flag = ma.masked_all(g.shape, dtype=np.bool)
             flag[np.nonzero(g>threshold)] = False
             flag[np.nonzero(g<=threshold)] = True
             self.flags[v]['gradient'] = flag
 
         if 'spike' in cfg:
             threshold = cfg['spike']
-            x = self.input[v]
-            s = ma.masked_all(x.shape)
-            s[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - np.abs((x[2:] - x[:-2])/2.0)
-            flag = ma.masked_all(x.shape, dtype=np.bool)
+            #x = self.input[v]
+            #s = ma.masked_all(x.shape)
+            #s[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - np.abs((x[2:] - x[:-2])/2.0)
+            s = spike(self.input[v])
+            flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[np.nonzero(s>threshold)] = False
             flag[np.nonzero(s<=threshold)] = True
             self.flags[v]['spike'] = flag
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
-            x = self.input[v]
-            d = ma.masked_all(x.shape)
-            step = ma.masked_all(x.shape, dtype=np.float)
-            step[1:] = ma.absolute(ma.diff(x))
-            flag = ma.masked_all(x.shape, dtype=np.bool)
-            flag[ma.absolute(step)>threshold] = False
-            flag[ma.absolute(step)<=threshold] = True
+            #x = self.input[v]
+            #d = ma.masked_all(x.shape)
+            #step = ma.masked_all(x.shape, dtype=np.float)
+            #step[1:] = ma.absolute(ma.diff(x))
+            s = step(self.input[v])
+            flag = ma.masked_all(s.shape, dtype=np.bool)
+            flag[ma.absolute(s)>threshold] = False
+            flag[ma.absolute(s)<=threshold] = True
             self.flags[v]['digit_roll_over'] = flag
 
         if 'woa_comparison' in cfg:
@@ -118,6 +121,20 @@ class ProfileQC(object):
                     woa_anom < 3
             except:
                 print "Couldn't make woa_comparison of %s" % v
+
+    def build_auxiliary(self):
+        vars = ['temperature']
+        products = ['step', 'gradient', 'spike']
+
+        if not hasattr(self,'auxiliary'):
+            self.auxiliary = {}
+
+        for v in vars:
+            if v not in self.auxiliary.keys():
+                self.auxiliary[v] = {}
+
+            for p in products:
+                self.auxiliary[v][p] = eval("%s(self['%s'])" % (p,v))
 
 class ProfileQCed(ProfileQC):
     """
@@ -144,3 +161,24 @@ class ProfileQCed(ProfileQC):
             return ma.masked_array(self.input[key].data, mask)
 
         raise KeyError('%s not found' % key)
+
+def step(x):
+    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y[1:] = ma.diff(x)
+    return y
+
+def gradient(x):
+    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
+    # ATENTION, temporary solution
+    #y[0]=0; y[-1]=0
+    return y
+
+def spike(x):
+    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - \
+                np.abs((x[2:] - x[:-2])/2.0)
+    # ATENTION, temporary solution
+    #y[0]=0; y[-1]=0
+    return y
+
