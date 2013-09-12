@@ -87,9 +87,6 @@ class ProfileQC(object):
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
-            #x = self.input[v]
-            #g = ma.masked_all(x.shape)
-            #g[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
             g = gradient(self.input[v])
             flag = ma.masked_all(g.shape, dtype=np.bool)
             flag[np.nonzero(g>threshold)] = False
@@ -98,9 +95,6 @@ class ProfileQC(object):
 
         if 'spike' in cfg:
             threshold = cfg['spike']
-            #x = self.input[v]
-            #s = ma.masked_all(x.shape)
-            #s[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - np.abs((x[2:] - x[:-2])/2.0)
             s = spike(self.input[v])
             flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[np.nonzero(s>threshold)] = False
@@ -109,10 +103,6 @@ class ProfileQC(object):
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
-            #x = self.input[v]
-            #d = ma.masked_all(x.shape)
-            #step = ma.masked_all(x.shape, dtype=np.float)
-            #step[1:] = ma.absolute(ma.diff(x))
             s = step(self.input[v])
             flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[ma.absolute(s)>threshold] = False
