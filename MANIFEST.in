@@ -1,4 +1,4 @@
-include distribute_setup.py
+#include distribute_setup.py
 include *.txt
 #recursive-include docs *.txt
 prune dist

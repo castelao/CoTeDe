@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from distribute_setup import use_setuptools
-use_setuptools()
+#from distribute_setup import use_setuptools
+#use_setuptools()
 
 from setuptools import setup
 
 
 setup(
     name='cotede',
-    version='0.3.1',
+    version='0.4.0',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],

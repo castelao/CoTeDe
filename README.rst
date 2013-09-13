@@ -1,6 +1,6 @@
-=====
+=============
 CoTe De l'eau
-=====
+=============
 
 This package is intended to quality control CTD stations by applying
 a sequence of tests. It uses the PyCNV package to interpret the
