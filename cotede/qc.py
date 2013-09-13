@@ -89,17 +89,59 @@ class ProfileQC(object):
             threshold = cfg['gradient']
             g = gradient(self.input[v])
             flag = ma.masked_all(g.shape, dtype=np.bool)
-            flag[np.nonzero(g>threshold)] = False
-            flag[np.nonzero(g<=threshold)] = True
+            flag[np.nonzero(g > threshold)] = False
+            flag[np.nonzero(g <= threshold)] = True
             self.flags[v]['gradient'] = flag
+
+        if 'gradient_depthconditional' in cfg:
+            cfg_tmp = cfg['gradient_depthconditional']
+            g = gradient(self.input[v])
+            flag = ma.masked_all(g.shape, dtype=np.bool)
+            # ---- Shallow zone -----------------
+            threshold = cfg_tmp['shallow_max']
+            #flag[np.nonzero(g>threshold)] = False
+            #flag[np.nonzero(g<=threshold)] = True
+            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g > threshold)] = False
+            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold)] = True
+            # ---- Deep zone --------------------
+            threshold = cfg_tmp['deep_max']
+            #flag[np.nonzero(g>threshold)] = False
+            #flag[np.nonzero(g<=threshold)] = True
+            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g > threshold)] = False
+            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold)] = True
+
+            self.flags[v]['gradient_depthconditional'] = flag
 
         if 'spike' in cfg:
             threshold = cfg['spike']
             s = spike(self.input[v])
             flag = ma.masked_all(s.shape, dtype=np.bool)
-            flag[np.nonzero(s>threshold)] = False
-            flag[np.nonzero(s<=threshold)] = True
+            flag[np.nonzero(s > threshold)] = False
+            flag[np.nonzero(s <= threshold)] = True
             self.flags[v]['spike'] = flag
+
+        if 'spike_depthconditional' in cfg:
+            cfg_tmp = cfg['spike_depthconditional']
+            s = spike(self.input[v])
+            flag = ma.masked_all(s.shape, dtype=np.bool)
+            # ---- Shallow zone -----------------
+            threshold = cfg_tmp['shallow_max']
+            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g > threshold)] = False
+            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold)] = True
+            # ---- Deep zone --------------------
+            threshold = cfg_tmp['deep_max']
+            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g > threshold)] = False
+            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold)] = True
+
+            self.flags[v]['spike_depthconditional'] = flag
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
