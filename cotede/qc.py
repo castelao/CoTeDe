@@ -29,25 +29,13 @@ class ProfileQC(object):
             - Is the best return another dictionary?
         """
 
+        self.name = 'ProfileQC'
         self.input = input
+        self.attributes = input.attributes
         self.load_cfg(cfg)
         self.flags = {}
 
-        if 'valid_datetime' in self.cfg['main']:
-            self.flags['valid_datetime'] = \
-                    type(self.input.attributes['datetime'])==datetime
-        if 'at_sea' in self.cfg['main']:
-            lon = self.input.attributes['longitude']
-            lat = self.input.attributes['latitude']
-            if 'url' in self.cfg['main']['at_sea']:
-                depth = get_depth_from_DAP(np.array([lat]), 
-                        np.array([lon]),
-                        url=self.cfg['main']['at_sea']['url'])
-                #flag[depth<0] = True
-                #flag[depth>0] = False
-                #self.flags['at_sea'] = flag
-                self.flags['at_sea'] = depth[0]<0
-
+        self.evaluate_common(v, self.cfg)
         # Must have a better way to do this!
         import re
         for v in self.input.keys():
@@ -77,6 +65,25 @@ class ProfileQC(object):
         self.cfg = eval(pkg_resources.resource_string(__name__, 'defaults'))
         for k in cfg:
             self.cfg[k] = cfg[k]
+
+    def evaluate_common(self, v, cfg):
+        self.flags['common'] = {}
+
+        if 'valid_datetime' in self.cfg['main']:
+            self.flags['common']['valid_datetime'] = \
+                    type(self.input.attributes['datetime'])==datetime
+
+        if 'at_sea' in self.cfg['main']:
+            lon = self.input.attributes['longitude']
+            lat = self.input.attributes['latitude']
+            if 'url' in self.cfg['main']['at_sea']:
+                depth = get_depth_from_DAP(np.array([lat]), 
+                        np.array([lon]),
+                        url = self.cfg['main']['at_sea']['url'])
+                #flag[depth<0] = True
+                #flag[depth>0] = False
+                #self.flags['at_sea'] = flag
+                self.flags['common']['at_sea'] = depth[0]<0
 
     def evaluate(self, v, cfg):
 
