@@ -5,10 +5,11 @@
 
 from setuptools import setup
 
+install_requires = ['numpy>=1.1', 'seabird']
 
 setup(
     name='cotede',
-    version='0.4.0',
+    version='0.4.1',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],
@@ -16,6 +17,7 @@ setup(
     license='See LICENSE.txt',
     description='Quality Control of CTD profiles',
     long_description=open('README.rst').read(),
+    install_requires=install_requires,
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Programming Language :: Python :: 2',
