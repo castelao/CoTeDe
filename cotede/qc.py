@@ -35,7 +35,11 @@ class ProfileQC(object):
         self.load_cfg(cfg)
         self.flags = {}
 
-        self.evaluate_common(v, self.cfg)
+        # I should use common or main, but must be consistent
+        #   between defaults and flags.keys()
+        # Think about it
+        self.evaluate_common(self.cfg)
+
         # Must have a better way to do this!
         import re
         for v in self.input.keys():
@@ -66,7 +70,7 @@ class ProfileQC(object):
         for k in cfg:
             self.cfg[k] = cfg[k]
 
-    def evaluate_common(self, v, cfg):
+    def evaluate_common(self, cfg):
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
