@@ -197,16 +197,7 @@ class ProfileQC(object):
             self.flags[v]['digit_roll_over'] = flag
 
         if 'bin_spike' in cfg:
-            cfg_tmp = cfg
-            N = len(self.input[v])
-            bin = ma.masked_all(N)
-            #bin_std = ma.masked_all(N)
-            half_window = cfg_tmp['bin_spike']/2
-            for i in range(half_window,N-half_window):
-                ini = max(0, i - half_window)
-                fin = min(N, i + half_window)
-                bin[i] = self.input[v][i] - ma.median(self.input[v][ini:fin])
-                #bin_std[i] = (T[ini:fin]).std()
+            bin = bin_spike(self.input[v], cfg['bin_spike'])
 
             if self.saveauxiliary:
                 self.auxiliary[v]['bin_spike'] = bin
@@ -356,6 +347,20 @@ def spike(x):
     # ATENTION, temporary solution
     #y[0]=0; y[-1]=0
     return y
+
+def bin_spike(x, l):
+    N = len(x)
+    bin = ma.masked_all(N)
+    half_window = l/2
+    for i in range(half_window, N-half_window):
+        ini = max(0, i - half_window)
+        fin = min(N, i + half_window)
+        bin[i] = x[i] - ma.median(x[ini:fin])
+        #bin_std[i] = (T[ini:fin]).std()
+
+    return bin
+
+
 
 def descentPrate(t, p):
     assert t.shape == p.shape, "t and p have different sizes"
