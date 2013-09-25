@@ -8,7 +8,7 @@ import numpy as np
 from numpy import ma
 
 from cotede.utils import get_depth_from_DAP
-from cotede.utils import woa_profile_from_dap
+from cotede.utils import woa_profile_from_dap, woa_profile_from_file
 
 class ProfileQC(object):
     """ Quality Control of a CTD profile
@@ -50,6 +50,8 @@ class ProfileQC(object):
                     print "evaluating: ", v, c
                     self.evaluate(v, self.cfg[c])
                     break
+
+        # Evaluate twin sensors
 
     def keys(self):
         """ Return the available keys in self.data
@@ -205,23 +207,31 @@ class ProfileQC(object):
 
         if 'woa_comparison' in cfg:
             try:
-                woa = woa_profile_from_dap(v, 
+                woa = woa_profile_from_file(v, 
                     self.input.attributes['datetime'],
                     self.input.attributes['latitude'], 
                     self.input.attributes['longitude'], 
                     self.input['pressure'],
                     cfg['woa_comparison'])
-
-                if self.saveauxiliary:
-                    for k in woa.keys():
-                        self.auxiliary[v][k] = woa[k]
-
-                woa_bias = (self.input[v] - woa['woa_an'])
-                self.flags[v]['woa_comparison'] = \
-                    ma.absolute(woa_bias/woa['woa_sd']) < 3
             except:
-                print "Couldn't make woa_comparison of %s" % v
-                raise
+                try:
+                    woa = woa_profile_from_dap(v, 
+                        self.input.attributes['datetime'],
+                        self.input.attributes['latitude'], 
+                        self.input.attributes['longitude'], 
+                        self.input['pressure'],
+                        cfg['woa_comparison'])
+                except:
+                    print "Couldn't make woa_comparison of %s" % v
+                    return
+
+            if self.saveauxiliary:
+                for k in woa.keys():
+                    self.auxiliary[v][k] = woa[k]
+
+            woa_bias = (self.input[v] - woa['woa_an'])
+            self.flags[v]['woa_comparison'] = \
+                    ma.absolute(woa_bias/woa['woa_sd']) < 3
 
     def build_auxiliary(self):
         vars = ['temperature']

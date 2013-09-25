@@ -9,7 +9,7 @@ install_requires = ['numpy>=1.1', 'seabird']
 
 setup(
     name='cotede',
-    version='0.4.3',
+    version='0.4.4',
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
     packages=['cotede'],
