@@ -1,11 +1,13 @@
 {'main':{
     'valid_datetime': None,
-    'at_sea': {
-        'url': 'http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
-        },
+    #'at_sea': {
+    #    'url': 'http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
+    #    },
     },
 'temperature':{
-    'woa_comparison': None,
+    'woa_comparison': {
+        'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_monthly_1deg.nc'
+	},
     'global_range':{ \
         'minval': -2.5,
         'maxval': 45,
@@ -25,7 +27,9 @@
     'digit_roll_over': 10,
     },
 'salinity':{
-    'woa_comparison': None,
+    'woa_comparison': {
+        'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_monthly_1deg.nc'
+	},
     'global_range':{ \
         'minval': 0,
         'maxval': 60,

@@ -32,7 +32,7 @@ def get_depth_from_DAP(lat, lon, url):
     return depth
 
 # ============================================================================
-def woa_profile_from_dap(var, doy, lat, lon, depth):
+def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     """
     Monthly Climatologic Mean and Standard Deviation from WOA,
     used either for temperature or salinity.
@@ -47,15 +47,11 @@ def woa_profile_from_dap(var, doy, lat, lon, depth):
     returns the corresponding WOA values of salinity or temperature mean and
     standard deviation for the given time, lat, lon, depth.
     """
-
     if lon<0: lon = lon+360
-    if var == 'temperature':
-        url ='http://opendap.ccst.inpe.br/Climatologies/WOA/temperature_monthly_1deg.nc'
-    elif var == 'salinity':
-        url ='http://opendap.ccst.inpe.br/Climatologies/WOA/salinity_monthly_1deg.nc'
-    else:
-        return
 
+    url = cfg['url']
+
+    doy = int(d.strftime('%j'))
     dataset = open_url(url)
 
     dn = (np.abs(doy-dataset['time'][:])).argmin()
@@ -67,10 +63,12 @@ def woa_profile_from_dap(var, doy, lat, lon, depth):
         an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
         sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
         #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
+        # Use this in the future. A minimum # of samples
         #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
     elif var == 'salinity':
         an = ma.masked_values(dataset.s_an.s_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_an.attributes['_FillValue'])
         sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
+        #dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
     zwoa = ma.array(dataset.depth[:])
 
     ind=depth<=zwoa.max()
