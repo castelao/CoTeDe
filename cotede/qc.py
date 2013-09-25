@@ -13,7 +13,7 @@ from cotede.utils import woa_profile_from_dap
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg={}):
+    def __init__(self, input, cfg={}, saveauxiliary=True):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -34,6 +34,9 @@ class ProfileQC(object):
         self.attributes = input.attributes
         self.load_cfg(cfg)
         self.flags = {}
+        self.saveauxiliary = saveauxiliary
+        if saveauxiliary:
+            self.auxiliary = {}
 
         # I should use common or main, but must be consistent
         #   between defaults and flags.keys()
@@ -43,7 +46,8 @@ class ProfileQC(object):
         # Must have a better way to do this!
         import re
         for v in self.input.keys():
-            c = re.sub('2$','', v)
+            #c = re.sub('2$','', v)
+            c = v # The evaluate runs var2, but saves as var.
             if c in self.cfg.keys():
                 self.evaluate(v, self.cfg[c])
 
@@ -92,6 +96,11 @@ class ProfileQC(object):
     def evaluate(self, v, cfg):
 
         self.flags[v] = {}
+
+        if self.saveauxiliary:
+            if v not in self.auxiliary.keys():
+                self.auxiliary[v] = {}
+
         if 'global_range' in cfg:
             f = (self.input[v] >= cfg['global_range']['minval']) & (self.input[v] <= cfg['global_range']['maxval'])
             self.flags[v]['global_range'] = f
@@ -99,6 +108,10 @@ class ProfileQC(object):
         if 'gradient' in cfg:
             threshold = cfg['gradient']
             g = gradient(self.input[v])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['gradient'] = g
+
             flag = ma.masked_all(g.shape, dtype=np.bool)
             flag[np.nonzero(g > threshold)] = False
             flag[np.nonzero(g <= threshold)] = True
@@ -130,6 +143,10 @@ class ProfileQC(object):
         if 'spike' in cfg:
             threshold = cfg['spike']
             s = spike(self.input[v])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['spike'] = s
+
             flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[np.nonzero(s > threshold)] = False
             flag[np.nonzero(s <= threshold)] = True
@@ -157,6 +174,10 @@ class ProfileQC(object):
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['step'] = s
+
             flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[ma.absolute(s)>threshold] = False
             flag[ma.absolute(s)<=threshold] = True
@@ -165,29 +186,28 @@ class ProfileQC(object):
         if 'woa_comparison' in cfg:
             try:
                 woa_an, woa_sd = woa_profile_from_dap(v, 
-                    int(self.input.attributes['datetime'].strftime('%j')),
+                    self.input.attributes['datetime'],
                     self.input.attributes['latitude'], 
                     self.input.attributes['longitude'], 
-                    self.input['pressure'])
-                woa_anom = (self.input[v] - woa_an) / woa_sd
+                    self.input['pressure'],
+                    cfg['woa_comparison'])
+
+                if self.saveauxiliary:
+                    self.auxiliary[v]['woa_an'] = woa_an
+                    self.auxiliary[v]['woa_sd'] = woa_sd
+
+                woa_bias = (self.input[v] - woa_an)
                 self.flags[v]['woa_comparison'] = \
-                    woa_anom < 3
+                    ma.absolute(woa_bias/woa_sd) < 3
             except:
                 print "Couldn't make woa_comparison of %s" % v
+                raise
 
     def build_auxiliary(self):
         vars = ['temperature']
-        products = ['step', 'gradient', 'spike']
 
         if not hasattr(self,'auxiliary'):
             self.auxiliary = {}
-
-        for v in vars:
-            if v not in self.auxiliary.keys():
-                self.auxiliary[v] = {}
-
-            for p in products:
-                self.auxiliary[v][p] = eval("%s(self['%s'])" % (p,v))
 
         self.auxiliary['common'] = {}
         self.auxiliary['common']['descentPrate'] = \
@@ -234,13 +254,25 @@ class CruiseQC(object):
         from seabird import cnv
         inputfiles = glob.glob(inputdir+"*.cnv")
         inputfiles.sort()
+        saveauxiliary = True
 
         self.data = []
         for f in inputfiles:
             try:
-                self.data.append(ProfileQC(cnv.fCNV(f)))
+                self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=True))
             except:
                 print "Couldn't load: %s" % f
+
+    def build_flags(self):
+        """
+        """
+        flags = {}
+        #for k in self.data[0].flags:
+        #    if type(cruise.data[0].flags[k]) == dict
+        #    else
+        #    flags
+        #for p in self.data:
+        #    for k in p.flags.keys():
 
     def build_auxiliary(self):
         """ Build the auxiliary products for each profile
