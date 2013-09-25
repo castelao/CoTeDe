@@ -43,7 +43,6 @@ class ProfileQC(object):
         # Think about it
         self.evaluate_common(self.cfg)
 
-        # Must have a better way to do this!
         import re
         for v in self.input.keys():
             for c in self.cfg.keys():
@@ -51,10 +50,6 @@ class ProfileQC(object):
                     print "evaluating: ", v, c
                     self.evaluate(v, self.cfg[c])
                     break
-            #c = re.sub('2$','', v)
-            #c = v # The evaluate runs var2, but saves as var.
-            #if c in self.cfg.keys():
-            #    self.evaluate(v, self.cfg[c])
 
     def keys(self):
         """ Return the available keys in self.data
