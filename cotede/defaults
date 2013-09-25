@@ -25,6 +25,7 @@
         'deep_max': 3.0,
         },
     'digit_roll_over': 10,
+    'bin_spike': 10
     },
 'salinity':{
     'woa_comparison': {

@@ -171,6 +171,19 @@ class ProfileQC(object):
 
             self.flags[v]['spike_depthconditional'] = flag
 
+        if 'spike_depthsmooth' in cfg:
+            from maud.window_func import _weight_hann as wfunc
+            cfg_tmp = cfg['spike_depthsmooth']
+            cfg_tmp['dzwindow'] = 10
+            smooth = ma.masked_all(self.input[v].shape)
+            z = ped['pressure']
+            for i in range(len(self.input[v])):
+                ind = np.nonzero(ma.absolute(z-z[i])<cfg_tmp['dzwindow'])[0]
+                ind = ind[ind!=i]
+                w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
+                smooth[i] = (T[ind]*w).sum()/w.sum()
+
+
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
@@ -182,6 +195,22 @@ class ProfileQC(object):
             flag[ma.absolute(s)>threshold] = False
             flag[ma.absolute(s)<=threshold] = True
             self.flags[v]['digit_roll_over'] = flag
+
+        if 'bin_spike' in cfg:
+            cfg_tmp = cfg
+            N = len(self.input[v])
+            bin = ma.masked_all(N)
+            #bin_std = ma.masked_all(N)
+            half_window = cfg_tmp['bin_spike']/2
+            for i in range(half_window,N-half_window):
+                ini = max(0, i - half_window)
+                fin = min(N, i + half_window)
+                bin[i] = self.input[v][i] - ma.median(self.input[v][ini:fin])
+                #bin_std[i] = (T[ini:fin]).std()
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['bin_spike'] = bin
+
 
         if 'woa_comparison' in cfg:
             try:
