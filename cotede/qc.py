@@ -185,7 +185,7 @@ class ProfileQC(object):
 
         if 'woa_comparison' in cfg:
             try:
-                woa_an, woa_sd = woa_profile_from_dap(v, 
+                woa = woa_profile_from_dap(v, 
                     self.input.attributes['datetime'],
                     self.input.attributes['latitude'], 
                     self.input.attributes['longitude'], 
@@ -193,12 +193,12 @@ class ProfileQC(object):
                     cfg['woa_comparison'])
 
                 if self.saveauxiliary:
-                    self.auxiliary[v]['woa_an'] = woa_an
-                    self.auxiliary[v]['woa_sd'] = woa_sd
+                    for k in woa.keys():
+                        self.auxiliary[v][k] = woa[k]
 
-                woa_bias = (self.input[v] - woa_an)
+                woa_bias = (self.input[v] - woa['woa_an'])
                 self.flags[v]['woa_comparison'] = \
-                    ma.absolute(woa_bias/woa_sd) < 3
+                    ma.absolute(woa_bias/woa['woa_sd']) < 3
             except:
                 print "Couldn't make woa_comparison of %s" % v
                 raise

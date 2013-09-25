@@ -58,7 +58,6 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     xn = (np.abs(lon-dataset['lon'][:])).argmin()
     yn = (np.abs(lat-dataset['lat'][:])).argmin()
 
-    data = {}
     if var == 'temperature':
         an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
         sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
@@ -81,5 +80,6 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     sd_interp = ma.masked_all(depth.shape)
     sd_interp[ind] = f(depth[ind])
 
-    return an_interp, sd_interp
-    #return an_interp
+    output = {'woa_an': an_interp, 'woa_sd': sd_interp}
+
+    return output
