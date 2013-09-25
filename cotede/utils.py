@@ -1,3 +1,5 @@
+import re
+
 import numpy as np
 from numpy import ma
 
@@ -58,13 +60,13 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     xn = (np.abs(lon-dataset['lon'][:])).argmin()
     yn = (np.abs(lat-dataset['lat'][:])).argmin()
 
-    if var == 'temperature':
+    if re.match("temperature\d?$", var):
         an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
         sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
         #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
         # Use this in the future. A minimum # of samples
         #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
-    elif var == 'salinity':
+    elif re.match("salinity\d?$", var):
         an = ma.masked_values(dataset.s_an.s_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_an.attributes['_FillValue'])
         sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
         #dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
