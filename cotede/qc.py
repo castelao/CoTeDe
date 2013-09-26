@@ -225,6 +225,10 @@ class ProfileQC(object):
                     print "Couldn't make woa_comparison of %s" % v
                     return
 
+            if woa is None:
+                print "WOA is not available at this site"
+                return
+
             if self.saveauxiliary:
                 for k in woa.keys():
                     self.auxiliary[v][k] = woa[k]

@@ -6,7 +6,9 @@
     },
 'temperature':{
     'woa_comparison': {
-        'file': '/Users/castelao/work/projects/python/cotede/data/temperature_monthly_1deg.nc'
+        'file': '/Users/castelao/work/projects/python/cotede/data/temperature_monthly_1deg.nc',
+        'vars': {'woa_an': 't_an', 'woa_sd': 't_sd', 'woa_n': 't_dd'},
+        'min_samples': 4
         #'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_monthly_1deg.nc'
 	},
     'global_range':{ \
@@ -30,7 +32,9 @@
     },
 'salinity':{
     'woa_comparison': {
-        'file': '/Users/castelao/work/projects/python/cotede/data/salinity_monthly_1deg.nc'
+        'file': '/Users/castelao/work/projects/python/cotede/data/salinity_monthly_1deg.nc',
+        'vars': {'woa_an': 's_an', 'woa_sd': 's_sd', 'woa_n': 's_dd'},
+        'min_samples': 4
         #'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_monthly_1deg.nc'
 	},
     'global_range':{ \

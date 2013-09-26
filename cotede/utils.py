@@ -108,32 +108,40 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
     doy = int(d.strftime('%j'))
     nc = Dataset(cfg['file'], 'r')
 
+    # Get the nearest point. In the future interpolate.
     dn = (np.abs(doy - nc.variables['time'][:])).argmin()
     xn = (np.abs(lon - nc.variables['lon'][:])).argmin()
     yn = (np.abs(lat - nc.variables['lat'][:])).argmin()
 
-    if re.match("temperature\d?$", var):
-        an = ma.masked_values(nc.variables['t_an'][dn, :, yn, xn], nc.variables['t_an']._FillValue)
-        sd = ma.masked_values(nc.variables['t_sd'][dn, :, yn, xn], nc.variables['t_sd']._FillValue)
-        #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
-        # Use this in the future. A minimum # of samples
-        #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
-    elif re.match("salinity\d?$", var):
-        an = ma.masked_values(nc.variables['s_an'][dn, :, yn, xn], nc.variables['s_an']._FillValue)
-        sd = ma.masked_values(nc.variables['s_sd'][dn, :, yn, xn], nc.variables['s_sd']._FillValue)
-        #dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
-    zwoa = ma.array(nc.variables['depth'][:])
+    vars = cfg['vars']
 
-    ind=depth<=zwoa.max()
+    # Identify the levels with at least cfg['min_samples'] samples. 
+    n = ma.masked_values(nc.variables[vars['woa_n']][dn, :, yn, xn], nc.variables[vars['woa_n']]._FillValue)
+    ind = np.nonzero(n >= cfg['min_samples'])[0]
+
+    # Returns null if there is no level with minimum # of samples
+    if not ind.any():
+        print "There isn't any level with at least %s samples" % \
+                cfg['min_samples']
+        print "The available samples per level are: %s" % n
+        return
+
+    climdata = {}
+    for v in vars:
+        climdata[v] = ma.masked_values(nc.variables[vars[v]][dn, ind, yn, xn], nc.variables[vars[v]]._FillValue)
+
+    zwoa = ma.array(nc.variables['depth'][ind])
+
+    ind = (depth<=zwoa.max()) & (depth>=zwoa.min())
+    output = {}
     # Mean value profile
-    f = interp1d(zwoa[~ma.getmaskarray(an)].compressed(), an.compressed())
-    an_interp = ma.masked_all(depth.shape)
-    an_interp[ind] = f(depth[ind])
-    # The stdev profile
-    f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
-    sd_interp = ma.masked_all(depth.shape)
-    sd_interp[ind] = f(depth[ind])
-
-    output = {'woa_an': an_interp, 'woa_sd': sd_interp}
+    for v in vars:
+        f = interp1d(zwoa, climdata[v])
+        output[v] = ma.masked_all(depth.shape)
+        output[v][ind] = f(depth[ind])
+    ## The stdev profile
+    #f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
+    #sd_interp = ma.masked_all(depth.shape)
+    #sd_interp[ind] = f(depth[ind])
 
     return output
