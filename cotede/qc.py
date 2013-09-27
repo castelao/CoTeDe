@@ -293,6 +293,7 @@ class CruiseQC(object):
         self.data = []
         for f in inputfiles:
             try:
+                print "Processing: %s" % f
                 self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=True))
             except:
                 print "Couldn't load: %s" % f
