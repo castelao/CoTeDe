@@ -115,22 +115,11 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
 
     vars = cfg['vars']
 
-    # Identify the levels with at least cfg['min_samples'] samples. 
-    n = ma.masked_values(nc.variables[vars['woa_n']][dn, :, yn, xn], nc.variables[vars['woa_n']]._FillValue)
-    ind = np.nonzero(n >= cfg['min_samples'])[0]
-
-    # Returns null if there is no level with minimum # of samples
-    if not ind.any():
-        print "There isn't any level with at least %s samples" % \
-                cfg['min_samples']
-        print "The available samples per level are: %s" % n
-        return
-
     climdata = {}
     for v in vars:
-        climdata[v] = ma.masked_values(nc.variables[vars[v]][dn, ind, yn, xn], nc.variables[vars[v]]._FillValue)
+        climdata[v] = ma.masked_values(nc.variables[vars[v]][dn, :, yn, xn], nc.variables[vars[v]]._FillValue)
 
-    zwoa = ma.array(nc.variables['depth'][ind])
+    zwoa = ma.array(nc.variables['depth'][:])
 
     ind = (depth<=zwoa.max()) & (depth>=zwoa.min())
     output = {}
