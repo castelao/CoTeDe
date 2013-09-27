@@ -3,9 +3,12 @@
 
 import pkg_resources
 from datetime import datetime
+import glob
 
 import numpy as np
 from numpy import ma
+
+from seabird import cnv
 
 from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
@@ -279,22 +282,19 @@ inputdir = "/Users/castelao/Dropbox/work/piratadata/pirataxii/"
 class CruiseQC(object):
     """ Quality Control of a group of CTD profiles
     """
-    def __init__(self, inputdir, inputpattern = "*.cnv", cfg={}):
+    def __init__(self, inputdir, inputpattern = "*.cnv", cfg={}, saveauxiliary=False):
         """
 
             Pandas is probably what I'm looking for here
         """
-        import glob
-        from seabird import cnv
         inputfiles = glob.glob(inputdir+"*.cnv")
         inputfiles.sort()
-        saveauxiliary = True
 
         self.data = []
         for f in inputfiles:
             try:
                 print "Processing: %s" % f
-                self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=True))
+                self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary))
             except:
                 print "Couldn't load: %s" % f
 
