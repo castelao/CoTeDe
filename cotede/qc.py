@@ -287,8 +287,8 @@ class CruiseQC(object):
 
             Pandas is probably what I'm looking for here
         """
-        inputfiles = glob.glob(inputdir+"*.cnv")
-        inputfiles.sort()
+
+        inputfiles = self.make_file_list(inputdir, inputpattern)
 
         self.data = []
         for f in inputfiles:
@@ -297,6 +297,13 @@ class CruiseQC(object):
                 self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary))
             except:
                 print "Couldn't load: %s" % f
+
+    def make_file_list(self, inputdir, inputpattern):
+        """
+        """
+        inputfiles = glob.glob(inputdir+"*.cnv")
+        inputfiles.sort()
+        return inputfiles
 
     def build_flags(self):
         """
