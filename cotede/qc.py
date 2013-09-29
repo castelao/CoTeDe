@@ -3,7 +3,6 @@
 
 import pkg_resources
 from datetime import datetime
-import glob
 
 import numpy as np
 from numpy import ma
@@ -12,6 +11,7 @@ from seabird import cnv
 
 from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
+from utils import make_file_list
 
 class ProfileQC(object):
     """ Quality Control of a CTD profile
@@ -283,7 +283,7 @@ class CruiseQC(object):
             Pandas is probably what I'm looking for here
         """
 
-        inputfiles = self.make_file_list(inputdir, inputpattern)
+        inputfiles = make_file_list(inputdir, inputpattern)
 
         self.data = []
         for f in inputfiles:
@@ -292,13 +292,6 @@ class CruiseQC(object):
                 self.data.append(ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary))
             except:
                 print "Couldn't load: %s" % f
-
-    def make_file_list(self, inputdir, inputpattern):
-        """
-        """
-        inputfiles = glob.glob(inputdir+"*.cnv")
-        inputfiles.sort()
-        return inputfiles
 
     def build_flags(self):
         """

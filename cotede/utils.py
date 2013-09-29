@@ -1,4 +1,5 @@
 import re
+import glob
 
 import numpy as np
 from numpy import ma
@@ -7,6 +8,14 @@ from pydap.client import open_url
 import pydap.lib
 pydap.lib.CACHE = '.cache'
 from scipy.interpolate import RectBivariateSpline, interp1d
+
+def make_file_list(inputdir, inputpattern):
+    """
+    """
+    inputfiles = glob.glob(inputdir + inputpattern)
+    inputfiles.sort()
+
+    return inputfiles
 
 def get_depth_from_DAP(lat, lon, url):
     """
