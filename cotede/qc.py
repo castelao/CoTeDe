@@ -128,16 +128,12 @@ class ProfileQC(object):
             flag = ma.masked_all(g.shape, dtype=np.bool)
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
-            #flag[np.nonzero(g>threshold)] = False
-            #flag[np.nonzero(g<=threshold)] = True
             flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold)] = False
             flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold)] = True
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
-            #flag[np.nonzero(g>threshold)] = False
-            #flag[np.nonzero(g<=threshold)] = True
             flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold)] = False
             flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
@@ -206,7 +202,6 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 self.auxiliary[v]['bin_spike'] = bin
-
 
         if 'woa_comparison' in cfg:
             try:
