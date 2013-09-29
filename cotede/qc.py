@@ -273,7 +273,75 @@ class ProfileQCed(ProfileQC):
         raise KeyError('%s not found' % key)
 
 
-inputdir = "/Users/castelao/Dropbox/work/piratadata/pirataxii/"
+class ProfileQCCollection(object):
+    """ Load a collection of ProfileQC from a directory
+    """
+    def __init__(self, inputdir, inputpattern="*.cnv",
+            saveauxiliary=False, pandas=True):
+        """
+        """
+        if pandas == True:
+            try:
+                import pandas as pd
+            except:
+                print "Sorry, I couldn't load pandas"
+                return
+
+        self.inputfiles = make_file_list(inputdir, inputpattern)
+
+        self.data = None
+        self.flags = {}
+        if saveauxiliary is True:
+            self.auxiliary = {}
+
+        for nf, f in enumerate(self.inputfiles):
+            try:
+                print "Processing: %s" % f
+                p = ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary)
+
+                # ---- Dealing with the data ---------------------------------
+                tmp = p.input.as_DataFrame()
+                tmp['profileid'] = nf
+                tmp['id'] = id = tmp.index
+
+                #tmp = pd.concat([ p.input.as_DataFrame(), pd.DataFrame({'profileid': nf}) ])
+                #self.data = pd.concat([self.data, p.input.as_DataFrame()])
+                self.data = pd.concat([self.data, tmp])
+
+                # Dealing with the data
+                #if 'timeS' in p.keys():
+                #    ind = ~p['timeS'].mask
+                #    d = ma.masked_all(p['timeS'].shape, dtype='O')
+                #    d0 = p.input.attributes['datetime']
+                #    d[ind] = ma.array([d0+timedelta(seconds=s) for s in p['timeS'][ind]])
+                #else:
+                #    d = p.input.attributes['datetime']
+                #tmp = {'datetime': pd.Series(d)}
+                #for k in p.keys():
+                #    tmp[k] = pd.Series(p[k])
+
+                # ---- Dealing with the flags --------------------------------
+                for v in p.flags.keys():
+                    if v not in self.flags:
+                        self.flags[v] = None
+                    tmp = p.flags[v]
+                    tmp['id'], tmp['profileid'] = id, nf
+                    self.flags[v] = pd.concat([self.flags[v],
+                        pd.DataFrame(tmp)])
+                # ---- Dealing with the auxiliary -----------------------------
+                if saveauxiliary is True:
+                    for a in p.auxiliary.keys():
+                        if a not in self.auxiliary:
+                            self.auxiliary[a] = None
+                        tmp = p.auxiliary[a]
+                        tmp['id'], tmp['profileid'] = id, nf
+                        self.auxiliary[a] = pd.concat([self.auxiliary[a],
+                            pd.DataFrame(tmp)])
+
+            except:
+                print "Couldn't load: %s" % f
+
+
 class CruiseQC(object):
     """ Quality Control of a group of CTD profiles
     """
