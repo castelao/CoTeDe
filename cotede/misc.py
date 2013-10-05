@@ -117,3 +117,21 @@ def split_data_groups(ind):
     output = {'ind_fit': ind_fit, 'ind_test': ind_test, 'ind_err': ind_err}
     return output
 
+
+# I need to improve this, and include the places where the
+#   flags are masked, i.e. only eliminate where the flags
+#   could guarantee it was false.
+
+def make_qc_index(flags, criteria, type="anytrue"):
+    ind = flags[criteria[0]]
+    if type == "anytrue":
+        for c in criteria:
+            ind[(ind == True) | (flags[c] == True)] = True
+        #ind[np.nonzero((ind == True) | (np.array(flags[c]) == True))[0]] = True
+    elif type == "alltrue":
+        for c in criteria:
+            ind[(ind == True) | (flags[c] == True)] = True
+    for c in criteria:
+        ind[(ind == False) | (flags[c] == False)] = False
+        #ind[np.nonzero((ind == False) | (np.array(flags[c]) == False))[0]] = False
+    return ind
