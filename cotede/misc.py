@@ -123,7 +123,7 @@ def split_data_groups(ind):
 #   could guarantee it was false.
 
 def make_qc_index(flags, criteria, type="anytrue"):
-    ind = flags[criteria[0]]
+    ind = flags[criteria[0]].copy()
     if type == "anytrue":
         for c in criteria:
             ind[(ind == True) | (flags[c] == True)] = True
