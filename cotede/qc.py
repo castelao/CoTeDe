@@ -3,6 +3,7 @@
 
 import pkg_resources
 from datetime import datetime
+from os.path import expanduser
 
 import numpy as np
 from numpy import ma
@@ -75,7 +76,14 @@ class ProfileQC(object):
             How to handle conflicts between user's cfg and default?
         """
         #defaults = pkg_resources.resource_listdir(__name__, 'defaults')
-        self.cfg = eval(pkg_resources.resource_string(__name__, 'defaults'))
+
+        try:
+            cfg_file = open(expanduser('~/.cotederc'))
+        except IOError:
+            self.cfg = eval(pkg_resources.resource_string(__name__, 'defaults'))
+        else:
+            configs = eval(cfg_file)
+
         for k in cfg:
             self.cfg[k] = cfg[k]
 
@@ -128,16 +136,24 @@ class ProfileQC(object):
             flag = ma.masked_all(g.shape, dtype=np.bool)
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
-            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
-                    (g > threshold)] = False
-            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold)] = True
+            flag[np.nonzero( \
+                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g > threshold))] \
+                    = False
+            flag[np.nonzero( \
+                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold))] \
+                    = True
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
-            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
-                    (g > threshold)] = False
-            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold)] = True
+            flag[np.nonzero( \
+                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g > threshold))] \
+                    = False
+            flag[np.nonzero( \
+                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold))] \
+                    = True
 
             self.flags[v]['gradient_depthconditional'] = flag
 
@@ -159,16 +175,24 @@ class ProfileQC(object):
             flag = ma.masked_all(s.shape, dtype=np.bool)
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
-            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
-                    (g > threshold)] = False
-            flag[(self['pressure'] <= cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold)] = True
+            flag[np.nonzero( \
+                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g > threshold))] \
+                    = False
+            flag[np.nonzero( \
+                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold))] \
+                    = True
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
-            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
-                    (g > threshold)] = False
-            flag[(self['pressure'] > cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold)] = True
+            flag[np.nonzero( \
+                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g > threshold))] \
+                    = False
+            flag[np.nonzero( \
+                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (g <= threshold))] \
+                    = True
 
             self.flags[v]['spike_depthconditional'] = flag
 
