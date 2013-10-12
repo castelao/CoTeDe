@@ -1,5 +1,5 @@
+import os
 import re
-import glob
 
 import numpy as np
 from numpy import ma
@@ -10,11 +10,14 @@ pydap.lib.CACHE = '.cache'
 from scipy.interpolate import RectBivariateSpline, interp1d
 
 def make_file_list(inputdir, inputpattern):
+    """ Search inputdir recursively for inputpattern
     """
-    """
-    inputfiles = glob.glob(inputdir + inputpattern)
+    inputfiles = []
+    for dirpath, dirnames, filenames in os.walk(inputdir):
+        for filename in filenames:
+            if re.match(inputpattern, filename):
+                inputfiles.append(os.path.join(dirpath,filename))
     inputfiles.sort()
-
     return inputfiles
 
 def get_depth_from_DAP(lat, lon, url):
