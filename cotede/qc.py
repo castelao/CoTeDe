@@ -208,7 +208,6 @@ class ProfileQC(object):
                 w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
                 smooth[i] = (T[ind]*w).sum()/w.sum()
 
-
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
@@ -300,13 +299,14 @@ class ProfileQCed(ProfileQC):
 class ProfileQCCollection(object):
     """ Load a collection of ProfileQC from a directory
     """
-    def __init__(self, inputdir, inputpattern="*.cnv",
+    def __init__(self, inputdir, inputpattern=".*\.cnv",
             saveauxiliary=False, pandas=True):
         """
         """
         if pandas == True:
             try:
                 import pandas as pd
+                self.pandas = True
             except:
                 print "Sorry, I couldn't load pandas"
                 return
@@ -364,6 +364,16 @@ class ProfileQCCollection(object):
 
             except:
                 print "Couldn't load: %s" % f
+
+    def save(self, filename):
+        if self.pandas == True:
+            self.data.to_hdf("%s_data.hdf" % filename, 'df')
+            for k in self.flags.keys():
+                self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+            if not hasattr(self, 'auxiliary'):
+                for k in self.auxiliary.keys():
+                    self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+
 
 
 class CruiseQC(object):
