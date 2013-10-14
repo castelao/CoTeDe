@@ -216,8 +216,10 @@ class ProfileQC(object):
                 self.auxiliary[v]['step'] = s
 
             flag = ma.masked_all(s.shape, dtype=np.bool)
-            flag[ma.absolute(s)>threshold] = False
-            flag[ma.absolute(s)<=threshold] = True
+
+            flag[np.nonzero(ma.absolute(s) > threshold)] = False
+            flag[np.nonzero(ma.absolute(s) <= threshold)] = True
+
             self.flags[v]['digit_roll_over'] = flag
 
         if 'bin_spike' in cfg:
