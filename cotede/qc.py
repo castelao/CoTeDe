@@ -320,14 +320,16 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        for nf, f in enumerate(self.inputfiles):
+        for f in self.inputfiles:
             try:
                 print "Processing: %s" % f
                 p = ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary)
 
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
-                tmp['profileid'] = nf
+                profileid = p.attributes['md5']
+                tmp['profileid'] = profileid
+                tmp['profilename'] = p.attributes['filename']
                 tmp['id'] = id = tmp.index
 
                 #tmp = pd.concat([ p.input.as_DataFrame(), pd.DataFrame({'profileid': nf}) ])
@@ -351,7 +353,7 @@ class ProfileQCCollection(object):
                     if v not in self.flags:
                         self.flags[v] = None
                     tmp = p.flags[v]
-                    tmp['id'], tmp['profileid'] = id, nf
+                    tmp['id'], tmp['profileid'] = id, profileid
                     self.flags[v] = pd.concat([self.flags[v],
                         pd.DataFrame(tmp)])
                 # ---- Dealing with the auxiliary -----------------------------
@@ -360,7 +362,7 @@ class ProfileQCCollection(object):
                         if a not in self.auxiliary:
                             self.auxiliary[a] = None
                         tmp = p.auxiliary[a]
-                        tmp['id'], tmp['profileid'] = id, nf
+                        tmp['id'], tmp['profileid'] = id, profileid
                         self.auxiliary[a] = pd.concat([self.auxiliary[a],
                             pd.DataFrame(tmp)])
 
