@@ -156,3 +156,12 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
             pylab.show()
 
     return output
+
+def estimate_anomaly(aux):
+    prob = ma.ones(aux.shape[0])
+    for t in output.keys():
+        param = output[t]['param']
+        ind = np.isfinite(aux[t])
+        prob[ind] = prob[ind] * \
+                exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
+    return prob
