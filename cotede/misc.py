@@ -1,5 +1,8 @@
 import numpy as np
 from numpy import ma, random
+#from scipy.stats import norm, rayleigh, expon, halfnorm, exponpow, exponweib
+from scipy.stats import exponweib
+#from scipy.stats import kstest
 
 from pydap.client import open_url
 import pydap.lib
