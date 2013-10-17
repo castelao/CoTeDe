@@ -5,6 +5,7 @@
     #    },
     },
 'temperature':{
+    'pstep': None,
     'woa_comparison': {
         'file': '/Users/castelao/work/projects/python/cotede/data/temperature_monthly_1deg.nc',
         'vars': {'woa_an': 't_an', 'woa_sd': 't_sd', 'woa_n': 't_dd'},

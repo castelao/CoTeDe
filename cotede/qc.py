@@ -262,6 +262,11 @@ class ProfileQC(object):
             self.flags[v]['woa_comparison'] = \
                     woa_bias/woa['woa_sd'] < 3
 
+        if 'pstep' in cfg:
+            ind = np.isfinite(self.input[v])
+            self.auxiliary[v]['pstep'] = ma.concatenate( \
+                    [ma.masked_all(1), np.diff(self.input['pressure'][ind])])
+
     def build_auxiliary(self):
         vars = ['temperature']
 
