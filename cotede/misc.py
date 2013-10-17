@@ -182,3 +182,29 @@ def estimate_p_optimal(prob, qc, verbose=False):
         pylab.plot(P, err , 'b'); pylab.show()
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
+def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
+    indices = split_data_groups(ind)
+    output = fit_tests(aux, qctests, indices['ind_fit'], q=0.90,
+            verbose=verbose)
+    prob = estimate_anomaly(aux, output)
+    if verbose == True:
+        pylab.hist(prob); pylab.show()
+    p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
+            ind[indices['ind_test']])
+    false_negative = (prob[indices['ind_err']] < p_optimal) & \
+        (ind[indices['ind_err']] == True)
+    false_positive = (prob[indices['ind_err']] > p_optimal) & \
+        (ind[indices['ind_err']] == False)
+    err = np.nonzero(false_negative)[0].size + \
+            np.nonzero(false_positive)[0].size
+    err_ratio = float(err)/prob[indices['ind_err']].size
+    false_negative = (prob < p_optimal) & \
+        (ind == True)
+    false_positive = (prob > p_optimal) & \
+        (ind == False)
+    output = {'false_negative': false_negative,
+            'false_positive': false_positive,
+            'p_optimal': p_optimal,
+            'err': err,
+            'err_ratio': err_ratio}
+    return output
