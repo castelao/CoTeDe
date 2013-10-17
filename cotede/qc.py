@@ -252,13 +252,15 @@ class ProfileQC(object):
                 print "WOA is not available at this site"
                 return
 
+            woa_bias = ma.absolute(self.input[v] - woa['woa_an'])
+
             if self.saveauxiliary:
                 for k in woa.keys():
                     self.auxiliary[v][k] = woa[k]
+                self.auxiliary[v]['woa_bias'] = woa_bias
 
-            woa_bias = (self.input[v] - woa['woa_an'])
             self.flags[v]['woa_comparison'] = \
-                    ma.absolute(woa_bias/woa['woa_sd']) < 3
+                    woa_bias/woa['woa_sd'] < 3
 
     def build_auxiliary(self):
         vars = ['temperature']
