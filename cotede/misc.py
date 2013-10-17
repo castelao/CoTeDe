@@ -135,3 +135,24 @@ def make_qc_index(flags, criteria, type="anytrue"):
         ind[(ind == False) | (flags[c] == False)] = False
         #ind[np.nonzero((ind == False) | (np.array(flags[c]) == False))[0]] = False
     return ind
+
+def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
+    """
+    """
+    output = {}
+    for teste in qctests:
+        samp = aux[teste][ind]
+        ind_top = samp>samp.quantile(q)
+        param = exponweib.fit(samp[ind_top])
+        output[teste] = {'param':param,
+                'q95': samp.quantile(q)}
+
+        if verbose == True:
+            x = linspace(samp[ind_top].min(), samp[ind_top].max(), 100)[1:]
+            pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
+            pylab.plot(x,pdf_fitted,'b-')
+            pylab.hist(samp[ind_top], 100, normed=1,alpha=.3)
+            pylab.title(teste)
+            pylab.show()
+
+    return output
