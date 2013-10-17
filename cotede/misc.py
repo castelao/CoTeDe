@@ -160,11 +160,25 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
 
     return output
 
-def estimate_anomaly(aux):
+def estimate_anomaly(aux, params):
     prob = ma.ones(aux.shape[0])
-    for t in output.keys():
-        param = output[t]['param']
+    for t in params.keys():
+        param = params[t]['param']
         ind = np.isfinite(aux[t])
         prob[ind] = prob[ind] * \
                 exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
     return prob
+
+def estimate_p_optimal(prob, qc, verbose=False):
+    err = []
+    P = 10.**np.arange(-12, 0, 0.1)
+    for p in P:
+        false_negative = (prob < p) & (qc == True)
+        false_positive = (prob > p) & (qc == False)
+        err.append(np.nonzero(false_negative)[0].size + \
+                np.nonzero(false_positive)[0].size)
+    err = np.array(err)
+    if verbose == True:
+        pylab.plot(P, err , 'b'); pylab.show()
+    return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
+
