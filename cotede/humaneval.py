@@ -8,18 +8,19 @@ import matplotlib.pyplot as plt
 class HumanQC(object):
     """
     """
-    def __init__(self, x, z, baseflags=[]):
+    def __init__(self, x, z, baseflags=[], fails=[], doubt=[]):
         """
         """
         self.x = x
         self.z = z
+        self.baseflags = baseflags
+        self.fails = fails
+        self.doubt = doubt
         #self.redraw = True
         #while self.redraw:
         self.hgood_ind = []
         self.hbad_ind  = []
         self.hdoubt_ind  = []
-        print self.hbad_ind
-        self.baseflags = baseflags
 
         self.plot()
 
@@ -32,6 +33,16 @@ class HumanQC(object):
         # Plot the bad ones
         self.ax.plot(self.x[self.baseflags==False],
                 self.z[self.baseflags==False], 'r^')
+
+        # Plot the dubious ones
+        self.ax.plot(self.x[self.doubt==True],
+                self.z[self.doubt==True], 'D',
+                color='magenta')
+
+        self.ax.plot(self.x[self.fails], self.z[self.fails], 'o', ms=12,
+                alpha=0.4, color='cyan', visible=True)
+
+
         #line, = ax.plot(xs, ys, 'o', picker=5)  # 5 points tolerance
         self.selected, = self.ax.plot([self.x[0]], [self.z[0]], 'o', ms=12,
                 alpha=0.4, color='yellow', visible=False)
@@ -150,3 +161,4 @@ class HumanQC(object):
         print('Closed Figure!')
         print "Good list: %s" % self.hgood_ind
         print "Bad list: %s" % self.hbad_ind
+        print "Doubt list: %s" % self.hdoubt_ind
