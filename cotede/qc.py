@@ -492,4 +492,25 @@ def descentPrate(t, p):
     dp = ma.diff(p)
     y[1:] = dp/dt
     return y
-    
+
+def tukey53H(x, k=1):
+    """Spike test Tukey 53H from Goring & Nikora 2002
+    """
+    N = len(x)
+
+    u1 = ma.masked_all(N)
+    for n in range(N-4):
+        u1[n+2] = ma.median(x[n:n+5])
+
+    u2 = ma.masked_all(N)
+    for n in range(N-2):
+        u2[n+1] = ma.median(u1[n:n+3])
+
+    u3 = ma.masked_all(N)
+    u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
+
+    Delta = ma.absolute(x-u3)
+
+    #return Delta/(k*x.std())
+    return Delta
+
