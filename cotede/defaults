@@ -21,6 +21,7 @@
         'shallow_max': 6.0,
         'deep_max': 2.0,
         },
+    'tukey53H': 1.5,
     'gradient': 9.0,
     'gradient_depthconditional': { \
         'pressure_threshold': 500,
