@@ -536,3 +536,14 @@ def tukey53H(x):
     #return Delta/(k*x.std())
     return Delta
 
+def tukey53H_norm(x, k=1.5, l=12):
+    """Spike test Tukey53H() normalized by the std of the low pass
+
+       l is the number of observations. The default l=12 is trully not
+         a big number, but this test foccus on spikes, therefore, any
+         variability longer than 12 is something else.
+    """
+    Delta = tukey53H(x)
+    from maud import window_1Dmean
+    sigma = (window_1Dmean(x, l, method='hann')).std()
+    return Delta/(k*sigma)
