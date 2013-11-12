@@ -196,27 +196,23 @@ class ProfileQC(object):
 
             self.flags[v]['spike_depthconditional'] = flag
 
-        if 'tukey53H' in cfg:
+        if 'tukey53H_norm' in cfg:
             """
 
                 I slightly modified the Goring & Nikora 2002. It is
                   expected that CTD profiles has a typical depth
                   structure, with a range between surface and bottom.
-                  The std of the diff makes more sense here as a
-                  reference for the magnitude of the spike.
             """
-            k = cfg['tukey53H']
-            s = tukey53H(self.input[v])
-            sigma = (ma.diff(self.input[v])).std()
-            threshold = k*sigma
+            k = cfg['tukey53H_norm']
+            s = tukey53H_norm(self.input[v], k)
 
             if self.saveauxiliary:
-                self.auxiliary[v]['tukey53H'] = s
+                self.auxiliary[v]['tukey53H_norm'] = s
 
             flag = ma.masked_all(s.shape, dtype=np.bool)
             flag[np.nonzero(s > threshold)] = False
             flag[np.nonzero(s <= threshold)] = True
-            self.flags[v]['tukey53H'] = flag
+            self.flags[v]['tukey53H_norm'] = flag
 
         if 'spike_depthsmooth' in cfg:
             from maud.window_func import _weight_hann as wfunc
