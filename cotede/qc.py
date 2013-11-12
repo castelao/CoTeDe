@@ -203,7 +203,7 @@ class ProfileQC(object):
                   expected that CTD profiles has a typical depth
                   structure, with a range between surface and bottom.
             """
-            k = cfg['tukey53H_norm']
+            k = cfg['tukey53H_norm']['k']
             s = tukey53H_norm(self.input[v], k)
 
             if self.saveauxiliary:
