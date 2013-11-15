@@ -1,0 +1,9 @@
+.. CoTeDe
+
+News
+====
+
+0.5.4
+-----
+
+Lost track before this.
