@@ -283,8 +283,12 @@ class ProfileQC(object):
                     self.auxiliary[v][k] = woa[k]
                 self.auxiliary[v]['woa_bias'] = woa_bias
 
-            self.flags[v]['woa_comparison'] = \
-                    woa_bias/woa['woa_sd'] < 3
+            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            ind = woa_bias/woa['woa_sd'] <= 3
+            self.flags[v]['woa_comparison'][ind] = 1
+            ind = woa_bias/woa['woa_sd'] > 3
+            self.flags[v]['woa_comparison'][ind] = 4
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
