@@ -115,8 +115,14 @@ class ProfileQC(object):
                 self.auxiliary[v] = {}
 
         if 'global_range' in cfg:
-            f = (self.input[v] >= cfg['global_range']['minval']) & (self.input[v] <= cfg['global_range']['maxval'])
-            self.flags[v]['global_range'] = f
+            self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            ind = (self.input[v] >= cfg['global_range']['minval']) & \
+                    (self.input[v] <= cfg['global_range']['maxval'])
+            self.flags[v]['global_range'][ind] = 1
+            ind = (self.input[v] < cfg['global_range']['minval']) & \
+                    (self.input[v] > cfg['global_range']['maxval'])
+            self.flags[v]['global_range'][ind] = 4
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
@@ -125,35 +131,35 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['gradient'] = g
 
-            flag = ma.masked_all(g.shape, dtype=np.bool)
-            flag[np.nonzero(g > threshold)] = False
-            flag[np.nonzero(g <= threshold)] = True
+            flag = np.zeros(g.shape, dtype='i1')
+            flag[np.nonzero(g > threshold)] = 4
+            flag[np.nonzero(g <= threshold)] = 1
             self.flags[v]['gradient'] = flag
 
         if 'gradient_depthconditional' in cfg:
             cfg_tmp = cfg['gradient_depthconditional']
             g = gradient(self.input[v])
-            flag = ma.masked_all(g.shape, dtype=np.bool)
+            flag = np.zeros(g.shape, dtype='i1')
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
                     (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
-                    = False
+                    = 4
             flag[np.nonzero( \
                     (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
-                    = True
+                    = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
                     (self['pressure'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
-                    = False
+                    = 4
             flag[np.nonzero( \
                     (self['pressure'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
-                    = True
+                    = 1
 
             self.flags[v]['gradient_depthconditional'] = flag
 
@@ -164,35 +170,35 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['spike'] = s
 
-            flag = ma.masked_all(s.shape, dtype=np.bool)
-            flag[np.nonzero(s > threshold)] = False
-            flag[np.nonzero(s <= threshold)] = True
+            flag = np.zeros(s.shape, dtype='i1')
+            flag[np.nonzero(s > threshold)] = 4
+            flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['spike'] = flag
 
         if 'spike_depthconditional' in cfg:
             cfg_tmp = cfg['spike_depthconditional']
             s = spike(self.input[v])
-            flag = ma.masked_all(s.shape, dtype=np.bool)
+            flag = np.zeros(s.shape, dtype='i1')
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
                     (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
-                    = False
+                    = 4
             flag[np.nonzero( \
                     (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
-                    = True
+                    = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
                     (self['pressure'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
-                    = False
+                    = 4
             flag[np.nonzero( \
                     (self['pressure'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
-                    = True
+                    = 1
 
             self.flags[v]['spike_depthconditional'] = flag
 
@@ -209,9 +215,9 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['tukey53H_norm'] = s
 
-            flag = ma.masked_all(s.shape, dtype=np.bool)
-            flag[np.nonzero(s > threshold)] = False
-            flag[np.nonzero(s <= threshold)] = True
+            flag = np.zeros(s.shape, dtype='i1')
+            flag[np.nonzero(s > threshold)] = 4
+            flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['tukey53H_norm'] = flag
 
         if 'spike_depthsmooth' in cfg:
@@ -233,10 +239,10 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['step'] = s
 
-            flag = ma.masked_all(s.shape, dtype=np.bool)
+            flag = np.zeros(s.shape, dtype='i1')
 
-            flag[np.nonzero(ma.absolute(s) > threshold)] = False
-            flag[np.nonzero(ma.absolute(s) <= threshold)] = True
+            flag[np.nonzero(ma.absolute(s) > threshold)] = 4
+            flag[np.nonzero(ma.absolute(s) <= threshold)] = 1
 
             self.flags[v]['digit_roll_over'] = flag
 

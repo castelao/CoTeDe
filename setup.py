@@ -29,7 +29,7 @@ install_requires = [
         'seabird',
         ]
 
-version = '0.6'
+version = '0.6.1'
 
 setup(
     name = 'cotede',
