@@ -14,6 +14,7 @@ from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
 from utils import make_file_list
 
+
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
@@ -21,8 +22,8 @@ class ProfileQC(object):
         """
             Input: dictionary with data.
                 - pressure[\d]:
-                - temperature[\d]: 
-                - salinity[\d]: 
+                - temperature[\d]:
+                - salinity[\d]:
 
             cfg: config file with thresholds
 
@@ -98,9 +99,9 @@ class ProfileQC(object):
             lon = self.input.attributes['longitude']
             lat = self.input.attributes['latitude']
             if 'url' in self.cfg['main']['at_sea']:
-                depth = get_depth_from_DAP(np.array([lat]), 
+                depth = get_depth_from_DAP(np.array([lat]),
                         np.array([lon]),
-                        url = self.cfg['main']['at_sea']['url'])
+                        url=self.cfg['main']['at_sea']['url'])
                 #flag[depth<0] = True
                 #flag[depth>0] = False
                 #self.flags['at_sea'] = flag
@@ -227,8 +228,8 @@ class ProfileQC(object):
             smooth = ma.masked_all(self.input[v].shape)
             z = ped['pressure']
             for i in range(len(self.input[v])):
-                ind = np.nonzero(ma.absolute(z-z[i])<cfg_tmp['dzwindow'])[0]
-                ind = ind[ind!=i]
+                ind = np.nonzero(ma.absolute(z-z[i]) < cfg_tmp['dzwindow'])[0]
+                ind = ind[ind != i]
                 w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
                 smooth[i] = (T[ind]*w).sum()/w.sum()
 
@@ -254,18 +255,18 @@ class ProfileQC(object):
 
         if 'woa_comparison' in cfg:
             try:
-                woa = woa_profile_from_file(v, 
+                woa = woa_profile_from_file(v,
                     self.input.attributes['datetime'],
-                    self.input.attributes['latitude'], 
-                    self.input.attributes['longitude'], 
+                    self.input.attributes['latitude'],
+                    self.input.attributes['longitude'],
                     self.input['pressure'],
                     cfg['woa_comparison'])
             except:
                 try:
-                    woa = woa_profile_from_dap(v, 
+                    woa = woa_profile_from_dap(v,
                         self.input.attributes['datetime'],
-                        self.input.attributes['latitude'], 
-                        self.input.attributes['longitude'], 
+                        self.input.attributes['latitude'],
+                        self.input.attributes['longitude'],
                         self.input['pressure'],
                         cfg['woa_comparison'])
                 except:
@@ -292,13 +293,13 @@ class ProfileQC(object):
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
-            self.auxiliary[v]['pstep'] = ma.concatenate( \
+            self.auxiliary[v]['pstep'] = ma.concatenate(
                     [ma.masked_all(1), np.diff(self.input['pressure'][ind])])
 
     def build_auxiliary(self):
         vars = ['temperature']
 
-        if not hasattr(self,'auxiliary'):
+        if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
 
         self.auxiliary['common'] = {}
@@ -340,7 +341,7 @@ class ProfileQCCollection(object):
             saveauxiliary=False, pandas=True):
         """
         """
-        if pandas == True:
+        if pandas is True:
             try:
                 import pandas as pd
                 self.pandas = True
@@ -405,7 +406,7 @@ class ProfileQCCollection(object):
                 print "Couldn't load: %s" % f
 
     def save(self, filename):
-        if self.pandas == True:
+        if self.pandas is True:
             self.data.to_hdf("%s_data.hdf" % filename, 'df')
             for k in self.flags.keys():
                 self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
@@ -414,11 +415,11 @@ class ProfileQCCollection(object):
                     self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
 
 
-
 class CruiseQC(object):
     """ Quality Control of a group of CTD profiles
     """
-    def __init__(self, inputdir, inputpattern = "*.cnv", cfg={}, saveauxiliary=False):
+    def __init__(self, inputdir, inputpattern="*.cnv", cfg={},
+            saveauxiliary=False):
         """
 
             Pandas is probably what I'm looking for here
@@ -454,13 +455,12 @@ class CruiseQC(object):
             self.data[i].build_auxiliary()
 
         self.auxiliary = self.data[0].auxiliary.copy()
-        for i in range(1,len(self.data)):
+        for i in range(1, len(self.data)):
             for k in self.data[i].auxiliary.keys():
                 for kk in self.data[i].auxiliary[k].keys():
                     self.auxiliary[k][kk] = ma.concatenate(
                             [self.auxiliary[k][kk],
                             self.data[i].auxiliary[k][kk]])
-
 
     def keys(self):
         k = self.data[0].keys()
@@ -475,29 +475,28 @@ class CruiseQC(object):
         return output
 
 
-
-
-
-
 def step(x):
-    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y = ma.masked_all(x.shape, dtype=x.dtype)
     y[1:] = ma.diff(x)
     return y
 
+
 def gradient(x):
-    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y = ma.masked_all(x.shape, dtype=x.dtype)
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
     # ATENTION, temporary solution
     #y[0]=0; y[-1]=0
     return y
 
+
 def spike(x):
-    y = ma.masked_all(x.shape, dtype = x.dtype)
+    y = ma.masked_all(x.shape, dtype=x.dtype)
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - \
                 np.abs((x[2:] - x[:-2])/2.0)
     # ATENTION, temporary solution
     #y[0]=0; y[-1]=0
     return y
+
 
 def bin_spike(x, l):
     N = len(x)
@@ -512,14 +511,14 @@ def bin_spike(x, l):
     return bin
 
 
-
 def descentPrate(t, p):
     assert t.shape == p.shape, "t and p have different sizes"
-    y = ma.masked_all(t.shape, dtype = t.dtype)
+    y = ma.masked_all(t.shape, dtype=t.dtype)
     dt = ma.diff(t)
     dp = ma.diff(p)
     y[1:] = dp/dt
     return y
+
 
 def tukey53H(x):
     """Spike test Tukey 53H from Goring & Nikora 2002
@@ -541,6 +540,7 @@ def tukey53H(x):
 
     #return Delta/(k*x.std())
     return Delta
+
 
 def tukey53H_norm(x, k=1.5, l=12):
     """Spike test Tukey53H() normalized by the std of the low pass
