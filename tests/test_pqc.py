@@ -1,6 +1,9 @@
-# I should split in two tests, one for generic expected proprieties and contents, and another test for specific contents, like keys, and values itself. But this last one must require a md5.
+# I should split in two tests, one for generic expected proprieties and
+#   contents, and another test for specific contents, like keys, and values
+#   itself. But this last one must require a md5.
 
 from numpy import ma
+
 
 def func():
     from seabird import cnv
@@ -9,9 +12,12 @@ def func():
     pqc = cotede.qc.ProfileQC(data, saveauxiliary=True)
     return pqc
 
+
 def test_answer():
     pqc = func()
-    keys = ['timeS', 'pressure', 'temperature', 'temperature2', 'conductivity', 'conductivity2', 'potemperature', 'potemperature2', 'salinity', 'salinity2', 'flag']
+    keys = ['timeS', 'pressure', 'temperature', 'temperature2', 'conductivity',
+            'conductivity2', 'potemperature', 'potemperature2', 'salinity',
+            'salinity2', 'flag']
     pqc.keys() == keys
     assert type(pqc.attributes) == dict
     assert len(pqc.attributes) == 11
