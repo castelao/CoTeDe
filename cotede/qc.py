@@ -14,6 +14,7 @@ from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
 from utils import make_file_list
 
+
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
@@ -21,8 +22,8 @@ class ProfileQC(object):
         """
             Input: dictionary with data.
                 - pressure[\d]:
-                - temperature[\d]: 
-                - salinity[\d]: 
+                - temperature[\d]:
+                - salinity[\d]:
 
             cfg: config file with thresholds
 
@@ -98,9 +99,9 @@ class ProfileQC(object):
             lon = self.input.attributes['longitude']
             lat = self.input.attributes['latitude']
             if 'url' in self.cfg['main']['at_sea']:
-                depth = get_depth_from_DAP(np.array([lat]), 
+                depth = get_depth_from_DAP(np.array([lat]),
                         np.array([lon]),
-                        url = self.cfg['main']['at_sea']['url'])
+                        url=self.cfg['main']['at_sea']['url'])
                 #flag[depth<0] = True
                 #flag[depth>0] = False
                 #self.flags['at_sea'] = flag
@@ -221,8 +222,8 @@ class ProfileQC(object):
             smooth = ma.masked_all(self.input[v].shape)
             z = ped['pressure']
             for i in range(len(self.input[v])):
-                ind = np.nonzero(ma.absolute(z-z[i])<cfg_tmp['dzwindow'])[0]
-                ind = ind[ind!=i]
+                ind = np.nonzero(ma.absolute(z-z[i]) < cfg_tmp['dzwindow'])[0]
+                ind = ind[ind != i]
                 w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
                 smooth[i] = (T[ind]*w).sum()/w.sum()
 
@@ -248,18 +249,18 @@ class ProfileQC(object):
 
         if 'woa_comparison' in cfg:
             try:
-                woa = woa_profile_from_file(v, 
+                woa = woa_profile_from_file(v,
                     self.input.attributes['datetime'],
-                    self.input.attributes['latitude'], 
-                    self.input.attributes['longitude'], 
+                    self.input.attributes['latitude'],
+                    self.input.attributes['longitude'],
                     self.input['pressure'],
                     cfg['woa_comparison'])
             except:
                 try:
-                    woa = woa_profile_from_dap(v, 
+                    woa = woa_profile_from_dap(v,
                         self.input.attributes['datetime'],
-                        self.input.attributes['latitude'], 
-                        self.input.attributes['longitude'], 
+                        self.input.attributes['latitude'],
+                        self.input.attributes['longitude'],
                         self.input['pressure'],
                         cfg['woa_comparison'])
                 except:
@@ -330,7 +331,7 @@ class ProfileQCCollection(object):
             saveauxiliary=False, pandas=True):
         """
         """
-        if pandas == True:
+        if pandas is True:
             try:
                 import pandas as pd
                 self.pandas = True
