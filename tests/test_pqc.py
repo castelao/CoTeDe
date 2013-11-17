@@ -2,8 +2,7 @@
 #   contents, and another test for specific contents, like keys, and values
 #   itself. But this last one must require a md5.
 
-from numpy import ma
-
+import numpy as np
 
 def func():
     from seabird import cnv
@@ -28,7 +27,7 @@ def test_answer():
     for k in pqc.flags.keys():
         assert type(pqc.flags[k]) == dict
         for kk in pqc.flags[k].keys():
-            assert (type(pqc.flags[k][kk]) == ma.MaskedArray) or \
+            assert (type(pqc.flags[k][kk]) == np.ndarray) or \
                 (type(pqc.flags[k][kk]) == bool)
-            if (type(pqc.flags[k][kk]) == ma.MaskedArray):
-                assert pqc.flags[k][kk].dtype == bool
+            if (type(pqc.flags[k][kk]) == np.ndarray):
+                assert pqc.flags[k][kk].dtype == 'int8'
