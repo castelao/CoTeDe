@@ -45,7 +45,21 @@
         'maxval': 60,
         },
     'spike': 0.9,
+    'spike_depthconditional': { \
+        'pressure_threshold': 500,
+        'shallow_max': 0.9,
+        'deep_max': 0.3,
+        },
+    'tukey53H_norm': { \
+        'k': 1.5,
+        'l': 12
+        },
     'gradient': 1.5,
+    'gradient_depthconditional': { \
+        'pressure_threshold': 500,
+        'shallow_max': 1.5,
+        'deep_max': 0.5,
+        },
     'digit_roll_over': 5,
     'bin_spike': 10,
     }
