@@ -125,6 +125,26 @@ def split_data_groups(ind):
 #   flags are masked, i.e. only eliminate where the flags
 #   could guarantee it was false.
 
+def combined_flag(flags, criteria=None):
+    """ Returns the combined flag considering all the criteria
+
+        Collects all flags in the criteria, and for each measurements, it
+          return the maximum flag value among the different criteria.
+
+        If criteria is not defined, considers all the flags,
+          i.e. flags.keys()
+    """
+    if criteria is None:
+        criteria = flags.keys()
+
+    N = flags[criteria[0]].size
+    Nf = len(criteria)
+    temp_flag = np.zeros((Nf, N), dtype='i1')
+    for i, k in enumerate(flags.keys()):
+        temp_flag[i] = flags[k]
+
+    return temp_flag.max(axis=0)
+
 def make_qc_index(flags, criteria, type="anytrue"):
     ind = flags[criteria[0]].copy()
     if type == "anytrue":
