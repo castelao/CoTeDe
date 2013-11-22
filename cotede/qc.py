@@ -125,6 +125,12 @@ class ProfileQC(object):
                     (self.input[v] > cfg['global_range']['maxval'])
             self.flags[v]['global_range'][ind] = 4
 
+        if 'profile_envelope' in cfg:
+            self.flags[v]['profile_envelope'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            for layer in cfg['profile_envelope']:
+                ind = self.input['pressure']
+
         if 'gradient' in cfg:
             threshold = cfg['gradient']
             g = gradient(self.input[v])
