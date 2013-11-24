@@ -171,7 +171,8 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
                 'q95': samp.quantile(q)}
 
         if verbose == True:
-            x = linspace(samp[ind_top].min(), samp[ind_top].max(), 100)[1:]
+            import pylab
+            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)[1:]
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x,pdf_fitted,'b-')
             pylab.hist(samp[ind_top], 100, normed=1,alpha=.3)
@@ -204,9 +205,9 @@ def estimate_p_optimal(prob, qc, verbose=False):
 
 def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
     indices = split_data_groups(ind)
-    output = fit_tests(aux, qctests, indices['ind_fit'], q=0.90,
+    params = fit_tests(aux, qctests, indices['ind_fit'], q=0.90,
             verbose=verbose)
-    prob = estimate_anomaly(aux, output)
+    prob = estimate_anomaly(aux, params)
     if verbose == True:
         pylab.hist(prob); pylab.show()
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
@@ -226,5 +227,6 @@ def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
             'false_positive': false_positive,
             'p_optimal': p_optimal,
             'err': err,
-            'err_ratio': err_ratio}
+            'err_ratio': err_ratio,
+            'params': params}
     return output
