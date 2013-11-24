@@ -118,6 +118,7 @@ class ProfileQC(object):
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
                     dtype='i1')
+            self.flags[v]['global_range'][~np.isfinite(self.input[v])] = 9
             ind = (self.input[v] >= cfg['global_range']['minval']) & \
                     (self.input[v] <= cfg['global_range']['maxval'])
             self.flags[v]['global_range'][ind] = 1
@@ -133,6 +134,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['gradient'] = g
 
             flag = np.zeros(g.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
             flag[np.nonzero(g > threshold)] = 4
             flag[np.nonzero(g <= threshold)] = 1
             self.flags[v]['gradient'] = flag
@@ -141,6 +143,7 @@ class ProfileQC(object):
             cfg_tmp = cfg['gradient_depthconditional']
             g = gradient(self.input[v])
             flag = np.zeros(g.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
@@ -172,6 +175,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['spike'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
             flag[np.nonzero(s > threshold)] = 4
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['spike'] = flag
@@ -180,6 +184,7 @@ class ProfileQC(object):
             cfg_tmp = cfg['spike_depthconditional']
             s = spike(self.input[v])
             flag = np.zeros(s.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
@@ -217,6 +222,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['tukey53H_norm'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
             flag[np.nonzero(s > threshold)] = 4
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['tukey53H_norm'] = flag
@@ -241,6 +247,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['step'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
 
             flag[np.nonzero(ma.absolute(s) > threshold)] = 4
             flag[np.nonzero(ma.absolute(s) <= threshold)] = 1

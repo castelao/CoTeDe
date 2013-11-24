@@ -140,7 +140,7 @@ def combined_flag(flags, criteria=None):
     N = flags[criteria[0]].size
     Nf = len(criteria)
     temp_flag = np.zeros((Nf, N), dtype='i1')
-    for i, k in enumerate(flags.keys()):
+    for i, k in enumerate(criteria):
         temp_flag[i] = flags[k]
 
     return temp_flag.max(axis=0)
