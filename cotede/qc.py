@@ -10,6 +10,7 @@ from numpy import ma
 
 from seabird import cnv
 
+from cotede.misc import combined_flag
 from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
 from utils import make_file_list
@@ -334,9 +335,8 @@ class ProfileQCed(ProfileQC):
         if key not in self.flags.keys():
             return self.input[key]
         else:
-            f = ma.array([self.flags[key][f] for f in self.flags[key]]).T
-            mask = self.input[key].mask | (~f).any(axis=1)
-            return ma.masked_array(self.input[key].data, mask)
+            f = combined_flag(self.flags[key])
+            return ma.masked_array(self.input[key].data, mask=(f!=1))
 
         raise KeyError('%s not found' % key)
 
