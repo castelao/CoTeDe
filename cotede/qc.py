@@ -545,7 +545,6 @@ def tukey53H(x):
 
     Delta = ma.absolute(x-u3)
 
-    #return Delta/(k*x.std())
     return Delta
 
 
