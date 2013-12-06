@@ -20,3 +20,14 @@ def test_answer():
             'salinity2', 'flag']
     assert pqc.keys() == keys
     assert len(pqc.attributes) == 11
+
+    assert hasattr(pqc, 'flags')
+    assert type(pqc.flags) is dict
+    vs = pqc.flags.keys()
+    vs.remove('common')
+    for v in vs:
+        for f in pqc.flags[v]:
+            assert pqc.flags[v][f].dtype == 'i1'
+
+    assert hasattr(pqc, 'auxiliary')
+    assert type(pqc.auxiliary) is dict
