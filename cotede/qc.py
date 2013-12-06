@@ -93,8 +93,11 @@ class ProfileQC(object):
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
-            self.flags['common']['valid_datetime'] = \
-                    type(self.input.attributes['datetime'])==datetime
+            if type(self.input.attributes['datetime']) == datetime:
+                f = 1
+            else:
+                f = 3
+            self.flags['common']['valid_datetime'] = f
 
         if 'at_sea' in self.cfg['main']:
             lon = self.input.attributes['longitude']
