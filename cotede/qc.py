@@ -261,6 +261,22 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['bin_spike'] = bin
 
+        if 'density_inversion' in cfg:
+            threshold = cfg['density_inversion']
+            ds = densitystep(self.['salinity'], self.['temperature'],
+                    self['pressure'])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['density_step'] = ds
+
+            flag = np.zeros(s.shape, dtype='i1')
+            flag[~np.isfinite(self.input[v])] = 9
+
+            flag[np.nonzero(ds < threshold)] = 3 # I'm not sure to use 3 or 4.
+            flag[np.nonzero(ds >= threshold)] = 1
+
+            self.flags[v]['density_inversion'] = flag
+
         if 'woa_comparison' in cfg:
             try:
                 woa = woa_profile_from_file(v,
@@ -516,6 +532,19 @@ def bin_spike(x, l):
         #bin_std[i] = (T[ini:fin]).std()
 
     return bin
+
+def densitystep(S, T, P):
+    """
+    """
+    assert S.shape == T.shape
+    assert S.shape == P.shape
+    assert S.ndim == 1, "Sorry, I'm not ready yet to handle and array with ndim > 1"
+
+    from fluid.ocean.seawater import _dens0 as dens0
+    ds = ma.masked_all(S.shape, dtype=S.dtype)
+    rho0 = dens0(s=S, t=T)
+    ds[1:] = np.sign(np.diff(P))*np.diff(rho0)
+    return ds
 
 
 def descentPrate(t, p):
