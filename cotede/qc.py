@@ -263,7 +263,7 @@ class ProfileQC(object):
 
         if 'density_inversion' in cfg:
             threshold = cfg['density_inversion']
-            ds = densitystep(self.['salinity'], self.['temperature'],
+            ds = densitystep(self['salinity'], self['temperature'],
                     self['pressure'])
 
             if self.saveauxiliary:
