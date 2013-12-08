@@ -4,17 +4,20 @@
 
 import numpy as np
 
-def func(datafile):
+def func(datafile, saveauxiliary):
     from seabird import cnv
     import cotede.qc
     data = cnv.fCNV(datafile)
-    pqc = cotede.qc.ProfileQC(data, saveauxiliary=True)
+    pqc = cotede.qc.ProfileQC(data, saveauxiliary=saveauxiliary)
     return pqc
 
 
 def test_answer():
     datafile = "./tests/dPIRX010.cnv"
-    pqc = func(datafile=datafile)
+    pqc = func(datafile=datafile, saveauxiliary=False)
+
+    pqc = func(datafile=datafile, saveauxiliary=True)
+
     keys = ['timeS', 'pressure', 'temperature', 'temperature2', 'conductivity',
             'conductivity2', 'potemperature', 'potemperature2', 'salinity',
             'salinity2', 'flag']
