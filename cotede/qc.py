@@ -3,7 +3,7 @@
 
 import pkg_resources
 from datetime import datetime
-from os.path import expanduser
+from os.path import basename, expanduser
 
 import numpy as np
 from numpy import ma
@@ -332,6 +332,16 @@ class ProfileQC(object):
         self.auxiliary['common'] = {}
         self.auxiliary['common']['descentPrate'] = \
             descentPrate(self['timeS'], self['pressure'])
+
+
+class fProfileQC(ProfileQC):
+    def __init__(self, file, cfg={}, saveauxiliary=False):
+        input = cnv.fCNV(file)
+        super(fProfileQC, self).__init__(input, cfg=cfg,
+                saveauxiliary=saveauxiliary)
+
+        self.name = 'fProfileQC'
+        self.attributes['filename'] = basename(file)
 
 
 class ProfileQCed(ProfileQC):
