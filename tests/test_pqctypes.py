@@ -25,6 +25,6 @@ def test_answer():
         assert type(pqc.flags[k]) == dict
         for kk in pqc.flags[k].keys():
             assert (type(pqc.flags[k][kk]) == np.ndarray) or \
-                (type(pqc.flags[k][kk]) == bool)
+                (type(pqc.flags[k][kk]) == int)
             if (type(pqc.flags[k][kk]) == np.ndarray):
                 assert pqc.flags[k][kk].dtype == 'int8'
