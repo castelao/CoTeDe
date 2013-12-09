@@ -14,31 +14,34 @@ quality control of the brazilian hydrography of PIRATA.
 Quick howto
 ___________
 
-First you need to have the CTD data:
+First load the CTD data
+
+    pqc = cotede.qc.fProfileQC('example.cnv')
+
+The keys() will give you the data loaded from the CTD, simillar to the output from the seabird.fCNV
+
+    pqc.keys()
+
+To see one of the read variables listed on the previous step
+
+    pqc['temperature']
+
+The flags are stored at pqc.flags and is a dictionary, being one item per variable evaluated. For example, to see the flags for the secondary salinity instrument, just do
+
+    pqc.flags['salinity2']
+
+or for a specific test
+
+    pqc.flags['salinity2']['gradient']
+
+
+The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it already mask the non approved data (flag != 1). Another it can also be used like
 
     from seabird import cnv
-    data = cnv.fCNV('example2.cnv')
-
-Load it and run on the data:
+    data = cnv.fCNV('example.cnv')
 
     import cotede.qc
     ped = cotede.qc.ProfileQCed(data)
-
-ped.keys will give you the data loaded from the CTD, simillar to the output from the fCNV
-
-    ped.keys()
-
-The ProfileQCed shows only the approved data, i.e. if flag !=1 it is shown as masked
-
-    ped['temperature']
-
-The Q.C. flags are at ped.flags
-
-    ped.flags.keys()
-
-For example, the Q.C. flags for temperature are at
-
-    ped.flags['temperature'].keys()
 
 Support and Documentation
 -------------------------
