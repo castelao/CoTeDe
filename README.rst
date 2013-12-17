@@ -34,6 +34,10 @@ or for a specific test
 
     pqc.flags['salinity2']['gradient']
 
+To evaluate a full set of profiles at once, use the class ProfileQCCollection, like:
+
+    dataset = ProfileQCCollection('/path/to/data/', inputpattern=".*\.cnv")
+    dataset.flags['temperature'].keys()
 
 The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it already mask the non approved data (flag != 1). Another it can also be used like
 
