@@ -210,8 +210,10 @@ def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
     prob = estimate_anomaly(aux, params)
     if verbose == True:
         pylab.hist(prob); pylab.show()
+
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
             ind[indices['ind_test']])
+
     false_negative = (prob[indices['ind_err']] < p_optimal) & \
         (ind[indices['ind_err']] == True)
     false_positive = (prob[indices['ind_err']] > p_optimal) & \
@@ -223,10 +225,12 @@ def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
         (ind == True)
     false_positive = (prob > p_optimal) & \
         (ind == False)
+
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
             'p_optimal': p_optimal,
             'err': err,
             'err_ratio': err_ratio,
             'params': params}
+
     return output
