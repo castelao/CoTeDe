@@ -94,7 +94,8 @@ class ProfileQC(object):
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
-            if type(self.input.attributes['datetime']) == datetime:
+            if 'datetime' in self.input.attributes.keys() and \
+                    type(self.input.attributes['datetime']) == datetime:
                 f = 1
             else:
                 f = 3
