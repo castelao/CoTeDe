@@ -146,3 +146,52 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
     #sd_interp[ind] = f(depth[ind])
 
     return output
+
+# ============================================================================
+def savePQCCollection_pandas(db, filename):
+    """ Save
+
+        ToDo:
+            - Save the files in a tmp file
+            - As it saves, creates a md5 of each file
+            - Put everything together in a tar.bz2, including the md5 list
+            - Delete the tmp file
+    """
+    import os
+    import tempfile
+    import tarfile
+    import shutil
+    import hashlib
+    #tar = tarfile.open("%s.tar.bz2" % filename, "w:bz2")
+    tar = tarfile.open(filename, "w:bz2")
+    tmpdir = tempfile.mkdtemp()
+
+    try:
+        # Data
+        f = "%s/data.hdf" % (tmpdir)
+        db.data.to_hdf(f, 'df')
+        tar.add(f, arcname='data.hdf')
+        #hashlib.md5(open(f, 'rb').read()).digest()
+        #hashlib.sha256(open(f, 'rb').read()).digest()
+        # Flags
+        p = os.path.join(tmpdir,'flags')
+        os.mkdir(p)
+        for k in db.flags.keys():
+            f = os.path.join(p, "flags_%s.hdf" % k)
+            db.flags[k].to_hdf(f, 'df')
+            tar.add(f, arcname="flags/flags_%s.hdf" % k)
+        if hasattr(db, 'auxiliary'):
+            p = os.path.join(tmpdir,'aux')
+            os.mkdir(p)
+            for k in db.auxiliary.keys():
+                f = os.path.join(p, "aux_%s.hdf" % k)
+                db.auxiliary[k].to_hdf(f, 'df')
+                tar.add(f, arcname="aux/aux_%s.hdf" % k)
+        tar.close()
+    except:
+        shutil.rmtree(tmpdir)
+        raise
+        print "Problems saving the data"
+        shutil.rmtree("%s.tar.bz2" % filename)
+    finally:
+        shutil.rmtree(tmpdir)
