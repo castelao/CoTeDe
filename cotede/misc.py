@@ -168,7 +168,7 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
         ind_top = samp>samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
         output[teste] = {'param':param,
-                'q95': samp.quantile(q)}
+                'qlimit': samp.quantile(q)}
 
         if verbose == True:
             import pylab
@@ -203,9 +203,9 @@ def estimate_p_optimal(prob, qc, verbose=False):
         pylab.plot(P, err , 'b'); pylab.show()
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
-def adjust_anomaly_coefficients(ind, qctests, aux, verbose=False):
+def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
     indices = split_data_groups(ind)
-    params = fit_tests(aux, qctests, indices['ind_fit'], q=0.90,
+    params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
             verbose=verbose)
     prob = estimate_anomaly(aux, params)
     if verbose == True:
