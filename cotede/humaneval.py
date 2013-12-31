@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 
 from cotede.qc import ProfileQCCollection
 from cotede.misc import combined_flag, adjust_anomaly_coefficients
-from cotede.humaneval import HumanQC
 
 
 class HumanQC(object):
