@@ -126,10 +126,10 @@ class ProfileQC(object):
             self.flags[v]['global_range'][self.input[v].mask == True] = 9
             ind = (self.input[v] >= cfg['global_range']['minval']) & \
                     (self.input[v] <= cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][ind] = 1
+            self.flags[v]['global_range'][np.nonzero(ind)] = 1
             ind = (self.input[v] < cfg['global_range']['minval']) & \
                     (self.input[v] > cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][ind] = 4
+            self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
@@ -317,10 +317,10 @@ class ProfileQC(object):
             self.flags[v]['woa_comparison'][self.input[v].mask==True] = 9
             ind = woa_bias/woa['woa_sd'] <= \
                     cfg['woa_comparison']['sigma_threshold']
-            self.flags[v]['woa_comparison'][ind] = 1
+            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
             ind = woa_bias/woa['woa_sd'] > \
                     cfg['woa_comparison']['sigma_threshold']
-            self.flags[v]['woa_comparison'][ind] = 3
+            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 3
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
