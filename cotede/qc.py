@@ -314,10 +314,12 @@ class ProfileQC(object):
 
             self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
                     dtype='i1')
-            ind = woa_bias/woa['woa_sd'] <= 3
+            ind = woa_bias/woa['woa_sd'] <= \
+                    cfg['woa_comparison']['sigma_threshold']
             self.flags[v]['woa_comparison'][ind] = 1
-            ind = woa_bias/woa['woa_sd'] > 3
-            self.flags[v]['woa_comparison'][ind] = 4
+            ind = woa_bias/woa['woa_sd'] > \
+                    cfg['woa_comparison']['sigma_threshold']
+            self.flags[v]['woa_comparison'][ind] = 3
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
