@@ -289,6 +289,11 @@ class ProfileQC(object):
             self.flags[v]['density_inversion'] = flag
 
         if 'woa_comparison' in cfg:
+            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            # Flag as 9 any masked input value
+            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
+
             try:
                 woa = woa_profile_from_file(v,
                     self.input.attributes['datetime'],
@@ -320,10 +325,6 @@ class ProfileQC(object):
                 self.auxiliary[v]['woa_bias'] = woa_bias
                 self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
 
-            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            # Flag as 9 any masked input value
-            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
             ind = woa_bias/woa['woa_sd'] <= \
                     cfg['woa_comparison']['sigma_threshold']
             self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
