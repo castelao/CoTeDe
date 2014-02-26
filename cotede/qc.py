@@ -128,7 +128,7 @@ class ProfileQC(object):
             ind = (self.input[v] >= cfg['global_range']['minval']) & \
                     (self.input[v] <= cfg['global_range']['maxval'])
             self.flags[v]['global_range'][np.nonzero(ind)] = 1
-            ind = (self.input[v] < cfg['global_range']['minval']) & \
+            ind = (self.input[v] < cfg['global_range']['minval']) | \
                     (self.input[v] > cfg['global_range']['maxval'])
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
