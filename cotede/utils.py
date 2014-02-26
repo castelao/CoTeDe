@@ -73,28 +73,28 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     yn = (np.abs(lat-dataset['lat'][:])).argmin()
 
     if re.match("temperature\d?$", var):
-        an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
+        mn = ma.masked_values(dataset.t_mn.t_mn[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_mn.attributes['_FillValue'])
         sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
         #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
         # Use this in the future. A minimum # of samples
-        #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
+        dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
     elif re.match("salinity\d?$", var):
-        an = ma.masked_values(dataset.s_an.s_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_an.attributes['_FillValue'])
+        mn = ma.masked_values(dataset.s_mn.s_mn[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_mn.attributes['_FillValue'])
         sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
-        #dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
+        dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
     zwoa = ma.array(dataset.depth[:])
 
     ind=depth<=zwoa.max()
     # Mean value profile
-    f = interp1d(zwoa[~ma.getmaskarray(an)].compressed(), an.compressed())
-    an_interp = ma.masked_all(depth.shape)
-    an_interp[ind] = f(depth[ind])
+    f = interp1d(zwoa[~ma.getmaskarray(mn)].compressed(), mn.compressed())
+    mn_interp = ma.masked_all(depth.shape)
+    mn_interp[ind] = f(depth[ind])
     # The stdev profile
     f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
     sd_interp = ma.masked_all(depth.shape)
     sd_interp[ind] = f(depth[ind])
 
-    output = {'woa_an': an_interp, 'woa_sd': sd_interp}
+    output = {'woa_an': mn_interp, 'woa_sd': sd_interp}
 
     return output
 
