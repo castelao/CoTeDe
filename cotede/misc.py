@@ -150,6 +150,22 @@ def estimate_p_optimal(prob, qc, verbose=False):
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
 def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
+    """ Adjust coeficients for Anomaly Detection, and estimate error
+
+        Inputs:
+            ind: Reference index. What the Anomaly Detection will try
+                   to reproduce. Uses the True and Falses from ind
+                   to partition the data to be used to fit, to adjust
+                   and to estimate the error.
+            qctests: The tests used by the Anomaly Detection. One curve will
+                   be fit for each test.
+            aux: The auxiliary tests results from the ProfileQCCollection. It
+                   is expected that the qctests are present in aux.
+            q: The top q extreme tests results to be used on Anom. Detect.
+                 For example q=0 will use all the data, while q=0.9 (default)
+                 will use the percentile of 0.9, i.e. the top 10% values.
+
+    """
     indices = split_data_groups(ind)
     params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
             verbose=verbose)
