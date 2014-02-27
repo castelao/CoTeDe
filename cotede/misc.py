@@ -204,6 +204,7 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
+            'prob': prob,
             'p_optimal': p_optimal,
             'err': err,
             'err_ratio': err_ratio,
