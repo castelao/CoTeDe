@@ -41,8 +41,7 @@ class HumanQC(object):
                 self.z[self.baseflags==False], 'r^')
 
         # Plot the dubious ones
-        self.ax.plot(self.x[self.doubt==True],
-                self.z[self.doubt==True], 'D',
+        self.ax.plot(self.x[self.doubt], self.z[self.doubt], 'D',
                 color='magenta')
 
         self.ax.plot(self.x[self.fails], self.z[self.fails], 'o', ms=12,
