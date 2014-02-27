@@ -340,8 +340,6 @@ class ProfileQC(object):
                             np.diff(self.input['pressure'][ind])])
 
     def build_auxiliary(self):
-        vars = ['temperature']
-
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
 
