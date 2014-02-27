@@ -165,6 +165,20 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
                  For example q=0 will use all the data, while q=0.9 (default)
                  will use the percentile of 0.9, i.e. the top 10% values.
 
+            Output: Returns a dictionary with
+                err:
+                err_ratio:
+                false_negative:
+                false_positive:
+                p_optimal:
+                params:
+
+            Use the functions:
+                split_data_groups()
+                fit_tests()
+                estimate_anomaly()
+                estimate_p_optimal()
+
     """
     indices = split_data_groups(ind)
     params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
