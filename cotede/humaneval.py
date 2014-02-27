@@ -13,7 +13,7 @@ from cotede.misc import combined_flag, adjust_anomaly_coefficients
 class HumanQC(object):
     """
     """
-    def __init__(self, x, z, baseflags=[], fails=[], doubt=[]):
+    def __init__(self, x, z, baseflags=[], fails=[], doubt=[], refname=None):
         """
         """
         self.x = x
@@ -21,6 +21,7 @@ class HumanQC(object):
         self.baseflags = baseflags
         self.fails = fails
         self.doubt = doubt
+        self.refname = refname
         #self.redraw = True
         #while self.redraw:
         self.hgood_ind = []
@@ -66,6 +67,9 @@ class HumanQC(object):
         self.fig.canvas.mpl_connect('pick_event', self.onpick)
         self.fig.canvas.mpl_connect('key_press_event', self.on_key)
         #pylab.connect('button_press_event', self.onpick)
+
+        if self.refname is not None:
+            self.ax.title(refname)
 
         pylab.show()
 
