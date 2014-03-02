@@ -3,13 +3,15 @@
 
 import pkg_resources
 from datetime import datetime
-from os.path import expanduser
+from os.path import basename, expanduser
 
 import numpy as np
 from numpy import ma
 
 from seabird import cnv
 
+from cotede.qctests import *
+from cotede.misc import combined_flag
 from cotede.utils import get_depth_from_DAP
 from cotede.utils import woa_profile_from_dap, woa_profile_from_file
 from utils import make_file_list
@@ -92,8 +94,12 @@ class ProfileQC(object):
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
-            self.flags['common']['valid_datetime'] = \
-                    type(self.input.attributes['datetime'])==datetime
+            if 'datetime' in self.input.attributes.keys() and \
+                    type(self.input.attributes['datetime']) == datetime:
+                f = 1
+            else:
+                f = 3
+            self.flags['common']['valid_datetime'] = f
 
         if 'at_sea' in self.cfg['main']:
             lon = self.input.attributes['longitude']
@@ -118,12 +124,14 @@ class ProfileQC(object):
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
                     dtype='i1')
+            # Flag as 9 any masked input value
+            self.flags[v]['global_range'][ma.getmaskarray(self.input[v])] = 9
             ind = (self.input[v] >= cfg['global_range']['minval']) & \
                     (self.input[v] <= cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][ind] = 1
-            ind = (self.input[v] < cfg['global_range']['minval']) & \
+            self.flags[v]['global_range'][np.nonzero(ind)] = 1
+            ind = (self.input[v] < cfg['global_range']['minval']) | \
                     (self.input[v] > cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][ind] = 4
+            self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
         if 'profile_envelope' in cfg:
             self.flags[v]['profile_envelope'] = np.zeros(self.input[v].shape,
@@ -139,6 +147,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['gradient'] = g
 
             flag = np.zeros(g.shape, dtype='i1')
+            flag[self.input[v].mask == True] = 9
             flag[np.nonzero(g > threshold)] = 4
             flag[np.nonzero(g <= threshold)] = 1
             self.flags[v]['gradient'] = flag
@@ -147,6 +156,8 @@ class ProfileQC(object):
             cfg_tmp = cfg['gradient_depthconditional']
             g = gradient(self.input[v])
             flag = np.zeros(g.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
@@ -178,6 +189,8 @@ class ProfileQC(object):
                 self.auxiliary[v]['spike'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
             flag[np.nonzero(s > threshold)] = 4
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['spike'] = flag
@@ -186,6 +199,8 @@ class ProfileQC(object):
             cfg_tmp = cfg['spike_depthconditional']
             s = spike(self.input[v])
             flag = np.zeros(s.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
@@ -223,6 +238,8 @@ class ProfileQC(object):
                 self.auxiliary[v]['tukey53H_norm'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
             flag[np.nonzero(s > threshold)] = 4
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['tukey53H_norm'] = flag
@@ -247,6 +264,8 @@ class ProfileQC(object):
                 self.auxiliary[v]['step'] = s
 
             flag = np.zeros(s.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
 
             flag[np.nonzero(ma.absolute(s) > threshold)] = 4
             flag[np.nonzero(ma.absolute(s) <= threshold)] = 1
@@ -259,7 +278,29 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['bin_spike'] = bin
 
+        if 'density_inversion' in cfg:
+            threshold = cfg['density_inversion']
+            ds = densitystep(self['salinity'], self['temperature'],
+                    self['pressure'])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['density_step'] = ds
+
+            flag = np.zeros(s.shape, dtype='i1')
+            # Flag as 9 any masked input value
+            flag[ma.getmaskarray(self.input[v])] = 9
+
+            flag[np.nonzero(ds < threshold)] = 3 # I'm not sure to use 3 or 4.
+            flag[np.nonzero(ds >= threshold)] = 1
+
+            self.flags[v]['density_inversion'] = flag
+
         if 'woa_comparison' in cfg:
+            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            # Flag as 9 any masked input value
+            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
+
             try:
                 woa = woa_profile_from_file(v,
                     self.input.attributes['datetime'],
@@ -289,28 +330,39 @@ class ProfileQC(object):
                 for k in woa.keys():
                     self.auxiliary[v][k] = woa[k]
                 self.auxiliary[v]['woa_bias'] = woa_bias
+                self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
 
-            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            ind = woa_bias/woa['woa_sd'] <= 3
-            self.flags[v]['woa_comparison'][ind] = 1
-            ind = woa_bias/woa['woa_sd'] > 3
-            self.flags[v]['woa_comparison'][ind] = 4
+            ind = woa_bias/woa['woa_sd'] <= \
+                    cfg['woa_comparison']['sigma_threshold']
+            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
+            ind = woa_bias/woa['woa_sd'] > \
+                    cfg['woa_comparison']['sigma_threshold']
+            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 3
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
-            self.auxiliary[v]['pstep'] = ma.concatenate(
-                    [ma.masked_all(1), np.diff(self.input['pressure'][ind])])
+            if self.saveauxiliary:
+                self.auxiliary[v]['pstep'] = ma.concatenate(
+                        [ma.masked_all(1),
+                            np.diff(self.input['pressure'][ind])])
 
     def build_auxiliary(self):
-        vars = ['temperature']
-
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
 
         self.auxiliary['common'] = {}
         self.auxiliary['common']['descentPrate'] = \
             descentPrate(self['timeS'], self['pressure'])
+
+
+class fProfileQC(ProfileQC):
+    def __init__(self, file, cfg={}, saveauxiliary=False):
+        input = cnv.fCNV(file)
+        super(fProfileQC, self).__init__(input, cfg=cfg,
+                saveauxiliary=saveauxiliary)
+
+        self.name = 'fProfileQC'
+        self.attributes['filename'] = basename(file)
 
 
 class ProfileQCed(ProfileQC):
@@ -333,9 +385,8 @@ class ProfileQCed(ProfileQC):
         if key not in self.flags.keys():
             return self.input[key]
         else:
-            f = ma.array([self.flags[key][f] for f in self.flags[key]]).T
-            mask = self.input[key].mask | (~f).any(axis=1)
-            return ma.masked_array(self.input[key].data, mask)
+            f = combined_flag(self.flags[key])
+            return ma.masked_array(self.input[key].data, mask=(f!=1))
 
         raise KeyError('%s not found' % key)
 
@@ -479,83 +530,3 @@ class CruiseQC(object):
             output = ma.concatenate([output, d[key]])
 
         return output
-
-
-def step(x):
-    y = ma.masked_all(x.shape, dtype=x.dtype)
-    y[1:] = ma.diff(x)
-    return y
-
-
-def gradient(x):
-    y = ma.masked_all(x.shape, dtype=x.dtype)
-    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
-    # ATENTION, temporary solution
-    #y[0]=0; y[-1]=0
-    return y
-
-
-def spike(x):
-    y = ma.masked_all(x.shape, dtype=x.dtype)
-    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - \
-                np.abs((x[2:] - x[:-2])/2.0)
-    # ATENTION, temporary solution
-    #y[0]=0; y[-1]=0
-    return y
-
-
-def bin_spike(x, l):
-    N = len(x)
-    bin = ma.masked_all(N)
-    half_window = l/2
-    for i in range(half_window, N-half_window):
-        ini = max(0, i - half_window)
-        fin = min(N, i + half_window)
-        bin[i] = x[i] - ma.median(x[ini:fin])
-        #bin_std[i] = (T[ini:fin]).std()
-
-    return bin
-
-
-def descentPrate(t, p):
-    assert t.shape == p.shape, "t and p have different sizes"
-    y = ma.masked_all(t.shape, dtype=t.dtype)
-    dt = ma.diff(t)
-    dp = ma.diff(p)
-    y[1:] = dp/dt
-    return y
-
-
-def tukey53H(x):
-    """Spike test Tukey 53H from Goring & Nikora 2002
-    """
-    N = len(x)
-
-    u1 = ma.masked_all(N)
-    for n in range(N-4):
-        u1[n+2] = ma.median(x[n:n+5])
-
-    u2 = ma.masked_all(N)
-    for n in range(N-2):
-        u2[n+1] = ma.median(u1[n:n+3])
-
-    u3 = ma.masked_all(N)
-    u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
-
-    Delta = ma.absolute(x-u3)
-
-    #return Delta/(k*x.std())
-    return Delta
-
-
-def tukey53H_norm(x, k=1.5, l=12):
-    """Spike test Tukey53H() normalized by the std of the low pass
-
-       l is the number of observations. The default l=12 is trully not
-         a big number, but this test foccus on spikes, therefore, any
-         variability longer than 12 is something else.
-    """
-    Delta = tukey53H(x)
-    from maud import window_1Dmean
-    sigma = (window_1Dmean(x, l, method='hann')).std()
-    return Delta/(k*sigma)

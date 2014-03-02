@@ -4,19 +4,33 @@
 
 import numpy as np
 
-def func(datafile):
+def func(datafile, saveauxiliary):
     from seabird import cnv
     import cotede.qc
     data = cnv.fCNV(datafile)
-    pqc = cotede.qc.ProfileQC(data, saveauxiliary=True)
+    pqc = cotede.qc.ProfileQC(data, saveauxiliary=saveauxiliary)
     return pqc
 
 
 def test_answer():
     datafile = "./tests/dPIRX010.cnv"
-    pqc = func(datafile=datafile)
+    pqc = func(datafile=datafile, saveauxiliary=False)
+
+    pqc = func(datafile=datafile, saveauxiliary=True)
+
     keys = ['timeS', 'pressure', 'temperature', 'temperature2', 'conductivity',
             'conductivity2', 'potemperature', 'potemperature2', 'salinity',
             'salinity2', 'flag']
     assert pqc.keys() == keys
     assert len(pqc.attributes) == 11
+
+    assert hasattr(pqc, 'flags')
+    assert type(pqc.flags) is dict
+    vs = pqc.flags.keys()
+    vs.remove('common')
+    for v in vs:
+        for f in pqc.flags[v]:
+            assert pqc.flags[v][f].dtype == 'i1'
+
+    assert hasattr(pqc, 'auxiliary')
+    assert type(pqc.auxiliary) is dict

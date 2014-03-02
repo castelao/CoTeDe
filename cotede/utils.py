@@ -73,28 +73,28 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     yn = (np.abs(lat-dataset['lat'][:])).argmin()
 
     if re.match("temperature\d?$", var):
-        an = ma.masked_values(dataset.t_an.t_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_an.attributes['_FillValue'])
+        mn = ma.masked_values(dataset.t_mn.t_mn[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_mn.attributes['_FillValue'])
         sd = ma.masked_values(dataset.t_sd.t_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_sd.attributes['_FillValue'])
         #se = ma.masked_values(dataset.t_se.t_se[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_se.attributes['_FillValue'])
         # Use this in the future. A minimum # of samples
-        #dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
+        dd = ma.masked_values(dataset.t_dd.t_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.t_dd.attributes['_FillValue'])
     elif re.match("salinity\d?$", var):
-        an = ma.masked_values(dataset.s_an.s_an[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_an.attributes['_FillValue'])
+        mn = ma.masked_values(dataset.s_mn.s_mn[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_mn.attributes['_FillValue'])
         sd = ma.masked_values(dataset.s_sd.s_sd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_sd.attributes['_FillValue'])
-        #dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
+        dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
     zwoa = ma.array(dataset.depth[:])
 
     ind=depth<=zwoa.max()
     # Mean value profile
-    f = interp1d(zwoa[~ma.getmaskarray(an)].compressed(), an.compressed())
-    an_interp = ma.masked_all(depth.shape)
-    an_interp[ind] = f(depth[ind])
+    f = interp1d(zwoa[~ma.getmaskarray(mn)].compressed(), mn.compressed())
+    mn_interp = ma.masked_all(depth.shape)
+    mn_interp[ind] = f(depth[ind])
     # The stdev profile
     f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
     sd_interp = ma.masked_all(depth.shape)
     sd_interp[ind] = f(depth[ind])
 
-    output = {'woa_an': an_interp, 'woa_sd': sd_interp}
+    output = {'woa_an': mn_interp, 'woa_sd': sd_interp}
 
     return output
 
@@ -146,3 +146,52 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
     #sd_interp[ind] = f(depth[ind])
 
     return output
+
+# ============================================================================
+def savePQCCollection_pandas(db, filename):
+    """ Save
+
+        ToDo:
+            - Save the files in a tmp file
+            - As it saves, creates a md5 of each file
+            - Put everything together in a tar.bz2, including the md5 list
+            - Delete the tmp file
+    """
+    import os
+    import tempfile
+    import tarfile
+    import shutil
+    import hashlib
+    #tar = tarfile.open("%s.tar.bz2" % filename, "w:bz2")
+    tar = tarfile.open(filename, "w:bz2")
+    tmpdir = tempfile.mkdtemp()
+
+    try:
+        # Data
+        f = "%s/data.hdf" % (tmpdir)
+        db.data.to_hdf(f, 'df')
+        tar.add(f, arcname='data.hdf')
+        #hashlib.md5(open(f, 'rb').read()).digest()
+        #hashlib.sha256(open(f, 'rb').read()).digest()
+        # Flags
+        p = os.path.join(tmpdir,'flags')
+        os.mkdir(p)
+        for k in db.flags.keys():
+            f = os.path.join(p, "flags_%s.hdf" % k)
+            db.flags[k].to_hdf(f, 'df')
+            tar.add(f, arcname="flags/flags_%s.hdf" % k)
+        if hasattr(db, 'auxiliary'):
+            p = os.path.join(tmpdir,'aux')
+            os.mkdir(p)
+            for k in db.auxiliary.keys():
+                f = os.path.join(p, "aux_%s.hdf" % k)
+                db.auxiliary[k].to_hdf(f, 'df')
+                tar.add(f, arcname="aux/aux_%s.hdf" % k)
+        tar.close()
+    except:
+        shutil.rmtree(tmpdir)
+        raise
+        print "Problems saving the data"
+        shutil.rmtree("%s.tar.bz2" % filename)
+    finally:
+        shutil.rmtree(tmpdir)

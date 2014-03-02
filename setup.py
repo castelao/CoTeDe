@@ -27,9 +27,11 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 install_requires = [
     'numpy>=1.1',
     'seabird',
+    'maud',
+    'Pydap',
     ]
 
-version = '0.7'
+version = '0.8.1'
 
 setup(
     name='cotede',
@@ -43,7 +45,7 @@ setup(
     long_description=open('README.rst').read(),
     install_requires=install_requires,
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 2',
         ],
     keywords='CTD SeaBird QualityControl oceanography hydrography',
