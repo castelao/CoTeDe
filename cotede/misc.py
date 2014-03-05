@@ -110,7 +110,7 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
     """
     output = {}
     for teste in qctests:
-        samp = aux[teste][ind]
+        samp = aux[teste][ind & np.isfinite(aux[teste])]
         ind_top = samp>samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
         output[teste] = {'param':param,
@@ -118,10 +118,10 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
 
         if verbose == True:
             import pylab
-            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)[1:]
+            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x,pdf_fitted,'b-')
-            pylab.hist(samp[ind_top], 100, normed=1,alpha=.3)
+            pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
             pylab.title(teste)
             pylab.show()
 
