@@ -131,7 +131,7 @@ def estimate_anomaly(aux, params):
     prob = ma.ones(aux.shape[0])
     for t in params.keys():
         param = params[t]['param']
-        ind = np.isfinite(aux[t])
+        ind = np.array(np.isfinite(aux[t]))
         prob[ind] = prob[ind] * \
                 exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
     return prob
