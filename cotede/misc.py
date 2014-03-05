@@ -45,7 +45,7 @@ def split_data_groups(ind):
     N = ind.size
     ind_base = np.zeros(N) == 1
     # ==== Good data ==================
-    ind_good = np.nonzero(ind == True)[0]
+    ind_good = np.nonzero((ind == True) & (ma.getmaskarray(ind) == False))[0]
     N_good = ind_good.size
     perm = random.permutation(N_good)
     N_fit = int(round(N_good*.6))
@@ -57,7 +57,7 @@ def split_data_groups(ind):
     ind_err = ind_base.copy()
     ind_err[ind_good[perm[-N_test:]]] = True
     # ==== Bad data ===================
-    ind_bad = np.nonzero(ind == False)[0]
+    ind_bad = np.nonzero((ind == False) & (ma.getmaskarray(ind) == False))[0]
     N_bad = ind_bad.size
     perm = random.permutation(N_bad)
     N_test = int(round(N_bad*.5))
