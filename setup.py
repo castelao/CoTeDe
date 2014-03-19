@@ -31,7 +31,7 @@ install_requires = [
     'Pydap',
     ]
 
-version = '0.8.2'
+version = '0.8.3'
 
 setup(
     name='cotede',
@@ -40,7 +40,7 @@ setup(
     author_email='guilherme@castelao.net',
     packages=['cotede'],
     url='http://cotede.castelao.net',
-    license='See LICENSE.txt',
+    license='License :: OSI Approved :: BSD License',
     description='Quality Control of CTD profiles',
     long_description=open('README.rst').read(),
     install_requires=install_requires,
@@ -51,6 +51,7 @@ setup(
     keywords='CTD SeaBird QualityControl oceanography hydrography',
     #package_dir = {'': './'},
     include_package_data=True,
+    zip_safe=False,
     platforms=['any'],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
