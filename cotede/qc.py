@@ -113,6 +113,11 @@ class ProfileQC(object):
                 #self.flags['at_sea'] = flag
                 self.flags['common']['at_sea'] = depth[0]<0
 
+        if self.saveauxiliary:
+            self.auxiliary['common'] = {}
+            self.auxiliary['common']['descentPrate'] = \
+                    descentPrate(self['timeS'], self['pressure'])
+
     def evaluate(self, v, cfg):
 
         self.flags[v] = {}
