@@ -43,7 +43,8 @@ class ProfileQC(object):
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
-            self.auxiliary = {}
+            #self.auxiliary = {}
+            self.build_auxiliary()
 
         # I should use common or main, but must be consistent
         #   between defaults and flags.keys()
