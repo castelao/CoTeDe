@@ -356,13 +356,26 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, file, cfg={}, saveauxiliary=False):
-        input = cnv.fCNV(file)
-        super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary)
-
+    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False):
         self.name = 'fProfileQC'
-        self.attributes['filename'] = basename(file)
+
+        try:
+            input = cnv.fCNV(inputfile)
+
+            # In the future the line below should go down into an else, and
+            #   leave the errors of the ProfileQC to be handled over there.
+            super(fProfileQC, self).__init__(input, cfg=cfg,
+                    saveauxiliary=saveauxiliary)
+        except:
+            self.error = True
+            print("Failed to load: %s" % inputfile)
+            self.attributes = {'basename': basename(inputfile)}
+            if silent is True:
+                return
+            else:
+                raise
+
+        self.attributes['filename'] = basename(inputfile)
 
 
 class ProfileQCed(ProfileQC):
