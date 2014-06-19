@@ -426,10 +426,18 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
+        results = []
+
         for f in self.inputfiles:
-            try:
+            results.append(fProfileQC(f, {}, saveauxiliary, True))
+
+        for r in results:
+            p = r
+            if hasattr(p, 'error'):
+               print("Fail to evaluate")
+               #print p.error['msg']
+            else:
                 print "Processing: %s" % f
-                p = ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary)
 
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
@@ -472,8 +480,6 @@ class ProfileQCCollection(object):
                         self.auxiliary[a] = pd.concat([self.auxiliary[a],
                             pd.DataFrame(tmp)])
 
-            except:
-                print "Couldn't load: %s" % f
 
     def save(self, filename):
         if self.pandas is True:
