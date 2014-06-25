@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from numpy import ma
 from numpy.random import permutation
 import pylab
 import matplotlib.pyplot as plt
@@ -13,21 +14,20 @@ from cotede.misc import combined_flag, adjust_anomaly_coefficients
 class HumanQC(object):
     """
     """
-    def __init__(self, x, z, baseflags=[], fails=[], doubt=[], refname=None):
+    def __init__(self, x, z, baseflag=None, fails=[],
+            humanflag=None, refname=None):
         """
         """
         self.x = x
         self.z = z
-        self.baseflags = baseflags
+        self.baseflag = baseflag
         self.fails = fails
-        self.doubt = doubt
         self.refname = refname
-        #self.redraw = True
-        #while self.redraw:
-        self.hgood_ind = []
-        self.hbad_ind  = []
-        self.hdoubt_ind  = []
-
+        if humanflag is None:
+            self.humanflag = ma.masked_all(baseflag.size,
+                    dtype='object')
+        else:
+            self.humanflag = humanflag
         self.plot()
 
     def plot(self):
@@ -37,12 +37,14 @@ class HumanQC(object):
         self.line, = self.ax.plot(self.x, self.z, 'b.',
                 picker=10) # 5 points tolerance
         # Plot the bad ones
-        self.ax.plot(self.x[self.baseflags==False],
-                self.z[self.baseflags==False], 'r^')
+        self.ax.plot(self.x[self.baseflag==False],
+                self.z[self.baseflag==False], 'r^')
 
         # Plot the dubious ones
-        self.ax.plot(self.x[self.doubt], self.z[self.doubt], 'D',
-                color='magenta')
+        self.ax.plot(
+                self.x[self.humanflag=='doubt'],
+                self.z[self.humanflag=='doubt'],
+                'D', color='magenta')
 
         self.ax.plot(self.x[self.fails], self.z[self.fails], 'o', ms=12,
                 alpha=0.4, color='cyan', visible=True)
@@ -72,6 +74,25 @@ class HumanQC(object):
 
         pylab.show()
 
+    def draw_humanflags(self, ind, flag):
+        assert flag in [None, 'good', 'bad', 'doubt']
+
+        if flag is None:
+            self.humanflag.mask[self.dataind] = True
+        else:
+            self.humanflag[ind] = flag
+
+        self.hbad.set_data(
+                self.x[self.humanflag=='bad'],
+                self.z[self.humanflag=='bad'])
+        self.hgood.set_data(
+                self.x[self.humanflag=='good'],
+                self.z[self.humanflag=='good'])
+        self.hdoubt.set_data(
+                self.x[self.humanflag=='doubt'],
+                self.z[self.humanflag=='doubt'])
+        self.fig.canvas.draw()
+
     def on_key(self, event):
         if (event.key == 'r') :
             #self.fig.canvas.draw()
@@ -79,55 +100,20 @@ class HumanQC(object):
             self.plot()
 
         elif (event.key == 'c') :
-            if self.dataind in self.hbad_ind:
-                print "Removing %s from the bad list" % self.dataind
-                self.hbad_ind.remove(self.dataind)
-                self.hbad.set_data(self.x[self.hbad_ind],
-                        self.z[self.hbad_ind])
-                self.fig.canvas.draw()
-
-            if self.dataind in self.hgood_ind:
-                print "Removing %s from the good list" % self.dataind
-                self.hgood_ind.remove(self.dataind)
-                self.hgood.set_data(self.x[self.hgood_ind],
-                        self.z[self.hgood_ind])
-                self.fig.canvas.draw()
-
-            if self.dataind in self.hdoubt_ind:
-                print "Removing %s from the dubious list" % self.dataind
-                self.hdoubt_ind.remove(self.dataind)
-                self.hdoubt.set_data(self.x[self.hdoubt_ind],
-                        self.z[self.hdoubt_ind])
-                self.fig.canvas.draw()
+            print("Removing %s from the human list" % self.dataind)
+            self.draw_humanflags(self.dataind, None)
 
         elif (event.key == 'f') :
-            if self.dataind not in self.hbad_ind:
-                print "Adding %s on the bad list" % self.dataind
-                self.hbad_ind.append(self.dataind)
-                self.hbad.set_data(self.x[self.hbad_ind], self.z[self.hbad_ind])
-            if self.dataind in self.hgood_ind:
-                print "Removing %s from the good list" % self.dataind
-                self.hgood_ind.remove(self.dataind)
-                self.hgood.set_data(self.x[self.hgood_ind], self.z[self.hgood_ind])
-            self.fig.canvas.draw()
+            print("Adding %s on the bad list" % self.dataind)
+            self.draw_humanflags(self.dataind, 'bad')
 
         elif (event.key == 't') :
-            if self.dataind not in self.hgood_ind:
-                print "Adding %s on the good list" % self.dataind
-                self.hgood_ind.append(self.dataind)
-                self.hgood.set_data(self.x[self.hgood_ind], self.z[self.hgood_ind])
-            if self.dataind in self.hbad_ind:
-                print "Removing %s from the bad list" % self.dataind
-                self.hbad_ind.remove(self.dataind)
-                self.hbad.set_data(self.x[self.hbad_ind], self.z[self.hbad_ind])
-            self.fig.canvas.draw()
+            print("Adding %s on the good list" % self.dataind)
+            self.draw_humanflags(self.dataind, 'good')
 
         elif (event.key == 'd') :
-            if self.dataind not in self.hdoubt_ind:
-                print "Adding %s on the dubious list" % self.dataind
-                self.hdoubt_ind.append(self.dataind)
-                self.hdoubt.set_data(self.x[self.hdoubt_ind], self.z[self.hdoubt_ind])
-            self.fig.canvas.draw()
+            print("Adding %s on the dubious list" % self.dataind)
+            self.draw_humanflags(self.dataind, 'doubt')
 
         elif (event.key == 'z') :
             (xini, xfin, zini, zfin) = self.ax.axis()
@@ -152,21 +138,26 @@ class HumanQC(object):
         N = len(event.ind)
         if not N: return True
 
-        # the click locations
-        x = event.mouseevent.xdata
-        y = event.mouseevent.ydata
+        if N == 1:
+            self.dataind = event.ind
+        else:
+            print("Problems. More than one point")
+            return True
+            import pdb; pdb.set_trace()
+            # the click locations
+            x = event.mouseevent.xdata
+            y = event.mouseevent.ydata
 
-        distances = np.hypot(x-self.x[event.ind], y-self.z[event.ind])
-        indmin = distances.argmin()
-        self.dataind = event.ind[indmin]
+            distances = np.hypot(x-self.x[event.ind], y-self.z[event.ind])
+            indmin = distances.argmin()
+            self.dataind = event.ind[indmin]
 
         self.selected.set_visible(True)
         self.selected.set_data(self.x[self.dataind], self.z[self.dataind])
-        #pylab.plot(self.x[dataind], self.z[dataind], 'r^')
         self.fig.canvas.draw()
 
     def handle_close(self, event):
         print('Closed Figure!')
-        print "Good list: %s" % self.hgood_ind
-        print "Bad list: %s" % self.hbad_ind
-        print "Doubt list: %s" % self.hdoubt_ind
+        print "Good list: %s" % np.nonzero(self.humanflag=='good')[0]
+        print "Bad list: %s" % np.nonzero(self.humanflag=='bad')[0]
+        print "Doubt list: %s" % np.nonzero(self.humanflag=='doubt')[0]
