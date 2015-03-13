@@ -14,7 +14,7 @@ quality control of the brazilian hydrography of PIRATA.
 CoTeDe can apply different quality control procedures:
   - The default GTSPP or EGOOS procedure;
   - A custom set of tests and user defined thresholds;
-  - A novel approach based on Anomaly Detection, described by Castelao 2014;
+  - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
 
 Quick howto
 ___________
