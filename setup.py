@@ -27,11 +27,10 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 install_requires = [
     'numpy>=1.1',
     'seabird',
-    'maud',
     'Pydap',
     ]
 
-version = '0.9.0'
+version = '0.10.0'
 
 setup(
     name='cotede',
