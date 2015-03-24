@@ -244,17 +244,18 @@ class ProfileQC(object):
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['tukey53H_norm'] = flag
 
-        if 'spike_depthsmooth' in cfg:
-            from maud.window_func import _weight_hann as wfunc
-            cfg_tmp = cfg['spike_depthsmooth']
-            cfg_tmp['dzwindow'] = 10
-            smooth = ma.masked_all(self.input[v].shape)
-            z = ped['pressure']
-            for i in range(len(self.input[v])):
-                ind = np.nonzero(ma.absolute(z-z[i]) < cfg_tmp['dzwindow'])[0]
-                ind = ind[ind != i]
-                w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
-                smooth[i] = (T[ind]*w).sum()/w.sum()
+        #if 'spike_depthsmooth' in cfg:
+        #    from maud.window_func import _weight_hann as wfunc
+        #    cfg_tmp = cfg['spike_depthsmooth']
+        #    cfg_tmp['dzwindow'] = 10
+        #    smooth = ma.masked_all(self.input[v].shape)
+        #    z = ped['pressure']
+        #    for i in range(len(self.input[v])):
+        #        ind = np.nonzero(ma.absolute(z-z[i]) < \
+        #                cfg_tmp['dzwindow'])[0]
+        #        ind = ind[ind != i]
+        #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
+        #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
