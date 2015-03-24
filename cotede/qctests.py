@@ -93,6 +93,8 @@ def tukey53H_norm(x, k=1.5, l=12):
          variability longer than 12 is something else.
     """
     Delta = tukey53H(x)
-    from maud import window_1Dmean
-    sigma = (window_1Dmean(x, l, method='hann')).std()
+
+    w = np.hamming(l)
+    sigma = (np.convolve(x, w, mode='same') / w.sum()).std()
+
     return Delta/(k*sigma)
