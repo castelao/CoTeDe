@@ -385,8 +385,8 @@ class ProfileQCed(ProfileQC):
     def __init__(self, input, cfg={}):
         """
         """
-        super(ProfileQCed, self).__init__(input, cfg)
         self.name = 'ProfileQCed'
+        super(ProfileQCed, self).__init__(input, cfg)
 
     def keys(self):
         """ Return the available keys in self.data
