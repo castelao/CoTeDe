@@ -9,7 +9,7 @@ import re
 import numpy as np
 from numpy import ma
 
-from seabird import cnv
+from seabird import cnv, CNVError
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
@@ -357,24 +357,19 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False):
+    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False,
+            verbose=True):
         self.name = 'fProfileQC'
 
         try:
             input = cnv.fCNV(inputfile)
+        except CNVError as e:
+            if verbose is True:
+                print e.msg
+            raise
 
-            # In the future the line below should go down into an else, and
-            #   leave the errors of the ProfileQC to be handled over there.
-            super(fProfileQC, self).__init__(input, cfg=cfg,
-                    saveauxiliary=saveauxiliary)
-        except:
-            self.error = True
-            print("Failed to load: %s" % inputfile)
-            self.attributes = {'basename': basename(inputfile)}
-            if silent is True:
-                return
-            else:
-                raise
+        super(fProfileQC, self).__init__(input, cfg=cfg,
+                saveauxiliary=saveauxiliary)
 
         self.attributes['filename'] = basename(inputfile)
 
