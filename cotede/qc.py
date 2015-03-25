@@ -4,6 +4,7 @@
 import pkg_resources
 from datetime import datetime
 from os.path import basename, expanduser
+import re
 
 import numpy as np
 from numpy import ma
@@ -51,7 +52,6 @@ class ProfileQC(object):
         # Think about it
         self.evaluate_common(self.cfg)
 
-        import re
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
