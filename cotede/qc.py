@@ -413,6 +413,8 @@ class ProfileQCCollection(object):
             saveauxiliary=False, pandas=True):
         """
         """
+        self.name = "ProfileQCCollection"
+
         if pandas is True:
             try:
                 import pandas as pd
