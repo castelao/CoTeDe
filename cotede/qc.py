@@ -370,14 +370,13 @@ class fProfileQC(ProfileQC):
         try:
             input = cnv.fCNV(inputfile)
         except CNVError as e:
+            #self.attributes['filename'] = basename(inputfile)
             if verbose is True:
                 print e.msg
             raise
 
         super(fProfileQC, self).__init__(input, cfg=cfg,
                 saveauxiliary=saveauxiliary)
-
-        self.attributes['filename'] = basename(inputfile)
 
 
 class ProfileQCed(ProfileQC):
