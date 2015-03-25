@@ -38,6 +38,11 @@ class ProfileQC(object):
         """
 
         self.name = 'ProfileQC'
+
+        assert (hasattr(input, 'attributes'))
+        assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
+        assert (hasattr(input, 'data')) and (len(input.data) > 0)
+
         self.input = input
         self.attributes = input.attributes
         self.load_cfg(cfg)
