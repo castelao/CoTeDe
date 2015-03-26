@@ -364,8 +364,7 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False,
-            verbose=True):
+    def __init__(self, inputfile, cfg={}, saveauxiliary=False, verbose=True):
         self.name = 'fProfileQC'
 
         try:
@@ -377,7 +376,7 @@ class fProfileQC(ProfileQC):
             raise
 
         super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary)
+                saveauxiliary=saveauxiliary, verbose=verbose)
 
 
 class ProfileQCed(ProfileQC):
