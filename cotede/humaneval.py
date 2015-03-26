@@ -7,7 +7,6 @@ from numpy.random import permutation
 import pylab
 import matplotlib.pyplot as plt
 
-from cotede.qc import ProfileQCCollection
 from cotede.misc import combined_flag, adjust_anomaly_coefficients
 
 
