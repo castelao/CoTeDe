@@ -21,7 +21,7 @@ from utils import make_file_list
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg={}, saveauxiliary=True):
+    def __init__(self, input, cfg={}, saveauxiliary=True, verbose=True):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -60,7 +60,8 @@ class ProfileQC(object):
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
-                    print "evaluating: ", v, c
+                    if verbose is True:
+                        print "evaluating: ", v, c
                     self.evaluate(v, self.cfg[c])
                     break
 
