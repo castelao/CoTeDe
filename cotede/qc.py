@@ -5,6 +5,7 @@ import pkg_resources
 from datetime import datetime
 from os.path import basename, expanduser
 import re
+import multiprocessing as mp
 
 import numpy as np
 from numpy import ma
@@ -431,16 +432,28 @@ class ProfileQCCollection(object):
 
         results = []
 
+        npes = 2 * mp.cpu_count()
+        npes = min(npes, len(self.inputfiles))
+        pool = mp.Pool(npes)
+
         for f in self.inputfiles:
-            results.append(fProfileQC(f, {}, saveauxiliary, True))
+            results.append(
+                    pool.apply_async(fProfileQC,
+                        (f, {}, saveauxiliary, False) ) )
+        pool.close()
 
         for r in results:
-            p = r
-            if hasattr(p, 'error'):
-               print("Fail to evaluate")
-               #print p.error['msg']
-            else:
-                print "Processing: %s" % f
+            try:
+                # 1 min per file should be time enough.
+                p = r.get(60)
+            except CNVError as e:
+                print "YOOOO! CNV error"
+                print e.msg
+                import pdb; pdb.set_trace()
+            except:
+                print("Failed to process: %s" % f)
+
+            print p.attributes['filename']
 
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
