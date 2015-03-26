@@ -4,11 +4,12 @@
 import pkg_resources
 from datetime import datetime
 from os.path import basename, expanduser
+import re
 
 import numpy as np
 from numpy import ma
 
-from seabird import cnv
+from seabird import cnv, CNVError
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
@@ -37,6 +38,11 @@ class ProfileQC(object):
         """
 
         self.name = 'ProfileQC'
+
+        assert (hasattr(input, 'attributes'))
+        assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
+        assert (hasattr(input, 'data')) and (len(input.data) > 0)
+
         self.input = input
         self.attributes = input.attributes
         self.load_cfg(cfg)
@@ -51,7 +57,6 @@ class ProfileQC(object):
         # Think about it
         self.evaluate_common(self.cfg)
 
-        import re
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
@@ -297,10 +302,6 @@ class ProfileQC(object):
             self.flags[v]['density_inversion'] = flag
 
         if 'woa_comparison' in cfg:
-            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            # Flag as 9 any masked input value
-            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
 
             try:
                 woa = woa_profile_from_file(v,
@@ -333,6 +334,11 @@ class ProfileQC(object):
                 self.auxiliary[v]['woa_bias'] = woa_bias
                 self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
 
+            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            # Flag as 9 any masked input value
+            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
+
             ind = woa_bias/woa['woa_sd'] <= \
                     cfg['woa_comparison']['sigma_threshold']
             self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
@@ -357,26 +363,20 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False):
+    def __init__(self, inputfile, cfg={}, saveauxiliary=False, silent=False,
+            verbose=True):
         self.name = 'fProfileQC'
 
         try:
             input = cnv.fCNV(inputfile)
+        except CNVError as e:
+            #self.attributes['filename'] = basename(inputfile)
+            if verbose is True:
+                print e.msg
+            raise
 
-            # In the future the line below should go down into an else, and
-            #   leave the errors of the ProfileQC to be handled over there.
-            super(fProfileQC, self).__init__(input, cfg=cfg,
-                    saveauxiliary=saveauxiliary)
-        except:
-            self.error = True
-            print("Failed to load: %s" % inputfile)
-            self.attributes = {'basename': basename(inputfile)}
-            if silent is True:
-                return
-            else:
-                raise
-
-        self.attributes['filename'] = basename(inputfile)
+        super(fProfileQC, self).__init__(input, cfg=cfg,
+                saveauxiliary=saveauxiliary)
 
 
 class ProfileQCed(ProfileQC):
@@ -385,8 +385,8 @@ class ProfileQCed(ProfileQC):
     def __init__(self, input, cfg={}):
         """
         """
-        super(ProfileQCed, self).__init__(input, cfg)
         self.name = 'ProfileQCed'
+        super(ProfileQCed, self).__init__(input, cfg)
 
     def keys(self):
         """ Return the available keys in self.data
@@ -412,6 +412,8 @@ class ProfileQCCollection(object):
             saveauxiliary=False, pandas=True):
         """
         """
+        self.name = "ProfileQCCollection"
+
         if pandas is True:
             try:
                 import pandas as pd
