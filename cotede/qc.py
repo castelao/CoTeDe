@@ -68,6 +68,10 @@ class ProfileQC(object):
 
         # Evaluate twin sensors
 
+    @property
+    def data(self):
+        return self.input.data
+
     def keys(self):
         """ Return the available keys in self.data
         """
