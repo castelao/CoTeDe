@@ -410,6 +410,18 @@ class ProfileQCed(ProfileQC):
         raise KeyError('%s not found' % key)
 
 
+def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
+    profiles = []
+    for f in inputfiles:
+        try:
+            p = fProfileQC(f, {}, saveauxiliary, verbose=verbose)
+            profiles.append(p)
+        except CNVError as e:
+            #print e.msg
+            pass
+    return profiles
+
+
 class ProfileQCCollection(object):
     """ Load a collection of ProfileQC from a directory
     """
