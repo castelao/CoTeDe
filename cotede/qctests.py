@@ -30,14 +30,20 @@ def spike(x):
 
 
 def bin_spike(x, l):
+    """
+
+        Dummy way to avoid warnings when x[ini:fin] are all masked.
+        Improve this in the future.
+    """
     N = len(x)
     bin = ma.masked_all(N)
     half_window = l/2
     for i in range(half_window, N-half_window):
         ini = max(0, i - half_window)
         fin = min(N, i + half_window)
-        bin[i] = x[i] - ma.median(x[ini:fin])
-        #bin_std[i] = (T[ini:fin]).std()
+        if ~x[ini:fin].mask.any():
+            bin[i] = x[i] - ma.median(x[ini:fin])
+            #bin_std[i] = (T[ini:fin]).std()
 
     return bin
 
