@@ -71,11 +71,13 @@ def tukey53H(x):
 
     u1 = ma.masked_all(N)
     for n in range(N-4):
-        u1[n+2] = ma.median(x[n:n+5])
+        if x[n:n+5].any():
+            u1[n+2] = ma.median(x[n:n+5])
 
     u2 = ma.masked_all(N)
     for n in range(N-2):
-        u2[n+1] = ma.median(u1[n:n+3])
+        if u1[n:n+3].any():
+            u2[n+1] = ma.median(u1[n:n+3])
 
     u3 = ma.masked_all(N)
     u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
