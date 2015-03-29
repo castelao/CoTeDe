@@ -431,14 +431,6 @@ class ProfileQCCollection(object):
         """
         self.name = "ProfileQCCollection"
 
-        if pandas is True:
-            try:
-                import pandas as pd
-                self.pandas = True
-            except:
-                print "Sorry, I couldn't load pandas"
-                return
-
         self.inputfiles = make_file_list(inputdir, inputpattern)
 
         self.data = None
@@ -446,31 +438,10 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        results = []
+        self.profiles = process_profiles_serial(self.inputfiles, saveaux)
 
-        npes = 2 * mp.cpu_count()
-        npes = min(npes, len(self.inputfiles))
-        pool = mp.Pool(npes)
-
-        for f in self.inputfiles:
-            results.append(
-                    pool.apply_async(fProfileQC,
-                        (f, {}, saveauxiliary, False) ) )
-        pool.close()
-
-        for r in results:
-            try:
-                # 1 min per file should be time enough.
-                p = r.get(60)
-            except CNVError as e:
-                print "YOOOO! CNV error"
-                print e.msg
-                import pdb; pdb.set_trace()
-            except:
-                print("Failed to process: %s" % f)
-
-            print p.attributes['filename']
-
+        import pandas as pd
+        for p in self.profiles:
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
                 profileid = p.attributes['md5']
@@ -503,7 +474,7 @@ class ProfileQCCollection(object):
                     self.flags[v] = pd.concat([self.flags[v],
                         pd.DataFrame(tmp)])
                 # ---- Dealing with the auxiliary -----------------------------
-                if saveauxiliary is True:
+                if saveaux is True:
                     for a in p.auxiliary.keys():
                         if a not in self.auxiliary:
                             self.auxiliary[a] = None
