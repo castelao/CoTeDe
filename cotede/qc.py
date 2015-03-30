@@ -449,21 +449,7 @@ class ProfileQCCollection(object):
                 tmp['profilename'] = p.attributes['filename']
                 tmp['id'] = id = tmp.index
 
-                #tmp = pd.concat([ p.input.as_DataFrame(), pd.DataFrame({'profileid': nf}) ])
-                #self.data = pd.concat([self.data, p.input.as_DataFrame()])
                 self.data = pd.concat([self.data, tmp])
-
-                # Dealing with the data
-                #if 'timeS' in p.keys():
-                #    ind = ~p['timeS'].mask
-                #    d = ma.masked_all(p['timeS'].shape, dtype='O')
-                #    d0 = p.input.attributes['datetime']
-                #    d[ind] = ma.array([d0+timedelta(seconds=s) for s in p['timeS'][ind]])
-                #else:
-                #    d = p.input.attributes['datetime']
-                #tmp = {'datetime': pd.Series(d)}
-                #for k in p.keys():
-                #    tmp[k] = pd.Series(p[k])
 
                 # ---- Dealing with the flags --------------------------------
                 for v in p.flags.keys():
@@ -482,7 +468,6 @@ class ProfileQCCollection(object):
                         tmp['id'], tmp['profileid'] = id, profileid
                         self.auxiliary[a] = pd.concat([self.auxiliary[a],
                             pd.DataFrame(tmp)])
-
 
     def save(self, filename):
         if self.pandas is True:
