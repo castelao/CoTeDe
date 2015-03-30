@@ -438,7 +438,7 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        self.profiles = process_profiles_serial(self.inputfiles, saveaux)
+        self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
 
         import pandas as pd
         for p in self.profiles:
@@ -460,7 +460,7 @@ class ProfileQCCollection(object):
                     self.flags[v] = pd.concat([self.flags[v],
                         pd.DataFrame(tmp)])
                 # ---- Dealing with the auxiliary -----------------------------
-                if saveaux is True:
+                if saveauxiliary is True:
                     for a in p.auxiliary.keys():
                         if a not in self.auxiliary:
                             self.auxiliary[a] = None
