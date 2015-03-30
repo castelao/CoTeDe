@@ -55,7 +55,7 @@ The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it
 Support and Documentation
 -------------------------
 
-Mmm, yeap, I have work to do here. If you have any trouble to use it, please drop a specific complain in the GitHUB issues, and I'll do my best to respond ASAP.
+http://cotede.readthedocs.org/en/latest/
 
 How I see quality control
 -------------------------
