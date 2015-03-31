@@ -45,7 +45,7 @@ def split_data_groups(ind):
     N = ind.size
     ind_base = np.zeros(N) == 1
     # ==== Good data ==================
-    ind_good = np.nonzero(ind == True)[0]
+    ind_good = np.nonzero((ind == True) & (ma.getmaskarray(ind) == False))[0]
     N_good = ind_good.size
     perm = random.permutation(N_good)
     N_fit = int(round(N_good*.6))
@@ -57,7 +57,7 @@ def split_data_groups(ind):
     ind_err = ind_base.copy()
     ind_err[ind_good[perm[-N_test:]]] = True
     # ==== Bad data ===================
-    ind_bad = np.nonzero(ind == False)[0]
+    ind_bad = np.nonzero((ind == False) & (ma.getmaskarray(ind) == False))[0]
     N_bad = ind_bad.size
     perm = random.permutation(N_bad)
     N_test = int(round(N_bad*.5))
@@ -110,7 +110,7 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
     """
     output = {}
     for teste in qctests:
-        samp = aux[teste][ind]
+        samp = aux[teste][ind & np.isfinite(aux[teste])]
         ind_top = samp>samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
         output[teste] = {'param':param,
@@ -118,10 +118,10 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
 
         if verbose == True:
             import pylab
-            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)[1:]
+            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x,pdf_fitted,'b-')
-            pylab.hist(samp[ind_top], 100, normed=1,alpha=.3)
+            pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
             pylab.title(teste)
             pylab.show()
 
@@ -131,7 +131,7 @@ def estimate_anomaly(aux, params):
     prob = ma.ones(aux.shape[0])
     for t in params.keys():
         param = params[t]['param']
-        ind = np.isfinite(aux[t])
+        ind = np.array(np.isfinite(aux[t]))
         prob[ind] = prob[ind] * \
                 exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
     return prob
@@ -190,17 +190,19 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
             ind[indices['ind_test']])
 
+    # I can extract only .data, since split_data_groups already eliminated
+    #   all non valid positions.
     false_negative = (prob[indices['ind_err']] < p_optimal) & \
-        (ind[indices['ind_err']] == True)
+        (ind[indices['ind_err']].data == True)
     false_positive = (prob[indices['ind_err']] > p_optimal) & \
-        (ind[indices['ind_err']] == False)
+        (ind[indices['ind_err']].data == False)
     err = np.nonzero(false_negative)[0].size + \
             np.nonzero(false_positive)[0].size
     err_ratio = float(err)/prob[indices['ind_err']].size
     false_negative = (prob < p_optimal) & \
-        (ind == True)
+        (ind.data == True) & (ma.getmaskarray(ind)==False)
     false_positive = (prob > p_optimal) & \
-        (ind == False)
+        (ind.data == False) & (ma.getmaskarray(ind)==False)
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,

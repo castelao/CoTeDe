@@ -4,11 +4,13 @@
 import pkg_resources
 from datetime import datetime
 from os.path import basename, expanduser
+import re
+import multiprocessing as mp
 
 import numpy as np
 from numpy import ma
 
-from seabird import cnv
+from seabird import cnv, CNVError
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
@@ -20,7 +22,7 @@ from utils import make_file_list
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg={}, saveauxiliary=True):
+    def __init__(self, input, cfg={}, saveauxiliary=True, verbose=True):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -37,28 +39,38 @@ class ProfileQC(object):
         """
 
         self.name = 'ProfileQC'
+
+        assert (hasattr(input, 'attributes'))
+        assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
+        assert (hasattr(input, 'data')) and (len(input.data) > 0)
+
         self.input = input
         self.attributes = input.attributes
         self.load_cfg(cfg)
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
-            self.auxiliary = {}
+            #self.auxiliary = {}
+            self.build_auxiliary()
 
         # I should use common or main, but must be consistent
         #   between defaults and flags.keys()
         # Think about it
         self.evaluate_common(self.cfg)
 
-        import re
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
-                    print "evaluating: ", v, c
+                    if verbose is True:
+                        print "evaluating: ", v, c
                     self.evaluate(v, self.cfg[c])
                     break
 
         # Evaluate twin sensors
+
+    @property
+    def data(self):
+        return self.input.data
 
     def keys(self):
         """ Return the available keys in self.data
@@ -112,6 +124,11 @@ class ProfileQC(object):
                 #flag[depth>0] = False
                 #self.flags['at_sea'] = flag
                 self.flags['common']['at_sea'] = depth[0]<0
+
+        if self.saveauxiliary:
+            self.auxiliary['common'] = {}
+            self.auxiliary['common']['descentPrate'] = \
+                    descentPrate(self['timeS'], self['pressure'])
 
     def evaluate(self, v, cfg):
 
@@ -244,17 +261,18 @@ class ProfileQC(object):
             flag[np.nonzero(s <= threshold)] = 1
             self.flags[v]['tukey53H_norm'] = flag
 
-        if 'spike_depthsmooth' in cfg:
-            from maud.window_func import _weight_hann as wfunc
-            cfg_tmp = cfg['spike_depthsmooth']
-            cfg_tmp['dzwindow'] = 10
-            smooth = ma.masked_all(self.input[v].shape)
-            z = ped['pressure']
-            for i in range(len(self.input[v])):
-                ind = np.nonzero(ma.absolute(z-z[i]) < cfg_tmp['dzwindow'])[0]
-                ind = ind[ind != i]
-                w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
-                smooth[i] = (T[ind]*w).sum()/w.sum()
+        #if 'spike_depthsmooth' in cfg:
+        #    from maud.window_func import _weight_hann as wfunc
+        #    cfg_tmp = cfg['spike_depthsmooth']
+        #    cfg_tmp['dzwindow'] = 10
+        #    smooth = ma.masked_all(self.input[v].shape)
+        #    z = ped['pressure']
+        #    for i in range(len(self.input[v])):
+        #        ind = np.nonzero(ma.absolute(z-z[i]) < \
+        #                cfg_tmp['dzwindow'])[0]
+        #        ind = ind[ind != i]
+        #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
+        #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
@@ -296,10 +314,6 @@ class ProfileQC(object):
             self.flags[v]['density_inversion'] = flag
 
         if 'woa_comparison' in cfg:
-            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            # Flag as 9 any masked input value
-            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
 
             try:
                 woa = woa_profile_from_file(v,
@@ -332,6 +346,11 @@ class ProfileQC(object):
                 self.auxiliary[v]['woa_bias'] = woa_bias
                 self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
 
+            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
+                    dtype='i1')
+            # Flag as 9 any masked input value
+            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
+
             ind = woa_bias/woa['woa_sd'] <= \
                     cfg['woa_comparison']['sigma_threshold']
             self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
@@ -356,13 +375,19 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, file, cfg={}, saveauxiliary=False):
-        input = cnv.fCNV(file)
-        super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary)
-
+    def __init__(self, inputfile, cfg={}, saveauxiliary=False, verbose=True):
         self.name = 'fProfileQC'
-        self.attributes['filename'] = basename(file)
+
+        try:
+            input = cnv.fCNV(inputfile)
+        except CNVError as e:
+            #self.attributes['filename'] = basename(inputfile)
+            if verbose is True:
+                print e.msg
+            raise
+
+        super(fProfileQC, self).__init__(input, cfg=cfg,
+                saveauxiliary=saveauxiliary, verbose=verbose)
 
 
 class ProfileQCed(ProfileQC):
@@ -371,8 +396,8 @@ class ProfileQCed(ProfileQC):
     def __init__(self, input, cfg={}):
         """
         """
-        super(ProfileQCed, self).__init__(input, cfg)
         self.name = 'ProfileQCed'
+        super(ProfileQCed, self).__init__(input, cfg)
 
     def keys(self):
         """ Return the available keys in self.data
@@ -391,6 +416,18 @@ class ProfileQCed(ProfileQC):
         raise KeyError('%s not found' % key)
 
 
+def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
+    profiles = []
+    for f in inputfiles:
+        try:
+            p = fProfileQC(f, {}, saveauxiliary, verbose=verbose)
+            profiles.append(p)
+        except CNVError as e:
+            #print e.msg
+            pass
+    return profiles
+
+
 class ProfileQCCollection(object):
     """ Load a collection of ProfileQC from a directory
     """
@@ -398,13 +435,7 @@ class ProfileQCCollection(object):
             saveauxiliary=False, pandas=True):
         """
         """
-        if pandas is True:
-            try:
-                import pandas as pd
-                self.pandas = True
-            except:
-                print "Sorry, I couldn't load pandas"
-                return
+        self.name = "ProfileQCCollection"
 
         self.inputfiles = make_file_list(inputdir, inputpattern)
 
@@ -413,11 +444,10 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        for f in self.inputfiles:
-            try:
-                print "Processing: %s" % f
-                p = ProfileQC(cnv.fCNV(f), saveauxiliary=saveauxiliary)
+        self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
 
+        import pandas as pd
+        for p in self.profiles:
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
                 profileid = p.attributes['md5']
@@ -425,21 +455,7 @@ class ProfileQCCollection(object):
                 tmp['profilename'] = p.attributes['filename']
                 tmp['id'] = id = tmp.index
 
-                #tmp = pd.concat([ p.input.as_DataFrame(), pd.DataFrame({'profileid': nf}) ])
-                #self.data = pd.concat([self.data, p.input.as_DataFrame()])
                 self.data = pd.concat([self.data, tmp])
-
-                # Dealing with the data
-                #if 'timeS' in p.keys():
-                #    ind = ~p['timeS'].mask
-                #    d = ma.masked_all(p['timeS'].shape, dtype='O')
-                #    d0 = p.input.attributes['datetime']
-                #    d[ind] = ma.array([d0+timedelta(seconds=s) for s in p['timeS'][ind]])
-                #else:
-                #    d = p.input.attributes['datetime']
-                #tmp = {'datetime': pd.Series(d)}
-                #for k in p.keys():
-                #    tmp[k] = pd.Series(p[k])
 
                 # ---- Dealing with the flags --------------------------------
                 for v in p.flags.keys():
@@ -458,9 +474,6 @@ class ProfileQCCollection(object):
                         tmp['id'], tmp['profileid'] = id, profileid
                         self.auxiliary[a] = pd.concat([self.auxiliary[a],
                             pd.DataFrame(tmp)])
-
-            except:
-                print "Couldn't load: %s" % f
 
     def save(self, filename):
         if self.pandas is True:

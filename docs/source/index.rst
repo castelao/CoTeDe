@@ -1,3 +1,22 @@
+.. CoTeDe documentation master file, created by
+   sphinx-quickstart on Thu Jan  1 20:18:58 2015.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+
+####################
+CoTeDe Documentation
+####################
+
+Welcome to CoTeDe's documentation!
+==================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+
 =============
 CoTe De l'eau
 =============
@@ -14,7 +33,7 @@ quality control of the brazilian hydrography of PIRATA.
 CoTeDe can apply different quality control procedures:
   - The default GTSPP or EGOOS procedure;
   - A custom set of tests and user defined thresholds;
-  - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
+  - A novel approach based on Anomaly Detection, described by Castelao 2014;
 
 Quick howto
 ___________
@@ -55,7 +74,7 @@ The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it
 Support and Documentation
 -------------------------
 
-http://cotede.readthedocs.org/en/latest/
+Mmm, yeap, I have work to do here. If you have any trouble to use it, please drop a specific complain in the GitHUB issues, and I'll do my best to respond ASAP.
 
 How I see quality control
 -------------------------
@@ -69,4 +88,12 @@ For a long time I had the idea of the anomaly detection technique in mind, but I
 The full name of this package is CoTe De l'eau, which I understand as something near to "rating the water". 
 The short name is cotede, to make easier for the users to remember, since it is the quality control of COnductivity TEmperature and DEpth (cotede). 
 The french name is a kind of tribute to the great time that I spent in France with Bia and the croissants that were converted in code lines.
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 

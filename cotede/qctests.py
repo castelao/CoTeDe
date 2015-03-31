@@ -30,14 +30,20 @@ def spike(x):
 
 
 def bin_spike(x, l):
+    """
+
+        Dummy way to avoid warnings when x[ini:fin] are all masked.
+        Improve this in the future.
+    """
     N = len(x)
     bin = ma.masked_all(N)
     half_window = l/2
     for i in range(half_window, N-half_window):
         ini = max(0, i - half_window)
         fin = min(N, i + half_window)
-        bin[i] = x[i] - ma.median(x[ini:fin])
-        #bin_std[i] = (T[ini:fin]).std()
+        if ~x[ini:fin].mask.any():
+            bin[i] = x[i] - ma.median(x[ini:fin])
+            #bin_std[i] = (T[ini:fin]).std()
 
     return bin
 
@@ -71,11 +77,13 @@ def tukey53H(x):
 
     u1 = ma.masked_all(N)
     for n in range(N-4):
-        u1[n+2] = ma.median(x[n:n+5])
+        if x[n:n+5].any():
+            u1[n+2] = ma.median(x[n:n+5])
 
     u2 = ma.masked_all(N)
     for n in range(N-2):
-        u2[n+1] = ma.median(u1[n:n+3])
+        if u1[n:n+3].any():
+            u2[n+1] = ma.median(u1[n:n+3])
 
     u3 = ma.masked_all(N)
     u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
@@ -93,6 +101,8 @@ def tukey53H_norm(x, k=1.5, l=12):
          variability longer than 12 is something else.
     """
     Delta = tukey53H(x)
-    from maud import window_1Dmean
-    sigma = (window_1Dmean(x, l, method='hann')).std()
+
+    w = np.hamming(l)
+    sigma = (np.convolve(x, w, mode='same') / w.sum()).std()
+
     return Delta/(k*sigma)
