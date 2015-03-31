@@ -190,17 +190,19 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
             ind[indices['ind_test']])
 
+    # I can extract only .data, since split_data_groups already eliminated
+    #   all non valid positions.
     false_negative = (prob[indices['ind_err']] < p_optimal) & \
-        (ind[indices['ind_err']] == True)
+        (ind[indices['ind_err']].data == True)
     false_positive = (prob[indices['ind_err']] > p_optimal) & \
-        (ind[indices['ind_err']] == False)
+        (ind[indices['ind_err']].data == False)
     err = np.nonzero(false_negative)[0].size + \
             np.nonzero(false_positive)[0].size
     err_ratio = float(err)/prob[indices['ind_err']].size
     false_negative = (prob < p_optimal) & \
-        (ind == True)
+        (ind.data == True) & (ma.getmaskarray(ind)==False)
     false_positive = (prob > p_optimal) & \
-        (ind == False)
+        (ind.data == False) & (ma.getmaskarray(ind)==False)
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
