@@ -151,10 +151,20 @@ class ProfileQC(object):
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
         if 'profile_envelope' in cfg:
+            # Probably not the best way to do this, but works for now.
             self.flags[v]['profile_envelope'] = np.zeros(self.input[v].shape,
                     dtype='i1')
             for layer in cfg['profile_envelope']:
-                ind = self.input['pressure']
+                ind = np.nonzero(
+                        eval("(%s %s) & (%s %s)" %
+                            ("self.input['pressure']", layer[0],
+                                "self.input['pressure']", layer[1]))
+                            )[0]
+                f = eval("(%s > %s) & (%s < %s)" %
+                        ("self.input[v][ind]", layer[2],
+                        "self.input[v][ind]", layer[3]))
+                self.flags[v]['profile_envelope'][ind[f == True]] = 1
+                self.flags[v]['profile_envelope'][ind[f == False]] = 4
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
