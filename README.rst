@@ -52,6 +52,7 @@ The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it
 |    import cotede.qc
 |    ped = cotede.qc.ProfileQCed(data)
 
+
 Check the example notebooks: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
 
 Support and Documentation
