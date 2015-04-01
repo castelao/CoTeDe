@@ -19,41 +19,26 @@ CoTeDe can apply different quality control procedures:
 Quick howto
 ___________
 
-First load the CTD data
+To evaluate the records of a profile:
 
-|    pqc = cotede.qc.fProfileQC('example.cnv')
+        import cotede.qc
+        pqc = cotede.qc.fProfileQC('example.cnv')
 
-The keys() will give you the data loaded from the CTD, simillar to the output from the seabird.fCNV
+To see the temperature records of the primary sensor:
 
-|    pqc.keys()
+        pqc['temperature']
 
-To see one of the read variables listed on the previous step
+To see the flags of all tests applied on the secondary sensor of salinity:
 
-|    pqc['temperature']
+        pqc.flags['salinity2']
 
-The flags are stored at pqc.flags and is a dictionary, being one item per variable evaluated. For example, to see the flags for the secondary salinity instrument, just do
+To evaluate a full set of profiles at once, like all profiles from a cruise, use the class ProfileQCCollection, like:
 
-|    pqc.flags['salinity2']
-
-or for a specific test
-
-|    pqc.flags['salinity2']['gradient']
-
-To evaluate a full set of profiles at once, use the class ProfileQCCollection, like:
-
-|    dataset = ProfileQCCollection('/path/to/data/', inputpattern=".*\.cnv")
-|    dataset.flags['temperature'].keys()
-
-The class cotede.qc.ProfileQCed is equivalent to the cotede.qc.ProfileQC, but it already mask the non approved data (flag != 1). Another it can also be used like:
-
-|    from seabird import cnv
-|    data = cnv.fCNV('example.cnv')
-|
-|    import cotede.qc
-|    ped = cotede.qc.ProfileQCed(data)
+        dataset = ProfileQCCollection('/path/to/data/', inputpattern=".*\.cnv")
+        dataset.flags['temperature'].keys()
 
 
-Check the example notebooks: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
+Check the notebooks galery for more examples and functionalities: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
 
 Support and Documentation
 -------------------------
@@ -63,7 +48,10 @@ http://cotede.readthedocs.org/en/latest/
 How I see quality control
 -------------------------
 
-Quality control is different then data processing. On the processed data, the quality control/quality assurance means to check what looks fine. It is very important that the data is properly sampled and processed. The quality control procedures can't go back on time and fix improper sampling, but only tell you that the data don't looks fine.
+Quality control is different then data processing. 
+On the processed data, the quality control/quality assurance means to check what looks fine. 
+It is very important that the data is properly sampled and processed. 
+The quality control procedures can't go back on time and fix improper sampling, but only tell you that the data don't looks fine.
 
 Why CoTeDe?
 -----------
