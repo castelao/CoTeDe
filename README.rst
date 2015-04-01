@@ -22,6 +22,7 @@ ___________
 To evaluate the records of a profile:
 
         import cotede.qc
+
         pqc = cotede.qc.fProfileQC('example.cnv')
 
 To see the temperature records of the primary sensor:
