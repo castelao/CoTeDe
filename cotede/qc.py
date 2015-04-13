@@ -22,7 +22,7 @@ from utils import make_file_list
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg={}, saveauxiliary=True, verbose=True):
+    def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -44,9 +44,10 @@ class ProfileQC(object):
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
         assert (hasattr(input, 'data')) and (len(input.data) > 0)
 
+        self.load_cfg(cfg)
+
         self.input = input
         self.attributes = input.attributes
-        self.load_cfg(cfg)
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
@@ -83,24 +84,54 @@ class ProfileQC(object):
         return self.input[key]
 
     def load_cfg(self, cfg):
-        """ Load the user's config and the default values
+        """ Load the QC configurations
 
-            Need to think better what do I want here. The user
-              should be able to choose which variables to evaluate.
+            The possible inputs are:
+                - None: Will use the CoTeDe's default configuration
 
-            How to handle conflicts between user's cfg and default?
+                - Preset config name [string]: A string with the name of
+                    pre-set rules, like 'cotede', 'egoos' or 'gtspp'.
+
+                - User configs [dict]: a dictionary composed by the variables
+                    to be evaluated as keys, and inside it another dictionary
+                    with the tests to perform as keys. example
+                    {'main':{
+                        'valid_datetime': None,
+                        },
+                    'temperature':{
+                        'global_range':{
+                            'minval': -2.5,
+                            'maxval': 45,
+                            },
+                        },
+                    }
         """
-        #defaults = pkg_resources.resource_listdir(__name__, 'defaults')
+        # A given manual configuration has priority
+        if type(cfg) is dict:
+            self.cfg = cfg
+            return
 
-        try:
-            cfg_file = open(expanduser('~/.cotederc'))
-        except IOError:
-            self.cfg = eval(pkg_resources.resource_string(__name__, 'defaults'))
-        else:
-            configs = eval(cfg_file)
+        # Need to safe_eval before allow to load rules from .cotederc
+        if cfg is None:
+            cfg = 'cotede'
+        self.cfg = eval(pkg_resources.resource_string(__name__,
+            "qc_cfg/%s" % cfg))
 
-        for k in cfg:
-            self.cfg[k] = cfg[k]
+        # If not defined, use CoTeDe's default
+        #if (cfg is None):
+        #    if os.path.isfile('~/.cotederc/default'):
+        #        self.cfg_file = eval(open(expanduser('~/.cotederc/default')))
+        #    else:
+        #        cfg = 'cotede'
+
+        # If it's a name of a config, try to get from CoTeDe's package
+        #elif type(cfg) is str:
+        #    try:
+        #        self.cfg = eval(pkg_resources.resource_string(__name__, cfg))
+        #    # If can't find inside cotede, try to load from users directory
+        #    except:
+        #        cfg_file = open(expanduser('~/.cotederc/%s' % cfg))
+        #        self.cfg = eval(cfg_file)
 
     def evaluate_common(self, cfg):
         self.flags['common'] = {}
@@ -385,7 +416,7 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, inputfile, cfg={}, saveauxiliary=False, verbose=True):
+    def __init__(self, inputfile, cfg=None, saveauxiliary=False, verbose=True):
         self.name = 'fProfileQC'
 
         try:
@@ -403,7 +434,7 @@ class fProfileQC(ProfileQC):
 class ProfileQCed(ProfileQC):
     """
     """
-    def __init__(self, input, cfg={}):
+    def __init__(self, input, cfg=None):
         """
         """
         self.name = 'ProfileQCed'
@@ -498,7 +529,7 @@ class ProfileQCCollection(object):
 class CruiseQC(object):
     """ Quality Control of a group of CTD profiles
     """
-    def __init__(self, inputdir, inputpattern="*.cnv", cfg={},
+    def __init__(self, inputdir, inputpattern="*.cnv", cfg=None,
             saveauxiliary=False):
         """
 
