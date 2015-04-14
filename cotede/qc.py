@@ -113,6 +113,17 @@ class ProfileQC(object):
                 f = 3
             self.flags['common']['valid_datetime'] = f
 
+        if 'datetime_range' in self.cfg['main']:
+            if 'datetime' in self.input.attributes.keys() and \
+                    (self.input.attributes['datetime'] >=
+                            self.cfg['main']['datetime_range']['minval']) and \
+                    (self.input.attributes['datetime'] <=
+                            self.cfg['main']['datetime_range']['maxval']):
+                f = 1
+            else:
+                f = 3
+            self.flags['common']['datetime_range'] = f
+
         if 'at_sea' in self.cfg['main']:
             lon = self.input.attributes['longitude']
             lat = self.input.attributes['latitude']
