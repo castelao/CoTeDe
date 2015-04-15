@@ -412,6 +412,8 @@ class ProfileQCed(ProfileQC):
 
 
 def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
+    """ Quality control a list of CTD files
+    """
     profiles = []
     for f in inputfiles:
         try:
