@@ -6,6 +6,7 @@ from datetime import datetime
 from os.path import basename, expanduser
 import re
 import multiprocessing as mp
+import time
 
 import numpy as np
 from numpy import ma
@@ -438,6 +439,8 @@ class ProfileQCed(ProfileQC):
 
 
 def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
+    """ Quality control a list of CTD files
+    """
     profiles = []
     for f in inputfiles:
         try:
@@ -449,11 +452,80 @@ def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
     return profiles
 
 
+def process_profiles(inputfiles, saveauxiliary, verbose=True, timeout=60):
+    """ Quality control a list of CTD files in parallel
+    """
+    cfg = {}
+    npes = 2 * mp.cpu_count()
+    npes = min(npes, len(inputfiles))
+    pool = mp.Pool(npes)
+    queuesize = 3*npes
+    qout = mp.Queue(queuesize)
+    teste = []
+
+    def run_qc(inputfiles, cfg, saveauxiliary, verbose):
+        def process_file(f, cfg, saveauxiliary, verbose=verbose):
+            try:
+                if verbose is True:
+                    print("Loading: %s" % f)
+                p = fProfileQC(f, cfg, saveauxiliary, verbose)
+                attrs = [pn.attributes for pn in p.data]
+                qout.put([p, attrs], block=True)
+            except CNVError as e:
+                print e.msg
+
+        pool = []
+        for f in inputfiles[:npes]:
+            pool.append(mp.Process(target=process_file,
+                args=(f, cfg, saveauxiliary, verbose)))
+            pool[-1].start()
+
+        for i, f in enumerate(inputfiles[npes:]):
+            n = i%npes
+            pool[n].join(timeout)
+            if pool[n].is_alive():
+                print("timeout: %s" % pool[n])
+            pool[n].terminate()
+            pool[n] = mp.Process(target=process_file,
+                args=(f, cfg, saveauxiliary, verbose))
+            pool[n].start()
+
+        for p in pool:
+            p.join(timeout)
+            if p.is_alive():
+                print("timeout: %s" % p)
+            p.terminate()
+        print "Done evaluating."
+
+    worker = mp.Process(target=run_qc,
+            args=(inputfiles, cfg, saveauxiliary, verbose))
+    worker.start()
+
+    profiles = []
+    while worker.is_alive() or not qout.empty():
+        if qout.empty():
+            #print("Queue is empty. I'll give a break.")
+            time.sleep(2)
+        else:
+            # Dummy way to fix pickling on Queue
+            # When the fProfile object is sent through the Queue, each
+            #   data loses its .attributes.
+            # Improve this in the future.
+            out, attrs = qout.get()
+            for i, a in enumerate(attrs):
+                out.data[i].attributes = a
+            print("Collected: %s" % out.attributes['filename'])
+            profiles.append(out)
+
+    worker.terminate()
+    return profiles
+
+
 class ProfileQCCollection(object):
     """ Load a collection of ProfileQC from a directory
     """
     def __init__(self, inputdir, inputpattern=".*\.cnv",
-            saveauxiliary=False, pandas=True):
+            saveauxiliary=False, timeout=60):
         """
         """
         self.name = "ProfileQCCollection"
@@ -465,7 +537,9 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
+        #self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
+        self.profiles = process_profiles(self.inputfiles, saveauxiliary,
+                timeout=timeout)
 
         import pandas as pd
         for p in self.profiles:
