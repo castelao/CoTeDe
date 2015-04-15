@@ -498,7 +498,7 @@ class ProfileQCCollection(object):
     """ Load a collection of ProfileQC from a directory
     """
     def __init__(self, inputdir, inputpattern=".*\.cnv",
-            saveauxiliary=False, pandas=True):
+            saveauxiliary=False, timeout=60):
         """
         """
         self.name = "ProfileQCCollection"
@@ -510,7 +510,9 @@ class ProfileQCCollection(object):
         if saveauxiliary is True:
             self.auxiliary = {}
 
-        self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
+        #self.profiles = process_profiles_serial(self.inputfiles, saveauxiliary)
+        self.profiles = process_profiles(self.inputfiles, saveauxiliary,
+                timeout=timeout)
 
         import pandas as pd
         for p in self.profiles:
