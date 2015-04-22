@@ -30,7 +30,7 @@ install_requires = [
     'Pydap',
     ]
 
-version = '0.10.2'
+version = '0.10.3'
 
 setup(
     name='cotede',

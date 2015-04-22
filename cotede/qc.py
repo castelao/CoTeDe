@@ -7,6 +7,7 @@ from os.path import basename, expanduser
 import re
 import multiprocessing as mp
 import time
+import json
 
 import numpy as np
 from numpy import ma
@@ -115,7 +116,7 @@ class ProfileQC(object):
         # Need to safe_eval before allow to load rules from .cotederc
         if cfg is None:
             cfg = 'cotede'
-        self.cfg = eval(pkg_resources.resource_string(__name__,
+        self.cfg = json.loads(pkg_resources.resource_string(__name__,
             "qc_cfg/%s" % cfg))
 
         # If not defined, use CoTeDe's default

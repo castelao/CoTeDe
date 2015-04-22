@@ -1,81 +1,78 @@
-{'main':{
-    'valid_datetime': None,
-    #'at_sea': {
-    #    'url': 'http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
-    #    },
+{"main": {
+    "valid_date": null
     },
-'temperature':{
-    'pstep': None,
-    'woa_comparison': {
-        'file': '/Users/castelao/work/projects/python/cotede/data/temperature_seasonal_5deg.nc',
-        'vars': {'woa_an': 't_an', 'woa_sd': 't_sd', 'woa_n': 't_dd'},
-        'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc',
-        'sigma_threshold': 6,
-	},
-    'global_range':{ \
-        'minval': -2.5,
-        'maxval': 45,
+"temperature": {
+    "pstep": null,
+    "woa_comparison":
+        {"sigma_threshold": 6,
+        "file": "/Users/castelao/work/projects/python/cotede/data/temperature_seasonal_5deg.nc",
+        "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
+        "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
-    'profile_envelope': [ \
-        ['> 0', '<= 25', -2, 37],
-        ['> 25', '<= 50', -2, 36],
-        ['> 50', '<= 100', -2, 36],
-        ['> 100', '<= 150', -2, 34],
-        ['> 150', '<= 200', -2, 33],
-        ['> 200', '<= 300', -2, 29],
-        ['> 300', '<= 400', -2, 27],
-        ['> 400', '<= 1100', -2, 27],
-        ['> 1100', '<= 3000', -1.5, 18],
-        ['> 3000', '<= 5500', -1.5, 7],
-        ['> 5500', '<= 12000', -1.5, 4],
-        ],
-    'spike': 6.0,
-    'spike_depthconditional': { \
-        'pressure_threshold': 500,
-        'shallow_max': 6.0,
-        'deep_max': 2.0,
+    "global_range":
+        {"minval": -2.5,
+        "maxval": 45
         },
-    'tukey53H_norm': { \
-        'k': 1.5,
-        'l': 12
+    "spike": 6.0,
+    "spike_depthconditional":
+        {"pressure_threshold": 500,
+        "shallow_max": 6.0,
+        "deep_max": 2.0
         },
-    'gradient': 9.0,
-    'gradient_depthconditional': { \
-        'pressure_threshold': 500,
-        'shallow_max': 9.0,
-        'deep_max': 3.0,
+    "tukey53H_norm":
+        {"k": 1.5,
+        "l": 12
         },
-    'digit_roll_over': 10,
-    'bin_spike': 10,
+    "gradient": 9.0,
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 9.0,
+        "deep_max": 3.0
+        },
+    "digit_roll_over": 10,
+    "bin_spike": 10,
+    "profile_envelope": [
+        ["> 0", "<= 25", -2, 37],
+        ["> 25", "<= 50", -2, 36],
+        ["> 50", "<= 100", -2, 36],
+        ["> 100", "<= 150", -2, 34],
+        ["> 150", "<= 200", -2, 33],
+        ["> 200", "<= 300", -2, 29],
+        ["> 300", "<= 400", -2, 27],
+        ["> 400", "<= 1100", -2, 27],
+        ["> 1100", "<= 3000", -1.5, 18],
+        ["> 3000", "<= 5500", -1.5, 7],
+        ["> 5500", "<= 12000", -1.5, 4]
+        ]
     },
-'salinity':{
-    'woa_comparison': {
-        'file': '/Users/castelao/work/projects/python/cotede/data/salinity_seasonal_5deg.nc',
-        'vars': {'woa_an': 's_an', 'woa_sd': 's_sd', 'woa_n': 's_dd'},
-        'url': 'http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc',
-        'sigma_threshold': 6,
-	},
-    'global_range':{ \
-        'minval': 0,
-        'maxval': 60,
+"salinity": {
+    "woa_comparison": {
+        "sigma_threshold": 6,
+        "file": "/Users/castelao/work/projects/python/cotede/data/salinity_seasonal_5deg.nc",
+        "vars": {"woa_an": "s_an", "woa_sd": "s_sd", "woa_n": "s_dd"},
+        "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
-    'spike': 0.9,
-    'spike_depthconditional': { \
-        'pressure_threshold': 500,
-        'shallow_max': 0.9,
-        'deep_max': 0.3,
+    "global_range":{
+        "minval": 0,
+        "maxval": 60
         },
-    'tukey53H_norm': { \
-        'k': 1.5,
-        'l': 12
+    "spike": 0.9,
+    "spike_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 0.9,
+        "deep_max": 0.3
         },
-    'gradient': 1.5,
-    'gradient_depthconditional': { \
-        'pressure_threshold': 500,
-        'shallow_max': 1.5,
-        'deep_max': 0.5,
+    "tukey53H_norm": {
+        "k": 1.5,
+        "l": 12
         },
-    'digit_roll_over': 5,
-    'bin_spike': 10,
+    "gradient": 1.5,
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 1.5,
+        "deep_max": 0.5
+        },
+    "digit_roll_over": 5,
+    "bin_spike": 10
     }
 }
