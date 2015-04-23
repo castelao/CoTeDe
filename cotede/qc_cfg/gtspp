@@ -11,8 +11,8 @@
         },
     "gradient": 10.0,
     "spike": 2.0,
-    "woa_comparison":
-        {"sigma_threshold": 3,
+    "woa_comparison": {
+        "sigma_threshold": 3,
         "file": "/Users/castelao/work/projects/python/cotede/data/temperature_seasonal_5deg.nc",
         "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
