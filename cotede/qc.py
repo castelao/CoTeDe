@@ -116,24 +116,14 @@ class ProfileQC(object):
         # Need to safe_eval before allow to load rules from .cotederc
         if cfg is None:
             cfg = 'cotede'
-        self.cfg = json.loads(pkg_resources.resource_string(__name__,
-            "qc_cfg/%s" % cfg))
-
-        # If not defined, use CoTeDe's default
-        #if (cfg is None):
-        #    if os.path.isfile('~/.cotederc/default'):
-        #        self.cfg_file = eval(open(expanduser('~/.cotederc/default')))
-        #    else:
-        #        cfg = 'cotede'
 
         # If it's a name of a config, try to get from CoTeDe's package
-        #elif type(cfg) is str:
-        #    try:
-        #        self.cfg = eval(pkg_resources.resource_string(__name__, cfg))
-        #    # If can't find inside cotede, try to load from users directory
-        #    except:
-        #        cfg_file = open(expanduser('~/.cotederc/%s' % cfg))
-        #        self.cfg = eval(cfg_file)
+        try:
+            self.cfg = json.loads(pkg_resources.resource_string(__name__,
+                "qc_cfg/%s" % cfg))
+        # If can't find inside cotede, try to load from users directory
+        except:
+            self.cfg = json.loads('~/.cotederc/%s' % cfg)
 
     def evaluate_common(self, cfg):
         self.flags['common'] = {}
