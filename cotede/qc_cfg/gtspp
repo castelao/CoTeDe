@@ -1,7 +1,7 @@
 {"main": {
     "valid_date": null,
     "at_sea": {
-        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf",
+        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
         }
     },
 "temperature": {
