@@ -3,10 +3,10 @@
 #   itself. But this last one must require a md5.
 
 import numpy as np
+from seabird import cnv
+import cotede.qc
 
 def func(datafile, saveauxiliary):
-    from seabird import cnv
-    import cotede.qc
     data = cnv.fCNV(datafile)
     pqc = cotede.qc.ProfileQC(data, saveauxiliary=saveauxiliary)
     return pqc
