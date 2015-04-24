@@ -126,6 +126,10 @@ class ProfileQC(object):
             self.cfg = json.loads('~/.cotederc/%s' % cfg)
 
     def evaluate_common(self, cfg):
+        if 'main' not in self.cfg.keys():
+            print("ATENTION, there is no main setup in the QC cfg")
+            return
+
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
