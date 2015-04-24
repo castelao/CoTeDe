@@ -123,7 +123,7 @@ class ProfileQC(object):
                 "qc_cfg/%s" % cfg))
         # If can't find inside cotede, try to load from users directory
         except:
-            self.cfg = json.loads('~/.cotederc/%s' % cfg)
+            self.cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
