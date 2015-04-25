@@ -464,13 +464,14 @@ class ProfileQCed(ProfileQC):
         raise KeyError('%s not found' % key)
 
 
-def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
+def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
+        verbose=True):
     """ Quality control a list of CTD files
     """
     profiles = []
     for f in inputfiles:
         try:
-            p = fProfileQC(f, {}, saveauxiliary, verbose=verbose)
+            p = fProfileQC(f, cfg, saveauxiliary, verbose=verbose)
             profiles.append(p)
         except CNVError as e:
             #print e.msg
@@ -478,10 +479,10 @@ def process_profiles_serial(inputfiles, saveauxiliary, verbose=True):
     return profiles
 
 
-def process_profiles(inputfiles, saveauxiliary, verbose=True, timeout=60):
+def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
+        verbose=True, timeout=60):
     """ Quality control a list of CTD files in parallel
     """
-    cfg = {}
     npes = 2 * mp.cpu_count()
     npes = min(npes, len(inputfiles))
     pool = mp.Pool(npes)
