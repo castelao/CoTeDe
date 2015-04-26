@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+""" Dump quality controled CTD data
+"""
+
+from optparse import OptionParser
+
+import numpy as np
+
+from seabird import CNVError
+from cotede.qc import fProfileQC, combined_flag
+
+
+# ==== Parsing the options on command line
+parser = OptionParser()
+
+(options, args) = parser.parse_args()
+
+
+try:
+    profile = fProfileQC(args[0])
+except CNVError as e:
+    print("\033[91m%s\033[0m" % e.msg)
+    import sys; sys.exit()
+except:
+    raise
+
+varnames = ['timeS']
+output = profile['timeS']
+
+varnames.append('pressure')
+output = np.vstack((output, profile['pressure']))
+
+for v in ['temperature', 'salinity']:
+    print v
+    varnames.append(v)
+    output = np.vstack((output, profile[v]))
+    f = combined_flag(profile.flags[v])
+    varnames.append("%s_flag" % v)
+    output = np.vstack((output, f))
+
+print ",\t".join(varnames)
+for row in output.T:
+    print '%.3f,\t%.1f,\t%.3f,\t%i,\t%.3f,\t%i' % \
+            (row[0], row[1], row[2], row[3], row[4], row[5])
+
+#np.savetxt(args[1], output.T,
+#        fmt='%.3f,\t%.2f,\t%.3f,\t%i,\t%.3f,\t%i',
+#        header=",\t".join(varnames))
