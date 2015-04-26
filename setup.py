@@ -52,6 +52,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms=['any'],
+    scripts=["bin/ctdqc"],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
 )
