@@ -4,9 +4,13 @@ import re
 import numpy as np
 from numpy import ma
 
-from pydap.client import open_url
-import pydap.lib
-pydap.lib.CACHE = '.cache'
+try:
+    from pydap.client import open_url
+    import pydap.lib
+    pydap.lib.CACHE = '.cache'
+except:
+    print("PyDAP is not available")
+
 from scipy.interpolate import RectBivariateSpline, interp1d
 
 def make_file_list(inputdir, inputpattern):
@@ -46,6 +50,21 @@ def get_depth_from_DAP(lat, lon, url):
     return depth
 
 # ============================================================================
+def woa_profile(var, d, lat, lon, depth, cfg):
+    try:
+        woa = woa_profile_from_file(var,
+                d, lat, lon, depth, cfg)
+    except:
+        try:
+            woa = woa_profile_from_dap(var,
+                d, lat, lon, depth, cfg)
+        except:
+            print "Couldn't make woa_comparison of %s" % var
+            return
+
+    return woa
+
+
 def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     """
     Monthly Climatologic Mean and Standard Deviation from WOA,
