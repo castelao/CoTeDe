@@ -5,6 +5,11 @@ import numpy as np
 from numpy import ma
 
 try:
+    import netCDF4
+except:
+    print("netCDF4 is not available")
+
+try:
     from pydap.client import open_url
     import pydap.lib
     pydap.lib.CACHE = '.cache'
