@@ -4,9 +4,18 @@ import re
 import numpy as np
 from numpy import ma
 
-from pydap.client import open_url
-import pydap.lib
-pydap.lib.CACHE = '.cache'
+try:
+    import netCDF4
+except:
+    print("netCDF4 is not available")
+
+try:
+    from pydap.client import open_url
+    import pydap.lib
+    pydap.lib.CACHE = '.cache'
+except:
+    print("PyDAP is not available")
+
 from scipy.interpolate import RectBivariateSpline, interp1d
 
 def make_file_list(inputdir, inputpattern):
@@ -20,7 +29,7 @@ def make_file_list(inputdir, inputpattern):
     inputfiles.sort()
     return inputfiles
 
-def get_depth_from_DAP(lat, lon, url):
+def get_depth_from_URL(lat, lon, url):
     """
 
     ATENTION, conceptual error on the data near by Greenwich.
@@ -29,23 +38,49 @@ def get_depth_from_DAP(lat, lon, url):
 
     if lat.shape != lon.shape:
                 print "lat and lon must have the same size"
-    dataset = open_url(url)
-    etopo = dataset.ROSE
-    x = etopo.ETOPO05_X[:]
+    try:
+        nc = netCDF4.Dataset(url)
+        x = nc.variables['ETOPO05_X'][:]
+        y = nc.variables['ETOPO05_Y'][:]
+    except:
+        dataset = open_url(url)
+        etopo = dataset.ROSE
+        x = etopo.ETOPO05_X[:]
+        y = etopo.ETOPO05_Y[:]
+
     if lon.min()<0:
         ind = lon<0
         lon[ind] = lon[ind]+360
-    y = etopo.ETOPO05_Y[:]
     iini = max(0, (np.absolute(lon.min()-x)).argmin()-2)
     ifin = (np.absolute(lon.max()-x)).argmin()+2
     jini = max(0, (np.absolute(lat.min()-y)).argmin()-2)
     jfin = (np.absolute(lat.max()-y)).argmin()+2
-    z = etopo.ROSE[jini:jfin, iini:ifin]
+
+    try:
+        z = nc.variables['ROSE'][jini:jfin, iini:ifin]
+    except:
+        z = etopo.ROSE[jini:jfin, iini:ifin]
+
     interpolator = RectBivariateSpline(x[iini:ifin], y[jini:jfin], z.T)
     depth = ma.array([interpolator(xx, yy)[0][0] for xx, yy in zip(lon,lat)])
     return depth
 
 # ============================================================================
+def woa_profile(var, d, lat, lon, depth, cfg):
+    try:
+        woa = woa_profile_from_file(var,
+                d, lat, lon, depth, cfg)
+    except:
+        try:
+            woa = woa_profile_from_dap(var,
+                d, lat, lon, depth, cfg)
+        except:
+            print "Couldn't make woa_comparison of %s" % var
+            return
+
+    return woa
+
+
 def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
     """
     Monthly Climatologic Mean and Standard Deviation from WOA,
