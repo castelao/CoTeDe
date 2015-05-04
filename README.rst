@@ -44,7 +44,7 @@ Check the notebooks galery for more examples and functionalities: http://nbviewe
 Support and Documentation
 -------------------------
 
-http://cotede.readthedocs.org/en/latest/
+http://cotede.readthedocs.org
 
 How I see quality control
 -------------------------
