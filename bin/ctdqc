@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 """ Dump quality controled CTD data
+
+    Initial prototype. Still needs plenty work.
 """
 
 from optparse import OptionParser
 
 import numpy as np
+from numpy import ma
 
 from seabird import CNVError
 from cotede.qc import fProfileQC, combined_flag
@@ -14,11 +17,19 @@ from cotede.qc import fProfileQC, combined_flag
 # ==== Parsing the options on command line
 parser = OptionParser()
 
+parser.add_option("--clean", dest="clean",
+        action="store_true", default = False,
+        help="If selected will remove lines with only bad data.")
+
+parser.add_option("--no-header", dest="noheader",
+        action="store_true", default = False,
+        help="If selected will not show the header.")
+
 (options, args) = parser.parse_args()
 
 
 try:
-    profile = fProfileQC(args[0])
+    profile = fProfileQC(args[0], verbose=False)
 except CNVError as e:
     print("\033[91m%s\033[0m" % e.msg)
     import sys; sys.exit()
@@ -29,20 +40,36 @@ varnames = ['timeS']
 output = profile['timeS']
 
 varnames.append('pressure')
-output = np.vstack((output, profile['pressure']))
+output = ma.vstack((output, profile['pressure']))
 
 for v in ['temperature', 'salinity']:
-    print v
     varnames.append(v)
-    output = np.vstack((output, profile[v]))
+    output = ma.vstack((output, profile[v]))
     f = combined_flag(profile.flags[v])
     varnames.append("%s_flag" % v)
-    output = np.vstack((output, f))
+    output = ma.vstack((output, f))
 
-print ",\t".join(varnames)
-for row in output.T:
-    print '%.3f,\t%.1f,\t%.3f,\t%i,\t%.3f,\t%i' % \
-            (row[0], row[1], row[2], row[3], row[4], row[5])
+output = output.T
+
+#import pdb; pdb.set_trace()
+header = ""
+if options.noheader is False:
+    for a in ['filename', 'md5', 'datetime', 'latitude', 'longitude']:
+        header += "%s: %s\n" % (a, profile.attributes[a])
+
+#header += "%s\n" % ",\t".join(varnames)
+header += ",".join(["%17s" % v for v in varnames])
+#np.savetxt('test.out', output, header=header, delimiter=', ')
+
+if options.clean is True:
+    output = output[(output[:,5] == 1) & (output[:,3] ==1)]
+
+#print ",\t".join(varnames)
+print header
+for row in output:
+    #print '%10s,\t%10s,\t%8s,\t%i,\t%8s,\t%i' % \
+    print '%17s,%17s,%17s,%17s,%17s,%17s' % \
+            (row[0], row[1], row[2], int(row[3]), row[4], int(row[5]))
 
 #np.savetxt(args[1], output.T,
 #        fmt='%.3f,\t%.2f,\t%.3f,\t%i,\t%.3f,\t%i',
