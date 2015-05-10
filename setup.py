@@ -26,7 +26,7 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 install_requires = [
     'numpy>=1.1',
-    'seabird>=0.5.0',
+    'seabird>=0.5.8',
     ]
 
 version = '0.11.0'
