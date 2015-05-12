@@ -36,6 +36,7 @@ To see the flags of all tests applied on the secondary sensor of salinity:
 To evaluate a full set of profiles at once, like all profiles from a cruise, use the class ProfileQCCollection, like:
 
         dataset = ProfileQCCollection('/path/to/data/', inputpattern=".*\.cnv")
+
         dataset.flags['temperature'].keys()
 
 
@@ -45,14 +46,6 @@ Support and Documentation
 -------------------------
 
 http://cotede.readthedocs.org
-
-How I see quality control
--------------------------
-
-Quality control is different then data processing. 
-On the processed data, the quality control/quality assurance means to check what looks fine. 
-It is very important that the data is properly sampled and processed. 
-The quality control procedures can't go back on time and fix improper sampling, but only tell you that the data don't looks fine.
 
 Why CoTeDe?
 -----------
