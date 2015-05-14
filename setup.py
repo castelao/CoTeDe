@@ -29,14 +29,14 @@ install_requires = [
     'seabird>=0.5.0',
     ]
 
-version = '0.11.0'
+version = '0.11.1'
 
 setup(
     name='cotede',
     version=version,
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
-    packages=['cotede'],
+    packages=['cotede', 'cotede.utils'],
     url='http://cotede.castelao.net',
     license='License :: OSI Approved :: BSD License',
     description='Quality Control of CTD profiles',
