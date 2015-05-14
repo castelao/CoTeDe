@@ -26,12 +26,19 @@ def download_file(url, md5hash):
     if not os.path.exists(d):
         os.makedirs(d)
 
+    hash = hashlib.md5()
+
     fname = os.path.join(d, os.path.basename(url))
-    assert not os.path.isfile(fname), "Already exist: %s" % fname
+    if os.path.isfile(fname):
+        h = hashlib.md5(open(fname, 'rb').read()).hexdigest()
+        if h == md5hash:
+            print("Was previously downloaded: %s" % fname)
+            return
+        else:
+            assert False, "%s already exist but doesn't match the hash: %s" % \
+                    (fname, md5hash)
 
     remote = urllib2.urlopen(url)
-
-    hash = hashlib.md5()
 
     with NamedTemporaryFile(delete=False) as f:
         try:
@@ -50,10 +57,15 @@ def download_file(url, md5hash):
     h = hash.hexdigest()
     if h != md5hash:
         os.remove(f.name)
-        print("Downloaded file doesn't match.")
-        return
+        print("Downloaded file doesn't match. %s" % h)
+        assert False, "Downloaded file (%s) doesn't match with expected hash (%s)" % \
+                (fname, md5hash)
 
     shutil.move(f.name, fname)
+    print("Downloaded: %s" % fname)
 
 def download_supportdata():
+    print("This can take several minutes, depending on the network bandwidth. Sorry, in the future I'll include a progress bar.")
     download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf','309bef6916aee6e12563d3f8c1f27503')
+    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc','271f66e8dea4dfef7db99f5f411af330')
+    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc','1d2d1982338c688bdd18069d030ec05f')
