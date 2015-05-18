@@ -37,3 +37,15 @@ Alternative
     The ``--no-deps`` flag is optional, but highly recommended if you already
     have Numpy installed, otherwise pip will sometimes try to "help" you
     by upgrading your Numpy installation, which may not always be desired.
+
+Climatology and bathymetry datasets
+-----------------------------------
+
+The climatology comparison test and the at sea test can run acessing a local file, which is probably the fastest way to do it.
+To download the required files you can inside python run this::
+
+   >>> from cotede.utils import supportdata
+   >>> supportdata.download_supportdata()
+
+That will create, if doesn't already exist, a directory in your home: ~/.cotederc/data, and place the required WOA09 and etopo5 files there.
+That was it, you're ready to run cotede with any of the preset configuration.
