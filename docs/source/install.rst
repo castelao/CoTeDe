@@ -14,9 +14,9 @@ Requirements
 Optional requirement
 --------------------
 
-- `NetCDF4 <https://pypi.python.org/pypi/netCDF4>`_, if you want to be able to export the data into netCDF files. The climatology test can be executed accessing a local netCDF4 WOA file, which requires netCDF4, or accessing an OpenDAP server using PyDAP (look next item).
+- `NetCDF4 <https://pypi.python.org/pypi/netCDF4>`_, is strongly recommended, since it allows to export data into netCDF as well as to read data required for some tests. With NetCDF4 the tests "at sea" and "climatology comparison" can run acessing local files, the fastest way to do it.
 
-- `PyDap <http://pydap.org>`_, if you want to run the climatology test accessing the WOA data from an OpenDAP server you will need to install PyDAP.
+- `PyDap <http://pydap.org>`_, if you want to run the climatology test accessing the WOA data from an OpenDAP server, and no not installed NetCDF4, you will need to install PyDAP.
 
 Installing CoTeDe
 ==================
@@ -24,7 +24,7 @@ Installing CoTeDe
 Using pip
 ---------
 
-First you need to `install pip <https://pip.pypa.io>`_, then you can run:
+If you don't already have PIP running on your machine, first you need to `install pip <https://pip.pypa.io/en/stable/installing.html>`_, then you can run:
 
     pip install cotede
 
