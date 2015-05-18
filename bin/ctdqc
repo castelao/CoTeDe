@@ -36,7 +36,8 @@ except CNVError as e:
 except:
     raise
 
-import pdb; pdb.set_trace()
+
+"Under development. Still need several adjusts to conform with CF-1.5, but it already save usefull data into a netCDF file"
 
 fnameout = args[0].replace(".cnv", "_qced.nc")
 
@@ -119,6 +120,28 @@ output['TEMP_QC'].coordinates = "TIME DEPTH LATITUDE LONGITUDE"
 output['TEMP_QC'].flag_values = [0, 1, 2, 3, 4, 7, 8, 9]
 output['TEMP_QC'].flag_meanings = "unknown good_data probably_good_data potentially_correctable bad_data bad_data nominal_value interpolated_value missing_value"
 output['TEMP_QC'][0, :] = combined_flag(profile.flags['temperature'])
+
+
+output['PSAL'] = nc.createVariable('PSAL', 'f4', ('TIME','DEPTH'),
+        fill_value=99999.)
+output['PSAL'].standard_name = "sea_water_practical_salinity"
+output['PSAL'].units = "psu"
+output['PSAL'].long_name = "sea water salinity"
+output['PSAL'].valid_min = 0.
+output['PSAL'].valid_max = 45.
+output['PSAL'].cell_methods = "TIME: mean DEPTH: point LATITUDE: point LONGITUDE: point"
+output['PSAL'].ancillary_variables = "PSAL_QC"
+output['PSAL'][0, :] = profile['salinity']
+
+
+output['PSAL_QC'] = nc.createVariable('PSAL_QC', 'i1', ('TIME','DEPTH'),
+        fill_value=99999.)
+output['PSAL_QC'].long_name = "quality flag of sea water salinity"
+output['PSAL_QC'].conventions = "OceanSITES QC Flags"
+output['PSAL_QC'].coordinates = "TIME DEPTH LATITUDE LONGITUDE"
+output['PSAL_QC'].flag_values = [0, 1, 2, 3, 4, 7, 8, 9]
+output['PSAL_QC'].flag_meanings = "unknown good_data probably_good_data potentially_correctable bad_data bad_data nominal_value interpolated_value missing_value"
+output['PSAL_QC'][0, :] = combined_flag(profile.flags['salinity'])
 
 nc.close()
 import sys; sys.exit()
