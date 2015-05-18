@@ -36,6 +36,93 @@ except CNVError as e:
 except:
     raise
 
+import pdb; pdb.set_trace()
+
+fnameout = args[0].replace(".cnv", "_qced.nc")
+
+import netCDF4
+
+nc = netCDF4.Dataset(fnameout, 'w')
+
+Nz = profile['pressure'].size
+
+nc.createDimension('TIME', 0)
+nc.createDimension('DEPTH', Nz)
+nc.createDimension('LATITUDE', 1)
+nc.createDimension('LONGITUDE', 1)
+
+output = {}
+output['TIME'] = nc.createVariable('TIME', 'f8', 'TIME', fill_value=999999.)
+output['TIME'].long_name = "time"
+output['TIME'].standard_name = "time"
+output['TIME'].units = "days since 1950-01-01T00:00:00Z"
+output['TIME'].valid_min = 0.
+output['TIME'].valid_max = 90000.
+output['TIME'].axis = "T"
+
+output['LATITUDE'] = nc.createVariable('LATITUDE', 'f4', 'LATITUDE',
+        fill_value=99999.)
+output['LATITUDE'].long_name = "Latitude of each location"
+output['LATITUDE'].standard_name = "latitude"
+output['LATITUDE'].units = "degrees_north"
+output['LATITUDE'].valid_min = -90.
+output['LATITUDE'].valid_max = 90.
+output['LATITUDE'].axis = "Y"
+
+output['LONGITUDE'] = nc.createVariable('LONGITUDE', 'f4', 'LONGITUDE',
+        fill_value=99999.)
+output['LONGITUDE'].long_name = "Longitude of each location"
+output['LONGITUDE'].standard_name = "longitude"
+output['LONGITUDE'].units = "degrees_east"
+output['LONGITUDE'].valid_min = -180.
+output['LONGITUDE'].valid_max = 180.
+output['LONGITUDE'].axis = "X"
+
+output['DEPTH'] = nc.createVariable('DEPTH', 'f4', 'DEPTH',
+        fill_value=-99999.0)
+output['DEPTH'].standard_name = "depth"
+output['DEPTH'].units = "meters"
+output['DEPTH'].positive = "down"
+output['DEPTH'].axis = "Z"
+output['DEPTH'].reference = "sea_level"
+output['DEPTH'].long_name = "Depth of measurement"
+output['DEPTH'].valid_min = 0.
+output['DEPTH'].valid_max = 12000.
+#DEPTH:QC_indicator = 8 ;
+#DEPTH:processing_level ;
+#DEPTH:QC_procedure = 2 ;
+#DEPTH:uncertainty = 1. ;
+output['DEPTH'].ancillary_variables = "DEPH_QC" ;
+#DEPTH:comment = "Calculated using integration of insitu density. Sverdrup, et al. 1942" ;
+output['DEPTH'].DM_indicator = "D"
+output['DEPTH'][:] = profile['pressure']
+
+
+output['TEMP'] = nc.createVariable('TEMP', 'f4', ('TIME','DEPTH'),
+        fill_value=99999.)
+output['TEMP'].standard_name = "sea_water_temperature"
+output['TEMP'].units = "degree_Celsius"
+output['TEMP'].long_name = "sea water temperature in-situ ITS-90 scale"
+output['TEMP'].valid_min = -2.0
+output['TEMP'].valid_max = 40.
+output['TEMP'].cell_methods = "TIME: mean DEPTH: point LATITUDE: point LONGITUDE: point"
+output['TEMP'].reference_scale = "ITS-90"
+output['TEMP'].ancillary_variables = "TEMP_QC"
+output['TEMP'][0, :] = profile['temperature']
+
+
+output['TEMP_QC'] = nc.createVariable('TEMP_QC', 'i1', ('TIME','DEPTH'),
+        fill_value=99999.)
+output['TEMP_QC'].long_name = "quality flag of sea water temperature"
+output['TEMP_QC'].conventions = "OceanSITES QC Flags"
+output['TEMP_QC'].coordinates = "TIME DEPTH LATITUDE LONGITUDE"
+output['TEMP_QC'].flag_values = [0, 1, 2, 3, 4, 7, 8, 9]
+output['TEMP_QC'].flag_meanings = "unknown good_data probably_good_data potentially_correctable bad_data bad_data nominal_value interpolated_value missing_value"
+output['TEMP_QC'][0, :] = combined_flag(profile.flags['temperature'])
+
+nc.close()
+import sys; sys.exit()
+
 varnames = ['timeS']
 output = profile['timeS']
 
