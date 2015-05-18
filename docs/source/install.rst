@@ -38,8 +38,8 @@ Alternative
     have Numpy installed, otherwise pip will sometimes try to "help" you
     by upgrading your Numpy installation, which may not always be desired.
 
-Climatology and bathymetry datasets
------------------------------------
+Climatology and bathymetry (optional)
+-------------------------------------
 
 The climatology comparison test and the at sea test can run acessing a local file, which is probably the fastest way to do it.
 To download the required files you can inside python run this::
