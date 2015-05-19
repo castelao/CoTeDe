@@ -73,7 +73,7 @@ def woa_profile_from_dap(var, d, lat, lon, depth, cfg):
         dd = ma.masked_values(dataset.s_dd.s_dd[dn,:,yn,xn].reshape(dataset['depth'].shape[0]), dataset.s_dd.attributes['_FillValue'])
     zwoa = ma.array(dataset.depth[:])
 
-    ind=depth<=zwoa.max()
+    ind = (depth<=zwoa.max()) & (depth>=zwoa.min())
     # Mean value profile
     f = interp1d(zwoa[~ma.getmaskarray(mn)].compressed(), mn.compressed())
     mn_interp = ma.masked_all(depth.shape)
