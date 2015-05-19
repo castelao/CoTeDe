@@ -14,12 +14,13 @@ quality control of the brazilian hydrography of PIRATA.
 CoTeDe can apply different quality control procedures:
   - The default GTSPP or EGOOS procedure;
   - A custom set of tests and user defined thresholds;
-  - A novel approach based on Anomaly Detection, described by Castelao 2014;
+  - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
 
 How I see quality control
 -------------------------
 
-Quality control is different then data processing. On the processed data, the quality control/quality assurance means to check what looks fine. 
+Quality control is different than data processing. 
+On the processed data, the quality control/quality assurance means to classify what looks fine. 
 It is very important that the data is properly sampled and processed. 
 The quality control procedures can't go back on time and fix improper sampling, but only tell you that the data don't looks fine.
 

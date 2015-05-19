@@ -1,6 +1,6 @@
-****************************
-Getting Started with Seabird
-****************************
+***************************
+Getting Started with CoTeDe
+***************************
 
 Inside python
 =============
