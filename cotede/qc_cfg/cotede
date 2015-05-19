@@ -5,8 +5,8 @@
     "pstep": null,
     "woa_comparison": {
         "sigma_threshold": 6,
-        "file": "/Users/castelao/work/projects/python/cotede/data/temperature_seasonal_5deg.nc",
-        "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
+        "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
+        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
     "global_range": {
@@ -48,8 +48,8 @@
 "salinity": {
     "woa_comparison": {
         "sigma_threshold": 6,
-        "file": "/Users/castelao/work/projects/python/cotede/data/salinity_seasonal_5deg.nc",
-        "vars": {"woa_an": "s_an", "woa_sd": "s_sd", "woa_n": "s_dd"},
+        "file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
+        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
     "global_range": {
