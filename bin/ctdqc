@@ -60,6 +60,8 @@ output['TIME'].units = "days since 1950-01-01T00:00:00Z"
 output['TIME'].valid_min = 0.
 output['TIME'].valid_max = 90000.
 output['TIME'].axis = "T"
+output['TIME'][0] = netCDF4.date2num(profile.attributes['datetime'],
+    "days since 1950-01-01T00:00:00Z")
 
 output['LATITUDE'] = nc.createVariable('LATITUDE', 'f4', 'LATITUDE',
         fill_value=99999.)
