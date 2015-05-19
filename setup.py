@@ -26,7 +26,7 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 
 install_requires = [
     'numpy>=1.1',
-    'seabird>=0.5.0',
+    'seabird>=0.5.8',
     ]
 
 version = '0.11.2'
@@ -51,6 +51,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     platforms=['any'],
+    scripts=["bin/ctdqc"],
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
 )

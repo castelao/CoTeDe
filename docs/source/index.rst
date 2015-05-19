@@ -24,6 +24,7 @@ User Documentation
    overview
    install
    getting_started
+   commandline
 
 Indices and tables
 ==================

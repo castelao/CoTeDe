@@ -40,6 +40,7 @@ class ProfileQC(object):
         """
 
         self.name = 'ProfileQC'
+        self.verbose = verbose
 
         assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
@@ -110,7 +111,8 @@ class ProfileQC(object):
         # A given manual configuration has priority
         if type(cfg) is dict:
             self.cfg = cfg
-            print("User's QC cfg.")
+            if self.verbose is True:
+                print("User's QC cfg.")
             return
 
         # Need to safe_eval before allow to load rules from .cotederc
@@ -121,11 +123,13 @@ class ProfileQC(object):
         try:
             self.cfg = json.loads(pkg_resources.resource_string(__name__,
                 "qc_cfg/%s" % cfg))
-            print("QC cfg: %s" % cfg)
+            if self.verbose is True:
+                print("QC cfg: %s" % cfg)
         # If can't find inside cotede, try to load from users directory
         except:
             self.cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
-            print("QC cfg: ~/.cotederc/%s" % cfg)
+            if self.verbose is True:
+                print("QC cfg: ~/.cotederc/%s" % cfg)
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
@@ -416,7 +420,7 @@ class fProfileQC(ProfileQC):
         self.name = 'fProfileQC'
 
         try:
-            input = cnv.fCNV(inputfile)
+            input = cnv.fCNV(inputfile, verbose=verbose)
         except CNVError as e:
             #self.attributes['filename'] = basename(inputfile)
             if verbose is True:
