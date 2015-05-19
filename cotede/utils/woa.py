@@ -103,7 +103,6 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
     returns the corresponding WOA values of salinity or temperature mean and
     standard deviation for the given time, lat, lon, depth.
     """
-    from netCDF4 import Dataset
     if lon<0: lon = lon+360
 
     doy = int(d.strftime('%j'))
@@ -122,13 +121,15 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
 
     zwoa = ma.array(nc.variables['depth'][:])
 
-    ind = (depth<=zwoa.max()) & (depth>=zwoa.min())
+    ind_z = (depth<=zwoa.max()) & (depth>=zwoa.min())
     output = {}
     # Mean value profile
     for v in vars:
-        f = interp1d(zwoa, climdata[v])
+        # interp1d can't handle masked values
+        ind_valid = ~ma.getmaskarray(climdata[v])
+        f = interp1d(zwoa[ind_valid], climdata[v][ind_valid])
         output[v] = ma.masked_all(depth.shape)
-        output[v][ind] = f(depth[ind])
+        output[v][ind_z] = f(depth[ind_z])
     ## The stdev profile
     #f = interp1d(zwoa[~ma.getmaskarray(sd)].compressed(), sd.compressed())
     #sd_interp = ma.masked_all(depth.shape)
