@@ -1,4 +1,5 @@
 import os
+from os.path import expanduser
 import re
 
 import numpy as np
@@ -106,7 +107,7 @@ def woa_profile_from_file(var, d, lat, lon, depth, cfg):
     if lon<0: lon = lon+360
 
     doy = int(d.strftime('%j'))
-    nc = Dataset(cfg['file'], 'r')
+    nc = netCDF4.Dataset(expanduser(cfg['file']), 'r')
 
     # Get the nearest point. In the future interpolate.
     dn = (np.abs(doy - nc.variables['time'][:])).argmin()
