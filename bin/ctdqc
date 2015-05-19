@@ -101,6 +101,11 @@ output['DEPTH'].DM_indicator = "D"
 output['DEPTH'][:] = profile['pressure']
 
 
+output['PRES'] = nc.createVariable('PRES', 'f4', 'DEPTH',
+        fill_value=-99999.0)
+output['PRES'][:] = profile['pressure']
+
+
 output['TEMP'] = nc.createVariable('TEMP', 'f4', ('TIME','DEPTH'),
         fill_value=99999.)
 output['TEMP'].standard_name = "sea_water_temperature"
