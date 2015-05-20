@@ -1,5 +1,9 @@
 {"main": {
-    "valid_date": null
+    "valid_date": null,
+    "at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf",
+        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+        }
     },
 "temperature": {
     "pstep": null,
