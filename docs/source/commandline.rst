@@ -12,4 +12,12 @@ In the shell one can run::
 A new file is created, MyData_qced.nc with depth, temperature and salinity, with the respective quality control flags. 
 It's used the default cotede setup of tests.
 
-In the future I'll turn this script much more flexible.
+With the command line it's easy to run in a full collection of cnv files, like::
+
+    for file in `find ./my_data_directory -iname '*.cnv'`;
+    do ctdqc $file;
+    done
+
+This shell script will search for all .cnv files inside the directory ./my_data_directory (and sub-directories), evaluate each file and create on the side of the original data a netCDF with the QC flags.
+
+In the future I'll turn this ctdqc command much more flexible.
