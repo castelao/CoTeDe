@@ -1,4 +1,5 @@
 import os
+from os.path import expanduser
 import re
 
 import numpy as np
@@ -29,7 +30,7 @@ def make_file_list(inputdir, inputpattern):
     inputfiles.sort()
     return inputfiles
 
-def get_depth_from_URL(lat, lon, url):
+def get_depth(lat, lon, cfg):
     """
 
     ATENTION, conceptual error on the data near by Greenwich.
@@ -39,12 +40,14 @@ def get_depth_from_URL(lat, lon, url):
     if lat.shape != lon.shape:
                 print "lat and lon must have the same size"
     try:
-        nc = netCDF4.Dataset(url)
-        x = nc.variables['ETOPO05_X'][:]
-        y = nc.variables['ETOPO05_Y'][:]
+        try:
+            etopo = netCDF4.Dataset(expanduser(cfg['file']))
+        except:
+            etopo = netCDF4.Dataset(expanduser(cfg['url']))
+        x = etopo.variables['ETOPO05_X'][:]
+        y = etopo.variables['ETOPO05_Y'][:]
     except:
-        dataset = open_url(url)
-        etopo = dataset.ROSE
+        etopo = open_url(cfg['url']).ROSE
         x = etopo.ETOPO05_X[:]
         y = etopo.ETOPO05_Y[:]
 
@@ -57,7 +60,7 @@ def get_depth_from_URL(lat, lon, url):
     jfin = (np.absolute(lat.max()-y)).argmin()+2
 
     try:
-        z = nc.variables['ROSE'][jini:jfin, iini:ifin]
+        z = etopo.variables['ROSE'][jini:jfin, iini:ifin]
     except:
         z = etopo.ROSE[jini:jfin, iini:ifin]
 

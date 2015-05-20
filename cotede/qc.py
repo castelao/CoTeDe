@@ -16,7 +16,7 @@ from seabird import cnv, CNVError
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
-from cotede.utils import get_depth_from_URL, woa_profile
+from cotede.utils import get_depth, woa_profile
 from utils import make_file_list
 
 
@@ -160,14 +160,15 @@ class ProfileQC(object):
         if 'at_sea' in self.cfg['main']:
             lon = self.input.attributes['longitude']
             lat = self.input.attributes['latitude']
-            if 'url' in self.cfg['main']['at_sea']:
-                depth = get_depth_from_URL(np.array([lat]),
-                        np.array([lon]),
-                        url=self.cfg['main']['at_sea']['url'])
+            depth = get_depth(np.array([lat]), np.array([lon]),
+                    cfg=self.cfg['main']['at_sea'])
                 #flag[depth<0] = True
                 #flag[depth>0] = False
                 #self.flags['at_sea'] = flag
-                self.flags['common']['at_sea'] = depth[0]<0
+            if depth[0] < 0:
+                self.flags['common']['at_sea'] = 1
+            else:
+                self.flags['common']['at_sea'] = 3
 
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
