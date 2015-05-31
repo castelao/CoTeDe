@@ -13,7 +13,7 @@ except:
 try:
     from pydap.client import open_url
     import pydap.lib
-    pydap.lib.CACHE = '.cache'
+    pydap.lib.CACHE = expanduser('~/.cotederc/pydap_cache')
 except:
     print("PyDAP is not available")
 
