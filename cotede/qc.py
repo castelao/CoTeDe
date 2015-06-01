@@ -593,13 +593,17 @@ class ProfileQCCollection(object):
                             pd.DataFrame(tmp)])
 
     def save(self, filename):
-        if self.pandas is True:
-            self.data.to_hdf("%s_data.hdf" % filename, 'df')
-            for k in self.flags.keys():
-                self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
-            if not hasattr(self, 'auxiliary'):
-                for k in self.auxiliary.keys():
-                    self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+        import pandas
+        store = pandas.HDFStore(filename)
+        #self.data.to_hdf("%s_data.hdf" % filename, 'df')
+        store.append('data', self.data)
+        for k in self.flags.keys():
+            #self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+            store.append("flags_%s" % k, self.flags[k])
+        if hasattr(self, 'auxiliary'):
+            for k in self.auxiliary.keys():
+                #self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+                store.append("auxiliary_%s" % k, self.auxiliary[k])
 
 
 class CruiseQC(object):
