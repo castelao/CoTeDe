@@ -69,3 +69,31 @@ def download_supportdata():
     download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf','309bef6916aee6e12563d3f8c1f27503')
     download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc','271f66e8dea4dfef7db99f5f411af330')
     download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc','1d2d1982338c688bdd18069d030ec05f')
+
+def download_testdata(filename):
+
+    #d = os.path.expanduser("~/.cotederc/testdata")
+    d = os.path.expanduser("~/.cotederc/data")
+    if not os.path.exists(d):
+        os.makedirs(d)
+
+    test_files = {
+            'dPIRX010.cnv': {
+                "url": "https://dl.dropboxusercontent.com/u/26063625/seabird/dPIRX010.cnv",
+                "md5": "8691409accb534c83c8bd412afbdd285"},
+            'dPIRX003.cnv': {
+                "url": "https://dl.dropboxusercontent.com/u/26063625/seabird/dPIRX003.cnv",
+                "md5": "4b941b902a3aea7d99e1cf4c78c51877"},
+            'PIRA001.cnv': {
+                "url": "https://dl.dropboxusercontent.com/u/26063625/seabird/PIRA001.cnv",
+                "md5": "5ded777144300b63c8775b1d7f033f92"},
+            }
+
+    assert filename in test_files.keys(), \
+            "%s is not a valid test file" % filename
+
+    download_file(test_files[filename]["url"], test_files[filename]["md5"])
+    datafile = os.path.join(os.path.expanduser("~/.cotederc/data/"),
+            filename)
+
+    return datafile
