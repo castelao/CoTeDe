@@ -66,8 +66,6 @@ class ProfileQC(object):
                     self.evaluate(v, self.cfg[c])
                     break
 
-        # Evaluate twin sensors
-
     @property
     def data(self):
         return self.input.data
