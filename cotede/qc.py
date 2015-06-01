@@ -565,6 +565,7 @@ class ProfileQCCollection(object):
 
         import pandas as pd
         for p in self.profiles:
+            try:
                 # ---- Dealing with the data ---------------------------------
                 tmp = p.input.as_DataFrame()
                 profileid = p.attributes['md5']
@@ -591,6 +592,8 @@ class ProfileQCCollection(object):
                         tmp['id'], tmp['profileid'] = id, profileid
                         self.auxiliary[a] = pd.concat([self.auxiliary[a],
                             pd.DataFrame(tmp)])
+            except:
+                print("Failled")
 
     def save(self, filename):
         import pandas
