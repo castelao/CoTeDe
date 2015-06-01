@@ -6,6 +6,9 @@
 import time
 import multiprocessing as mp
 
+import numpy as np
+from numpy import ma
+
 from seabird import cnv, CNVError
 
 from cotede.utils import make_file_list
@@ -109,6 +112,7 @@ class ProfilesQCCollection(object):
         self.inputfiles = make_file_list(inputdir, inputpattern)
 
         self.data = None
+        self.data = {'id': [], 'profileid': [], 'profilename': []}
         self.flags = {}
         if saveauxiliary is True:
             self.auxiliary = {}
@@ -117,6 +121,45 @@ class ProfilesQCCollection(object):
                 timeout=timeout)
         #self.profiles = process_profiles_serial(self.inputfiles, cfg,
         #        saveauxiliary)
+
+        import pdb; pdb.set_trace()
+        offset = 0
+        for p in self.profiles:
+            N = p['timeS'].size
+
+            # Be sure that all have the same lenght.
+            for v in p.keys():
+                assert p[v].size== N
+            ids = offset + np.arange(N)
+            self.data['id'] = np.append(self.data['id'],
+                    ids).astype('i')
+            profileid = [p.attributes['md5']] * N
+            self.data['profileid'] = np.append(self.data['profileid'],
+                    profileid)
+            profilename = [p.attributes['filename']] * N
+            self.data['profilename'] = np.append(self.data['profilename'],
+                    profilename)
+            for v in p.keys():
+                if v not in self.data:
+                    self.data[v] = ma.masked_all(offset)
+                self.data[v] = ma.append(self.data[v], p[v])
+
+            # ---- Dealing with the flags --------------------------------
+            for v in p.flags.keys():
+                if v not in self.flags:
+                    self.flags[v] = {'id': [], 'profileid': []}
+                self.flags[v]['id'] = np.append(self.flags[v]['id'],
+                        ids).astype('i')
+                self.flags[v]['profileid'] = np.append(
+                        self.flags[v]['profileid'], profileid)
+                for t in p.flags[v]:
+                    if t not in self.flags[v]:
+                        self.flags[v][t] = ma.masked_all(offset)
+                    self.flags[v][t] = ma.append(self.flags[v][t],
+                            p.flags[v][t])
+            offset += N
+
+        return
 
         import pandas as pd
         for p in self.profiles:
