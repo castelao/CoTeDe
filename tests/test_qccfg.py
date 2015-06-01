@@ -2,13 +2,14 @@ import numpy as np
 
 from seabird import cnv
 import cotede.qc
+from cotede.utils.supportdata import download_testdata
 
 
 def test_multiple_cfg():
     """ I should think about a way to test if the output make sense.
     """
 
-    datafile = "./tests/dPIRX010.cnv"
+    datafile = download_testdata("dPIRX010.cnv")
     data = cnv.fCNV(datafile)
     pqc = cotede.qc.ProfileQC(data)
     pqc = cotede.qc.ProfileQC(data, cfg='cotede')

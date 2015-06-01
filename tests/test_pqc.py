@@ -5,6 +5,7 @@
 import numpy as np
 from seabird import cnv
 import cotede.qc
+from cotede.utils.supportdata import download_testdata
 
 def func(datafile, saveauxiliary):
     data = cnv.fCNV(datafile)
@@ -13,7 +14,8 @@ def func(datafile, saveauxiliary):
 
 
 def test_answer():
-    datafile = "./tests/dPIRX010.cnv"
+    datafile = download_testdata("dPIRX010.cnv")
+
     pqc = func(datafile=datafile, saveauxiliary=False)
 
     pqc = func(datafile=datafile, saveauxiliary=True)

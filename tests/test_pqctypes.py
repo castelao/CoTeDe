@@ -3,6 +3,7 @@
 #   itself. But this last one must require a md5.
 
 import numpy as np
+from cotede.utils.supportdata import download_testdata
 
 def func(datafile):
     from seabird import cnv
@@ -13,7 +14,7 @@ def func(datafile):
 
 
 def test_answer():
-    datafile = "./tests/dPIRX010.cnv"
+    datafile = download_testdata("dPIRX010.cnv")
     pqc = func(datafile=datafile)
     assert type(pqc.keys()) == list
     assert type(pqc.attributes) == dict
