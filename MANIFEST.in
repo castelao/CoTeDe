@@ -2,5 +2,4 @@
 include *.txt
 #recursive-include docs *.txt
 prune dist
-#recursive-include src/cnv/rules *
-include cotede/defaults
+recursive-include cotede/qc_cfg *
