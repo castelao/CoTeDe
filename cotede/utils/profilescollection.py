@@ -161,7 +161,42 @@ class ProfilesQCCollection(object):
 
         return
 
-        import pandas as pd
+
+class ProfilesQCPandasCollection(object):
+    """ Quality Control a collection of ProfileQC from a directory
+
+        Search all profiles inside the given directory and evaluate
+          all them. The output is stored in a continuous table, where
+          each profile receives a unique profileid value.
+
+       This class was build thinking on join analysis of a batch of
+         profiles, like all profiles from a specific cruise, for
+         example.
+    """
+    def __init__(self, inputdir, inputpattern=".*\.cnv",
+            cfg=None, saveauxiliary=False, timeout=60):
+        """
+        """
+        try:
+            import pandas as pd
+        except:
+            print("Pandas is not available.")
+            return
+
+        self.name = "ProfilesQCPandasCollection"
+
+        self.inputfiles = make_file_list(inputdir, inputpattern)
+
+        self.profiles = process_profiles(self.inputfiles, cfg, saveauxiliary,
+                timeout=timeout)
+        #self.profiles = process_profiles_serial(self.inputfiles, cfg,
+        #        saveauxiliary)
+
+        self.data = None
+        self.flags = {}
+        if saveauxiliary is True:
+            self.auxiliary = {}
+
         for p in self.profiles:
             try:
                 # ---- Dealing with the data ---------------------------------
@@ -194,8 +229,7 @@ class ProfilesQCCollection(object):
                 print("Failled")
 
     def save(self, filename):
-        import pandas
-        store = pandas.HDFStore(filename)
+        store = pd.HDFStore(filename)
         #self.data.to_hdf("%s_data.hdf" % filename, 'df')
         store.append('data', self.data)
         for k in self.flags.keys():
