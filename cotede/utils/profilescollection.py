@@ -111,18 +111,16 @@ class ProfilesQCCollection(object):
 
         self.inputfiles = make_file_list(inputdir, inputpattern)
 
-        self.data = None
-        self.data = {'id': [], 'profileid': [], 'profilename': []}
-        self.flags = {}
-        if saveauxiliary is True:
-            self.auxiliary = {}
-
         self.profiles = process_profiles(self.inputfiles, cfg, saveauxiliary,
                 timeout=timeout)
         #self.profiles = process_profiles_serial(self.inputfiles, cfg,
         #        saveauxiliary)
 
-        import pdb; pdb.set_trace()
+        self.data = {'id': [], 'profileid': [], 'profilename': []}
+        self.flags = {}
+        if saveauxiliary is True:
+            self.auxiliary = {}
+
         offset = 0
         for p in self.profiles:
             N = p['timeS'].size
