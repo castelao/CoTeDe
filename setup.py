@@ -36,7 +36,7 @@ setup(
     version=version,
     author='Guilherme Castelão',
     author_email='guilherme@castelao.net',
-    packages=['cotede', 'cotede.utils'],
+    packages=['cotede', 'cotede.utils', 'cotede.humanqc'],
     url='http://cotede.castelao.net',
     license='License :: OSI Approved :: BSD License',
     description='Quality Control of CTD profiles',
