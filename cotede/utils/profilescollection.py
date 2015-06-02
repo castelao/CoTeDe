@@ -228,6 +228,16 @@ class ProfilesQCPandasCollection(object):
             except:
                 print("Failled")
 
+    def keys(self):
+        return [k for k in self.flags.keys()]
+
+    def __getitem__(self, key):
+        tmp = self.flags[key].copy()
+        tmp[key] = self.data[key]
+        tmp['timeS'] = self.data['timeS']
+        tmp['pressure'] = self.data['pressure']
+        return tmp
+
     def save(self, filename):
         store = pd.HDFStore(filename)
         #self.data.to_hdf("%s_data.hdf" % filename, 'df')
