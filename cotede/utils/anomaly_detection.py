@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""
+"""
+
+import numpy as np
+from numpy import ma
+#from scipy.stats import norm, rayleigh, expon, halfnorm, exponpow, exponweib
+from scipy.stats import exponweib
+#from scipy.stats import kstest
+
 
 def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
     """
