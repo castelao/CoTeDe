@@ -11,23 +11,45 @@ import matplotlib.pyplot as plt
 
 
 class HumanQC(object):
+    """ Plot a profile and collect human QC evaluation
+
+        Still have much to improve here.
     """
-    """
-    def __init__(self, x, z, baseflag=None, fails=[],
+    def __init__(self):
+        pass
+
+    def eval(self, x, z, baseflag=None, fails=[],
             humanflag=None, refname=None):
         """
         """
-        self.x = x
-        self.z = z
-        self.baseflag = baseflag
-        self.fails = fails
-        self.refname = refname
+        self.x = np.asanyarray(x)
+        self.z = np.asanyarray(z)
+
+        assert x.shape == z.shape, "Data and z coordinate must have same shape"
+
+        if baseflag is None:
+            self.baseflag = ma.ones(x.size).astype('bool')
+        else:
+            self.baseflag = np.asanyarray(baseflag)
+            assert self.baseflag.shape == self.x.shape
+
         if humanflag is None:
-            self.humanflag = ma.masked_all(baseflag.size,
+            self.humanflag = ma.masked_all(self.x.size,
                     dtype='object')
         else:
-            self.humanflag = humanflag
+            self.humanflag = np.asanyarray(humanflag)
+            assert self.baseflag.shape == self.x.shape
+
+        if fail is None:
+            self.fail = ma.ones(x.size).astype('bool')
+        else:
+            self.fail = np.asanyarray(fail)
+            assert self.fail.shape == self.x.shape
+
+        self.refname = refname
+
         self.plot()
+        return self.humanflag
 
     def plot(self):
         """
@@ -72,6 +94,7 @@ class HumanQC(object):
             self.ax.title(refname)
 
         pylab.show()
+
 
     def draw_humanflags(self, ind, flag):
         assert flag in [None, 'good', 'bad', 'doubt']
@@ -140,10 +163,7 @@ class HumanQC(object):
         if N == 1:
             self.dataind = event.ind
         else:
-            print("Problems. More than one point")
-            return True
-            import pdb; pdb.set_trace()
-            # the click locations
+            # Will get the closest point
             x = event.mouseevent.xdata
             y = event.mouseevent.ydata
 
