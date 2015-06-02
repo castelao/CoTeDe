@@ -1,13 +1,13 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+""" Procedures for visual inspection and human flagging.
+"""
 
 import numpy as np
 from numpy import ma
-from numpy.random import permutation
+
 import pylab
 import matplotlib.pyplot as plt
-
-from cotede.misc import combined_flag, adjust_anomaly_coefficients
 
 
 class HumanQC(object):
