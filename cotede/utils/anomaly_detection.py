@@ -107,3 +107,35 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
             'params': params}
 
     return output
+
+def split_data_groups(ind):
+    """ Splits randomly the indices into fit, test and error groups
+
+        Return 3 indices set:
+            - ind_fit with 60% of the good
+            - ind_test with 20% of the good and 50% of the bad
+            - ind_eval with 20% of the good and 50% of the bad
+    """
+    N = ind.size
+    ind_base = np.zeros(N) == 1
+    # ==== Good data ==================
+    ind_good = np.nonzero((ind == True) & (ma.getmaskarray(ind) == False))[0]
+    N_good = ind_good.size
+    perm = np.random.permutation(N_good)
+    N_fit = int(round(N_good*.6))
+    N_test = int(round(N_good*.2))
+    ind_fit = ind_base.copy()
+    ind_fit[ind_good[perm[:N_fit]]] = True
+    ind_test = ind_base.copy()
+    ind_test[ind_good[perm[N_fit:-N_test]]] = True
+    ind_err = ind_base.copy()
+    ind_err[ind_good[perm[-N_test:]]] = True
+    # ==== Bad data ===================
+    ind_bad = np.nonzero((ind == False) & (ma.getmaskarray(ind) == False))[0]
+    N_bad = ind_bad.size
+    perm = np.random.permutation(N_bad)
+    N_test = int(round(N_bad*.5))
+    ind_test[ind_bad[perm[:N_test]]] = True
+    ind_err[ind_bad[perm[N_test:]]] = True
+    output = {'ind_fit': ind_fit, 'ind_test': ind_test, 'ind_err': ind_err}
+    return output
