@@ -39,22 +39,26 @@ def get_depth(lat, lon):
 def combined_flag(flags, criteria=None):
     """ Returns the combined flag considering all the criteria
 
+        Input: flags
+
         Collects all flags in the criteria, and for each measurements, it
           return the maximum flag value among the different criteria.
 
         If criteria is not defined, considers all the flags,
           i.e. flags.keys()
     """
+    assert hasattr(flags, 'keys')
+
     if criteria is None:
         criteria = flags.keys()
 
-    N = flags[criteria[0]].size
-    Nf = len(criteria)
-    temp_flag = np.zeros((Nf, N), dtype='i1')
-    for i, k in enumerate(criteria):
-        temp_flag[i] = flags[k]
+    output = np.asanyarray(flags[criteria[0]])
+    for c in criteria[1:]:
+        assert len(flags[c]) == len(output)
+        output = np.max([output, flags[c]], axis=0)
 
-    return temp_flag.max(axis=0)
+    return output
+
 
 def make_qc_index(flags, criteria, type="anytrue"):
     ind = flags[criteria[0]].copy()
