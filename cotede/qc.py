@@ -20,7 +20,8 @@ from cotede.utils import get_depth, woa_profile
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True):
+    def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True,
+            attributes=None):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -39,14 +40,17 @@ class ProfileQC(object):
         self.name = 'ProfileQC'
         self.verbose = verbose
 
-        assert (hasattr(input, 'attributes'))
+        if attributes is None:
+            assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
-        assert (hasattr(input, 'data')) and (len(input.data) > 0)
 
         self.load_cfg(cfg)
 
         self.input = input
-        self.attributes = input.attributes
+        if attributes is None:
+            self.attributes = input.attributes
+        else:
+            self.attributes = attributes
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
@@ -134,18 +138,18 @@ class ProfileQC(object):
         self.flags['common'] = {}
 
         if 'valid_datetime' in self.cfg['main']:
-            if 'datetime' in self.input.attributes.keys() and \
-                    type(self.input.attributes['datetime']) == datetime:
+            if 'datetime' in self.attributes.keys() and \
+                    type(self.attributes['datetime']) == datetime:
                 f = 1
             else:
                 f = 3
             self.flags['common']['valid_datetime'] = f
 
         if 'datetime_range' in self.cfg['main']:
-            if 'datetime' in self.input.attributes.keys() and \
-                    (self.input.attributes['datetime'] >=
+            if 'datetime' in self.attributes.keys() and \
+                    (self.attributes['datetime'] >=
                             self.cfg['main']['datetime_range']['minval']) and \
-                    (self.input.attributes['datetime'] <=
+                    (self.attributes['datetime'] <=
                             self.cfg['main']['datetime_range']['maxval']):
                 f = 1
             else:
@@ -153,8 +157,8 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'at_sea' in self.cfg['main']:
-            lon = self.input.attributes['longitude']
-            lat = self.input.attributes['latitude']
+            lon = self.attributes['longitude']
+            lat = self.attributes['latitude']
             depth = get_depth(np.array([lat]), np.array([lon]),
                     cfg=self.cfg['main']['at_sea'])
                 #flag[depth<0] = True
@@ -365,9 +369,9 @@ class ProfileQC(object):
 
         if 'woa_comparison' in cfg:
             woa = woa_profile(v,
-                    self.input.attributes['datetime'],
-                    self.input.attributes['latitude'],
-                    self.input.attributes['longitude'],
+                    self.attributes['datetime'],
+                    self.attributes['latitude'],
+                    self.attributes['longitude'],
                     self.input['pressure'],
                     cfg['woa_comparison'])
 
