@@ -64,23 +64,6 @@ def densitystep(S, T, P):
         print("Package gsw is required and is not available.")
 
 
-def densityinvertion(S, T, P):
-    """
-    """
-    assert S.shape == T.shape
-    assert S.shape == P.shape
-    try:
-        import gsw
-        rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
-        ds = ma.masked_all(S.shape, dtype=S.dtype)
-        ds[1:] = np.diff(P))*np.diff(rho0)
-        ds[ds>0] = 0
-        return ds
-
-    except ImportError:
-        print("Package gsw is required and is not available.")
-
-
 def descentPrate(t, p):
     """
 
