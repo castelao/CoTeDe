@@ -40,11 +40,11 @@ class HumanQC(object):
             self.humanflag = np.asanyarray(humanflag)
             assert self.baseflag.shape == self.x.shape
 
-        if fail is None:
-            self.fail = ma.ones(x.size).astype('bool')
+        if fails is None:
+            self.fails = ma.ones(x.size).astype('bool')
         else:
-            self.fail = np.asanyarray(fail)
-            assert self.fail.shape == self.x.shape
+            self.fails = np.asanyarray(fails)
+            assert self.fails.shape == self.x.shape
 
         self.refname = refname
 
