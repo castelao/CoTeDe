@@ -20,7 +20,8 @@ from cotede.utils import get_depth, woa_profile
 class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
-    def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True):
+    def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True,
+            attributes=None):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -39,14 +40,18 @@ class ProfileQC(object):
         self.name = 'ProfileQC'
         self.verbose = verbose
 
-        assert (hasattr(input, 'attributes'))
+        if attributes is None:
+            assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
         assert (hasattr(input, 'data')) and (len(input.data) > 0)
 
         self.load_cfg(cfg)
 
         self.input = input
-        self.attributes = input.attributes
+        if attributes is None:
+            self.attributes = input.attributes
+        else:
+            self.attributes = attributes
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
