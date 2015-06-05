@@ -47,18 +47,21 @@ def bin_spike(x, l):
 
     return bin
 
+
 def densitystep(S, T, P):
     """
     """
     assert S.shape == T.shape
     assert S.shape == P.shape
-    assert S.ndim == 1, "Sorry, I'm not ready yet to handle and array with ndim > 1"
+    try:
+        import gsw
+        rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
+        ds = ma.masked_all(S.shape, dtype=S.dtype)
+        ds[1:] = np.sign(np.diff(P))*np.diff(rho0)
+        return ds
 
-    from fluid.ocean.seawater import _dens0 as dens0
-    ds = ma.masked_all(S.shape, dtype=S.dtype)
-    rho0 = dens0(s=S, t=T)
-    ds[1:] = np.sign(np.diff(P))*np.diff(rho0)
-    return ds
+    except ImportError:
+        print("Package gsw is required and is not available.")
 
 
 def descentPrate(t, p):
