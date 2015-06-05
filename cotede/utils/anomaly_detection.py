@@ -10,15 +10,31 @@ from scipy.stats import exponweib
 #from scipy.stats import kstest
 
 
-def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
+def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
     """
+
+        Input:
+          features: a dictionary like with the numerical results from the
+              QC tests. For example, the gradient test values, not the
+              flags, but the floats itself, like
+              {'gradient': ma.array([.23, .12, .08]), 'spike': ...}
+          qctests: The name of the tests to fit. They must be in
+              features.keys().
+              ['gradient', 'spike', 'woa_bias']
+          ind: The features values positions to be considered in the fit.
+              It's usefull to eliminate out of range data, or to
+              restrict to a subset of the data, like in the calibration
+              procedure.
+          q: The lowest percentile to be considered. For example, .90
+              means that only the top 10% data (i.e. percentiles higher
+              than .90) are considered in the fitting.
     """
     output = {}
-    for teste in qctests:
-        samp = aux[teste][ind & np.isfinite(aux[teste])]
-        ind_top = samp>samp.quantile(q)
+    for test in qctests:
+        samp = features[test][ind & np.isfinite(features[test])]
+        ind_top = samp > samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
-        output[teste] = {'param':param,
+        output[test] = {'param':param,
                 'qlimit': samp.quantile(q)}
 
         if verbose == True:
@@ -27,10 +43,11 @@ def fit_tests(aux, qctests, ind=True, q=0.95, verbose=False):
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x,pdf_fitted,'b-')
             pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
-            pylab.title(teste)
+            pylab.title(test)
             pylab.show()
 
     return output
+
 
 def estimate_anomaly(aux, params):
     prob = ma.ones(aux.shape[0])
