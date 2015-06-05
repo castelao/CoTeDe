@@ -61,6 +61,7 @@ def estimate_anomaly(aux, params):
                 exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
     return prob
 
+
 def estimate_p_optimal(prob, qc, verbose=False):
     err = []
     P = 10.**np.arange(-12, 0, 0.1)
@@ -74,12 +75,13 @@ def estimate_p_optimal(prob, qc, verbose=False):
         pylab.plot(P, err , 'b'); pylab.show()
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
-def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
+
+def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
     """ Adjust coeficients for Anomaly Detection, and estimate error
 
         Inputs:
-            ind: Reference index. What the Anomaly Detection will try
-                   to reproduce. Uses the True and Falses from ind
+            flag_ref: Reference index. What the Anomaly Detection will try
+                   to reproduce. Uses the True and Falses from flag_ref
                    to partition the data to be used to fit, to adjust
                    and to estimate the error.
             qctests: The tests used by the Anomaly Detection. One curve will
@@ -105,7 +107,7 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
                 estimate_p_optimal()
 
     """
-    indices = split_data_groups(ind)
+    indices = split_data_groups(flag_ref)
     params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
             verbose=verbose)
     prob = estimate_anomaly(aux, params)
@@ -113,21 +115,21 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
         pylab.hist(prob); pylab.show()
 
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
-            ind[indices['ind_test']])
+            flag_ref[indices['ind_test']])
 
     # I can extract only .data, since split_data_groups already eliminated
     #   all non valid positions.
     false_negative = (prob[indices['ind_err']] < p_optimal) & \
-        (ind[indices['ind_err']].data == True)
+        (flag_ref[indices['ind_err']].data == True)
     false_positive = (prob[indices['ind_err']] > p_optimal) & \
-        (ind[indices['ind_err']].data == False)
+        (flag_ref[indices['ind_err']].data == False)
     err = np.nonzero(false_negative)[0].size + \
             np.nonzero(false_positive)[0].size
     err_ratio = float(err)/prob[indices['ind_err']].size
     false_negative = (prob < p_optimal) & \
-        (ind.data == True) & (ma.getmaskarray(ind)==False)
+        (flag_ref.data == True) & (ma.getmaskarray(flag_ref)==False)
     false_positive = (prob > p_optimal) & \
-        (ind.data == False) & (ma.getmaskarray(ind)==False)
+        (flag_ref.data == False) & (ma.getmaskarray(flag_ref)==False)
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
@@ -138,6 +140,7 @@ def adjust_anomaly_coefficients(ind, qctests, aux, q=0.90, verbose=False):
             'params': params}
 
     return output
+
 
 def split_data_groups(ind):
     """ Splits randomly the indices into fit, test and error groups
