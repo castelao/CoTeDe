@@ -43,7 +43,6 @@ class ProfileQC(object):
         if attributes is None:
             assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
-        assert (hasattr(input, 'data')) and (len(input.data) > 0)
 
         self.load_cfg(cfg)
 
