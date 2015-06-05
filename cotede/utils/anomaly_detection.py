@@ -170,3 +170,121 @@ def split_data_groups(ind):
     ind_err[ind_bad[perm[N_test:]]] = True
     output = {'ind_fit': ind_fit, 'ind_test': ind_test, 'ind_err': ind_err}
     return output
+
+
+def flags2binflag(flags, reference_flags):
+    """
+    """
+
+    # The different flags must have same ammount of data.
+    N = len(flags[flags.keys()[0]])
+    for f in flags:
+        assert len(flags[f]) == N
+
+    flags = combined_flag(flags, reference_flags)
+
+    output = ma.masked_all(N, dtype='bool')
+    output[flags==1] = True
+    output[(flags==3) | (flags==4)] = False
+
+    return output
+
+
+def order_unprobable_profiles(datadir, varname):
+    """ Return a list of profiles ordered by less probable data
+    """
+    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
+    reference_flags = ['global_range', 'gradient_depthconditional',
+            'spike_depthconditional', 'digit_roll_over']
+    #hardlimit_flags = ['global_range']
+
+    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
+    aux = db.auxiliary[varname]
+
+    params = fit_tests(aux, qctests, q=.9,)
+    prob = estimate_anomaly(aux, params)
+
+    profilename = np.asanyarray(db.data['profilename'])
+    output = []
+    for pid in np.unique(profilename):
+        output.append([pid, min(prob[profilename == pid])])
+
+    return [x[0] for x in sorted(output, key=lambda x: x[1])]
+
+
+def calibrate_anomaly_detection(datadir, varname):
+    """
+    """
+    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
+    reference_flags = ['global_range', 'gradient_depthconditional',
+            'spike_depthconditional', 'digit_roll_over']
+    #hardlimit_flags = ['global_range']
+
+    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
+    aux = db.auxiliary[varname]
+
+    binflag = flags2binflag(db.flags[varname], reference_flags)
+    # Remove the value out of the possible range.
+    ind_outofrange = np.nonzero(db.flags[varname]['global_range'] != 1)
+    binflag.mask[ind_outofrange] = True
+
+    result = adjust_anomaly_coefficients(binflag, qctests, aux)
+
+    return result
+
+
+def human_calibrate_mistakes(datadir, varname, niter=5):
+    """
+    """
+    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
+    reference_flags = ['global_range', 'gradient_depthconditional',
+            'spike_depthconditional', 'digit_roll_over']
+    #hardlimit_flags = ['global_range']
+
+    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
+
+    # Remove the value out of the possible range.
+    ind_valid = db.flags[varname]['global_range'] == 1
+    data = db.data.loc[ind_valid, ['profileid', 'pressure', varname]]
+    flags = db.flags[varname][ind_valid]
+    aux = db.auxiliary[varname][ind_valid]
+
+    binflag = flags2binflag(flags, reference_flags)
+
+    result = adjust_anomaly_coefficients(binflag, qctests, aux)
+    error_log = [{'err': result['err'], 'err_ratio': result['err_ratio'],
+                     'p_optimal': result['p_optimal']}]
+
+    # I don't like this approach. Improve this in the future.
+    ind_humanqc = binflag.copy()
+    for i in range(niter):
+        # Profiles with any failure
+        mistakes = (result['false_positive'] | result['false_negative'])
+        profileids = data['profileid'].iloc[mistakes].unique()
+        if len(profileids) == 0:
+            break
+        # Only 5 profiles each time
+        for pid in np.random.permutation(profileids)[:5]:
+            print("Profile: %s" % pid)
+            ind_p = np.array(data.profileid == pid)
+            print data.profilename[ind_p].iloc[0]
+            mistakes = (result['false_positive'][ind_p] |
+                    result['false_negative'][ind_p])
+            h = HumanQC().eval(
+                    np.array(data[varname][ind_p]),
+                    np.array(data['pressure'][ind_p]),
+                    baseflag=ind_humanqc[ind_p],
+                    fails=mistakes)#, doubt = ind_doubt[ind])
+            ind_humanqc[np.nonzero(ind_p)[0][h=='good']] = True
+            ind_humanqc[np.nonzero(ind_p)[0][h=='bad']] = False
+            ind_humanqc.mask[np.nonzero(ind_p)[0][h=='doubt']] = True
+
+            result = adjust_anomaly_coefficients(ind_humanqc, qctests, aux)
+            error_log.append({'err': result['err'],
+                'err_ratio': result['err_ratio'],
+                'p_optimal': result['p_optimal']})
+
+        print error_log[-2]
+        print error_log[-1]
+    return {'ind_humanqc':ind_humanqc, 'error_log': error_log,
+            'result': result}
