@@ -25,6 +25,7 @@ User Documentation
    install
    getting_started
    commandline
+   tests
 
 Indices and tables
 ==================
