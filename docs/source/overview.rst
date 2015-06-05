@@ -16,16 +16,21 @@ CoTeDe can apply different quality control procedures:
   - A custom set of tests and user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
 
-How I see quality control
--------------------------
+My opinion on quality control
+-----------------------------
 
 Quality control is different than data processing. 
 On the processed data, the quality control/quality assurance means to classify what looks fine. 
 It is very important that the data is properly sampled and processed. 
-The quality control procedures can't go back on time and fix improper sampling, but only tell you that the data don't looks fine.
+If all you have is bad data, quality control procedures can't go back on time and fix improper sampling, but only tell you that the data might not be good.
 
-Why CoTeDe?
------------
+Once I was requested to quality control over 10 years of hydrographic data. 
+It didn't take long to learn that all those cruises lack the proper procedure, which did compromise the data. 
+That was not a quality control job, but data mining, in the sense of trying to rescue the most I could.
+A CTD cast is far easier than reach the moon, but there is a proper way to do it.
+
+Why the name CoTeDe?
+--------------------
 
 For a long time I had the idea of the anomaly detection technique in mind, but I only really formalize the procedure in 2013, when I spent few months in Toulouse. 
 The full name of this package is CoTe De l'eau, which I understand as something near to "rating the water". 
