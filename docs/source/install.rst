@@ -18,6 +18,8 @@ Optional requirement
 
 - `PyDap <http://pydap.org>`_, if you want to run the climatology test accessing the WOA data from an OpenDAP server, and no not installed NetCDF4, you will need to install PyDAP.
 
+- `Matplotlib <http://matplotlib.org>`_, is a powerfull library for data visualization. It is required for the graphic tools, like the visual inspection and classification of the data.
+
 .. note::
 
     Without netCDF4 nor PyDAP it is not possible to run "at sea" neither 
@@ -61,3 +63,10 @@ To download the required files you can inside python run this::
 That will create, if doesn't already exist, a directory in your home: ~/.cotederc/data, and place the required WOA09 and etopo5 files there.
 That was it, you're ready to run cotede in place with any of the preset configurations. 
 Remember to run this before leave the dock, while you still have cheap and fast access to the network.
+
+Testing
+=======
+
+I maintain a suite of tests to check CoTeDe while I keep changing and improving the code. You can use it to test if everything runs as expected on your machine. For that, in the directory where is the source code you can simply run in the shell (i.e. outside Python)::
+
+    $ python setup.py test
