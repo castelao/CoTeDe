@@ -47,10 +47,11 @@ Support and Documentation
 
 http://cotede.readthedocs.org
 
-Why CoTeDe?
------------
+Why the name CoTeDe?
+--------------------
 
-For a long time I had the idea of the anomaly detection technique in mind, but I only really formalize the procedure in 2013, when I spent few months in Toulouse. 
+Since NOAA I wanted to combine the multiple tests, but I didn't really knew how  to do that. 
+In 2011 I learned the anomaly detection technique, but I only formalize the procedure in 2013, when I spent few months in Toulouse. 
 The full name of this package is CoTe De l'eau, which I understand as something near to "rating the water". 
 The short name is cotede, to make easier for the users to remember, since it is the quality control of COnductivity TEmperature and DEpth (cotede). 
 The french name is a kind of tribute to the great time that I spent in France with Bia and the croissants that were converted in code lines.
