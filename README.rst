@@ -2,19 +2,25 @@
 CoTe De l'eau
 =============
 
-This package is intended to quality control CTD stations by applying
-a sequence of tests. It uses the Seabird package to interpret the
-SeaBird's .cnv output file.
+This package is intended to quality control temperature and salinity profiles by applying a sequence of tests. 
+For CTD profiles it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
 
 This is the result from several generations of quality control systems,
-which started in 2006, while I was in charge of the quality control
+which started in 2006, while I was applying the quality control
 of termosalinographs at AOML-NOAA, USA. Later I was advising the
 quality control of the brazilian hydrography of PIRATA.
 
+Why use CoTeDe
+--------------
+
 CoTeDe can apply different quality control procedures:
   - The default GTSPP or EGOOS procedure;
-  - A custom set of tests and user defined thresholds;
+  - A custom set of tests, including user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
+
+Process multiple files in parallel, ideal for large datasets.
+
+Export output, original data plus flags, into netCDF files following OCEANSites data structure.
 
 Quick howto
 ___________
@@ -39,11 +45,10 @@ To evaluate a full set of profiles at once, like all profiles from a cruise, use
 
         dataset.flags['temperature'].keys()
 
-
 Check the notebooks galery for more examples and functionalities: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
 
-Support and Documentation
--------------------------
+Documentation
+-------------
 
 http://cotede.readthedocs.org
 
