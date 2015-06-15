@@ -32,4 +32,36 @@ Spike
 
 Climatology
 
+.. math::
+
+    X_i = \frac{V_{it} - <V_t>}{\sigma}
+
+
+Tests according to Instrument Type
+----------------------------------
+
+- CTD
+
+- TSG
+
+  1. Platform Identification
+  2. Impossible Date
+  3. Impossible Location
+  4. Location at Sea
+  5. Impossible Speed
+  6. Global Ranges
+  7. Regional Ranges
+  8. Spike
+  9. Constant Value
+  10. Gradient
+  11. Climatology
+..  12. NCEP Weekly analysis
+..  13. Buddy Check
+..  14. Water Samples
+..  15. Calibrations
+
+- XBT
+
+- ARGO
+
 References
