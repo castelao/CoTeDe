@@ -6,11 +6,14 @@ from datetime import datetime
 from os.path import basename, expanduser
 import re
 import json
+import logging
 
 import numpy as np
 from numpy import ma
 
 from seabird import cnv, CNVError
+from seabird.utils import basic_logger
+logging.basicConfig(level=logging.DEBUG)
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
@@ -21,7 +24,7 @@ class ProfileQC(object):
     """ Quality Control of a CTD profile
     """
     def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True,
-            attributes=None):
+            attributes=None, logger=None):
         """
             Input: dictionary with data.
                 - pressure[\d]:
@@ -36,8 +39,9 @@ class ProfileQC(object):
                 not defined, take the default value.
             - Is the best return another dictionary?
         """
+        self.logger = logger or logging.getLogger(__name__)
 
-        self.name = 'ProfileQC'
+        self.name = input.filename
         self.verbose = verbose
 
         if attributes is None:
@@ -66,7 +70,8 @@ class ProfileQC(object):
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
                     if verbose is True:
-                        print "evaluating: ", v, c
+                        self.logger.debug(" %s - evaluating: %s, as type: %s" %
+                                (self.name, v, c))
                     self.evaluate(v, self.cfg[c])
                     break
 
@@ -110,8 +115,7 @@ class ProfileQC(object):
         # A given manual configuration has priority
         if type(cfg) is dict:
             self.cfg = cfg
-            if self.verbose is True:
-                print("User's QC cfg.")
+            self.logger.debug("%s - User's QC cfg." % self.name)
             return
 
         # Need to safe_eval before allow to load rules from .cotederc
@@ -123,16 +127,17 @@ class ProfileQC(object):
             self.cfg = json.loads(pkg_resources.resource_string(__name__,
                 "qc_cfg/%s" % cfg))
             if self.verbose is True:
-                print("QC cfg: %s" % cfg)
+                self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
         # If can't find inside cotede, try to load from users directory
         except:
             self.cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
             if self.verbose is True:
-                print("QC cfg: ~/.cotederc/%s" % cfg)
+                self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
+                        (self.name, cfg))
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
-            print("ATENTION, there is no main setup in the QC cfg")
+            self.logger.warn("ATTENTION, there is no main setup in the QC cfg")
             return
 
         self.flags['common'] = {}
@@ -376,7 +381,8 @@ class ProfileQC(object):
                     cfg['woa_comparison'])
 
             if woa is None:
-                print "WOA is not available at this site"
+                self.logger.warn("%s - WOA is not available at this site" %
+                        self.name)
                 return
 
             woa_bias = ma.absolute(self.input[v] - woa['woa_an'])
@@ -416,15 +422,22 @@ class ProfileQC(object):
 
 
 class fProfileQC(ProfileQC):
-    def __init__(self, inputfile, cfg=None, saveauxiliary=False, verbose=True):
+    """ Apply ProfileQC straight from a file.
+    """
+    def __init__(self, inputfile, cfg=None, saveauxiliary=False, verbose=True,
+            logger=None):
+        """
+        """
+        self.logger = logger or logging.getLogger(__name__)
         self.name = 'fProfileQC'
 
         try:
-            input = cnv.fCNV(inputfile, verbose=verbose)
+            # Not the best way, but will work for now. I should pass
+            #   the reference for the logger being used.
+            input = cnv.fCNV(inputfile, logger=None)
         except CNVError as e:
             #self.attributes['filename'] = basename(inputfile)
-            if verbose is True:
-                print e.msg
+            self.logger.error(e.msg)
             raise
 
         super(fProfileQC, self).__init__(input, cfg=cfg,
