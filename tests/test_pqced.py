@@ -17,4 +17,4 @@ def test_answer():
             'conductivity2', 'potemperature', 'potemperature2', 'salinity',
             'salinity2', 'flag']
     assert ped.keys() == keys
-    assert len(ped.attributes) == 11
+    assert len(ped.attributes) == 12

@@ -24,7 +24,7 @@ def test_answer():
             'conductivity2', 'potemperature', 'potemperature2', 'salinity',
             'salinity2', 'flag']
     assert pqc.keys() == keys
-    assert len(pqc.attributes) == 11
+    assert len(pqc.attributes) == 12
 
     assert hasattr(pqc, 'flags')
     assert type(pqc.flags) is dict
