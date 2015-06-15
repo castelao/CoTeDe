@@ -2,6 +2,10 @@
 CoTe De l'eau
 =============
 
+.. image:: https://zenodo.org/badge/doi/10.5281/zenodo.18589.svg
+   :target: http://dx.doi.org/10.5281/zenodo.18589
+
+
 This package is intended to quality control temperature and salinity profiles by applying a sequence of tests. 
 For CTD profiles it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
 
