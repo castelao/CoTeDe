@@ -3,7 +3,7 @@ Tests for Quality Control
 *************************
 
 These are the tests available, and can be explicity accessed at cotede.qctests. 
-Most of them simply reproduce the procedure recommended by GTSPP, EuroGOOS, IMOS and others. 
+Most of them simply reproduce the procedure recommended by GTSPP, EuroGOOS, IMOS, ARGO and others.
 
 Flag table
 
@@ -65,3 +65,4 @@ Tests according to Instrument Type
 - ARGO
 
 References
+----------
