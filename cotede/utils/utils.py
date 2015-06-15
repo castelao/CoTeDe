@@ -30,15 +30,22 @@ def make_file_list(inputdir, inputpattern):
     inputfiles.sort()
     return inputfiles
 
+
 def get_depth(lat, lon, cfg):
     """
 
     ATENTION, conceptual error on the data near by Greenwich.
     url='http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf'
-    """
 
-    if lat.shape != lon.shape:
-                print "lat and lon must have the same size"
+    If I ever need to get depth from multiple points, check the history
+      of this file. One day it was like that.
+    """
+    assert type(lat) in [int, float]
+    assert type(lon) in [int, float]
+
+    #if lat.shape != lon.shape:
+    #            print "lat and lon must have the same size"
+
     try:
         try:
             etopo = netCDF4.Dataset(expanduser(cfg['file']))
@@ -51,13 +58,17 @@ def get_depth(lat, lon, cfg):
         x = etopo.ETOPO05_X[:]
         y = etopo.ETOPO05_Y[:]
 
-    if lon.min()<0:
-        ind = lon<0
-        lon[ind] = lon[ind]+360
-    iini = max(0, (np.absolute(lon.min()-x)).argmin()-2)
-    ifin = (np.absolute(lon.max()-x)).argmin()+2
-    jini = max(0, (np.absolute(lat.min()-y)).argmin()-2)
-    jfin = (np.absolute(lat.max()-y)).argmin()+2
+    if lon < 0:
+        lon += 360
+
+    iini = (abs(lon - x)).argmin() - 2
+    ifin = (abs(lon - x)).argmin() + 2
+    jini = (abs(lat - y)).argmin() - 2
+    jfin = (abs(lat - y)).argmin() + 2
+
+    assert (iini >= 0) or (jini >= 0) or \
+            (iini <= len(x)) or (jini <= len(y)), \
+            "Sorry not ready to handle too close to boundaries"
 
     try:
         z = etopo.variables['ROSE'][jini:jfin, iini:ifin]
@@ -65,8 +76,7 @@ def get_depth(lat, lon, cfg):
         z = etopo.ROSE[jini:jfin, iini:ifin]
 
     interpolator = RectBivariateSpline(x[iini:ifin], y[jini:jfin], z.T)
-    depth = ma.array([interpolator(xx, yy)[0][0] for xx, yy in zip(lon,lat)])
-    return depth
+    return interpolator(lon, lat)[0][0]
 
 
 # ============================================================================
