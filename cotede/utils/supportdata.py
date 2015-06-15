@@ -87,6 +87,9 @@ def download_testdata(filename):
             'PIRA001.cnv': {
                 "url": "https://dl.dropboxusercontent.com/u/26063625/seabird/PIRA001.cnv",
                 "md5": "5ded777144300b63c8775b1d7f033f92"},
+            'TSG_PIR_001.cnv': {
+                "url": "https://dl.dropboxusercontent.com/u/26063625/seabird/TSG_PIR_001.cnv",
+                "md5": "2950ccb9f77e0802557b011c63d2e39b"},
             }
 
     assert filename in test_files.keys(), \
