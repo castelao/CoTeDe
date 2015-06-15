@@ -162,17 +162,9 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'at_sea' in self.cfg['main']:
-            lon = self.attributes['longitude']
-            lat = self.attributes['latitude']
-            depth = get_depth(np.array([lat]), np.array([lon]),
-                    cfg=self.cfg['main']['at_sea'])
-                #flag[depth<0] = True
-                #flag[depth>0] = False
-                #self.flags['at_sea'] = flag
-            if depth[0] < 0:
-                self.flags['common']['at_sea'] = 1
-            else:
-                self.flags['common']['at_sea'] = 3
+            self.flags['common']['at_sea'] = location_at_sea(
+                    self.input,
+                    self.cfg['main']['at_sea'])
 
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
