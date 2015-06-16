@@ -64,5 +64,26 @@ Tests according to Instrument Type
 
 - ARGO
 
+  1. Platform Identification
+  2. Impossible date test
+  3. Impossible location test
+  4. Position on land test
+  5. Impossible speed test
+  6. Global range test
+  7. Regional range test
+  8. Pressure increasing test
+  9. Spike test
+  10. Top an dbottom spike test: obsolete
+  11. Gradient test
+  12. Digit rollover test
+  13. Stuck value test
+  14. Density inversion
+  15. Grey list
+  16. Gross salinity or temperature sensor drift
+  17. Visual QC
+  18. Frozen profile test
+  19. Deepest pressure test
+
+
 References
 ----------
