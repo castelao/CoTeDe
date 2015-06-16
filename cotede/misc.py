@@ -1,37 +1,9 @@
 import numpy as np
 from numpy import ma, random
 
-from pydap.client import open_url
-import pydap.lib
-pydap.lib.CACHE = '.cache'
 from scipy.interpolate import RectBivariateSpline, interp1d
 
 # ============================================================================
-def get_depth(lat, lon):
-    """
-
-    ATENTION, conceptual error on the data near by Greenwich.
-    """
-    if lat.shape != lon.shape:
-        print "lat and lon must have the same size"
-    url='http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf'
-    dataset = open_url(url)
-    etopo = dataset.ROSE
-    x = etopo.ETOPO05_X[:]
-    if lon.min()<0:
-        ind = lon<0
-        lon[ind] = lon[ind]+360
-    y = etopo.ETOPO05_Y[:]
-    iini = max(0, (numpy.absolute(lon.min()-x)).argmin()-2)
-    ifin = (numpy.absolute(lon.max()-x)).argmin()+2
-    jini = max(0, (numpy.absolute(lat.min()-y)).argmin()-2)
-    jfin = (numpy.absolute(lat.max()-y)).argmin()+2
-    z = etopo.ROSE[jini:jfin, iini:ifin]
-    interpolator = RectBivariateSpline(x[iini:ifin], y[jini:jfin], z.T)
-    depth = ma.array([interpolator(xx, yy)[0][0] for xx, yy in zip(lon,lat)])
-    return depth
-
-
 # I need to improve this, and include the places where the
 #   flags are masked, i.e. only eliminate where the flags
 #   could guarantee it was false.
