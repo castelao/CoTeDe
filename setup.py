@@ -27,9 +27,10 @@ NEWS = open(os.path.join(here, 'NEWS.txt')).read()
 install_requires = [
     'numpy>=1.1',
     'seabird>=0.5.8',
+    'scipy',
     ]
 
-version = '0.12.4'
+version = '0.12.5'
 
 setup(
     name='cotede',
