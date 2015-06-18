@@ -40,7 +40,7 @@ setup(
     packages=['cotede', 'cotede.qctests', 'cotede.utils', 'cotede.humanqc'],
     url='http://cotede.castelao.net',
     license='License :: OSI Approved :: BSD License',
-    description='Quality Control of CTD profiles',
+    description='Quality Control of Temperature and Salinity profiles',
     long_description=open('README.rst').read(),
     install_requires=install_requires,
     classifiers=[
