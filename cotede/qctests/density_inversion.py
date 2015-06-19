@@ -2,7 +2,7 @@
 
 """
 
-    Based on ARGO tests definition. Test 14 @ ARGO QC 2.9.1
+    Based on ARGO's density inversion test. Test 14 @ ARGO QC 2.9.1
 """
 
 import numpy as np
