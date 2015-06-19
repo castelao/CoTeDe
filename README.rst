@@ -11,7 +11,7 @@ CoTe De l'eau
 
 
 This package is intended to quality control temperature and salinity profiles by applying a sequence of tests. 
-For CTD profiles it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
+For CTD profiles and TSG time series it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
 
 This is the result from several generations of quality control systems,
 which started in 2006, while I was applying the quality control
