@@ -8,6 +8,7 @@
 import numpy as np
 from numpy import ma
 
+
 def densitystep(S, T, P):
     """
     """
@@ -24,22 +25,27 @@ def densitystep(S, T, P):
         print("Package gsw is required and is not available.")
 
 
-def density_inverison(data, cfg):
+def density_inversion(data, cfg, aux=False):
     """
 
+        Must decide where to set the flags.
     """
-    assert ('temperature' in data.attributes), \
-            "Missing temperature in attributes"
-    assert ('salinity' in data.attributes), \
-            "Missing salinity in attributes"
-    assert ('pressure' in data.attributes), \
-            "Missing pressure in attributes"
+    assert ('temperature' in data.keys()), \
+            "Missing temperature"
+    assert ('salinity' in data.keys()), \
+            "Missing salinity"
+    assert ('pressure' in data.keys()), \
+            "Missing pressure"
 
     ds = densitystep(data['temperature'], data['salinity'],
             data['pressure'])
 
-    flag = np.zeros(ds.shape, dtype='i1')
-    flag[ds >= -0.03] = 1
-    flag[ds < -0.03] = 4
+    return ds
+    #flag = np.zeros(ds.shape, dtype='i1')
+    #flag[ds >= cfg] = 1
+    #flag[ds < cfg] = 4
 
-    return flag
+    if aux:
+        return flag, ds
+    else:
+        return flag
