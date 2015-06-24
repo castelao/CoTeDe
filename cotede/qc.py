@@ -348,21 +348,16 @@ class ProfileQC(object):
                 self.auxiliary[v]['bin_spike'] = bin
 
         if 'density_inversion' in cfg:
-            threshold = cfg['density_inversion']
-            ds = densitystep(self['salinity'], self['temperature'],
-                    self['pressure'])
-
-            if self.saveauxiliary:
-                self.auxiliary[v]['density_step'] = ds
-
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-
-            flag[np.nonzero(ds < threshold)] = 3 # I'm not sure to use 3 or 4.
-            flag[np.nonzero(ds >= threshold)] = 1
-
-            self.flags[v]['density_inversion'] = flag
+            try:
+                if self.saveauxiliary:
+                    self.flags[v]['density_inversion'],
+                    self.auxiliary[v]['density_step'] = density_inversion(
+                            self.input, cfg['density_inversion'])
+                else:
+                    self.flags[v]['density_inversion'] = density_inversion(
+                            self.input, cfg['density_inversion'])
+            except:
+                print("Fail on density_inversion")
 
         if 'woa_comparison' in cfg:
             woa = woa_profile(v,

@@ -25,7 +25,7 @@ def densitystep(S, T, P):
         print("Package gsw is required and is not available.")
 
 
-def density_inversion(data, cfg, aux=False):
+def density_inversion(data, cfg, saveaux=False):
     """
 
         Must decide where to set the flags.
@@ -40,12 +40,16 @@ def density_inversion(data, cfg, aux=False):
     ds = densitystep(data['temperature'], data['salinity'],
             data['pressure'])
 
-    return ds
-    #flag = np.zeros(ds.shape, dtype='i1')
-    #flag[ds >= cfg] = 1
-    #flag[ds < cfg] = 4
+    flag = np.zeros(ds.shape, dtype='i1')
 
-    if aux:
+    flag[np.nonzero(ds >= cfg['threshold'])] = cfg['flag_good']
+    flag[np.nonzero(ds < cfg['threshold'])] = cfg['flag_bad']
+
+    # Flag as 9 any masked input value
+    for v in ['temperature', 'salinity', 'pressure']:
+        flag[ma.getmaskarray(data[v])] = 9
+
+    if saveaux:
         return flag, ds
     else:
         return flag
