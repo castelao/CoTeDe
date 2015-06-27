@@ -9,6 +9,13 @@ CoTe De l'eau
    :target: https://readthedocs.org/projects/cotede/?badge=latest
    :alt: Documentation Status
 
+.. image:: https://img.shields.io/travis/castelao/cotede.svg
+        :target: https://travis-ci.org/castelao/cotede
+
+.. image:: https://img.shields.io/pypi/v/cotede.svg
+        :target: https://pypi.python.org/pypi/cotede
+
+
 
 This package is intended to quality control temperature and salinity profiles by applying a sequence of tests. 
 For CTD profiles and TSG time series it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
