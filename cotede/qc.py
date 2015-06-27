@@ -41,7 +41,10 @@ class ProfileQC(object):
         """
         self.logger = logger or logging.getLogger(__name__)
 
-        self.name = input.filename
+        try:
+            self.name = input.filename
+        except:
+            self.name = None
         self.verbose = verbose
 
         if attributes is None:
