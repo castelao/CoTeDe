@@ -25,7 +25,7 @@ User Documentation
    install
    getting_started
    commandline
-   tests
+   qctests
 
 Indices and tables
 ==================
