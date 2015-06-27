@@ -171,8 +171,13 @@ class ProfileQC(object):
 
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
-            self.auxiliary['common']['descentPrate'] = \
-                    descentPrate(self['timeS'], self['pressure'])
+            # Need to improve this. descentPrate doesn't make sense
+            #   for ARGO. That's why the try.
+            try:
+                self.auxiliary['common']['descentPrate'] = \
+                        descentPrate(self.input)
+            except:
+                pass
 
     def evaluate(self, v, cfg):
 
@@ -328,6 +333,7 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
+        # ARGO, test #12. (10C, 5PSU)
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
@@ -407,8 +413,11 @@ class ProfileQC(object):
             self.auxiliary = {}
 
         self.auxiliary['common'] = {}
-        self.auxiliary['common']['descentPrate'] = \
-            descentPrate(self['timeS'], self['pressure'])
+        try:
+            self.auxiliary['common']['descentPrate'] = \
+                    descentPrate(self.input)
+        except:
+            self.logger.warn("Failled to run descentPrate")
 
 
 class fProfileQC(ProfileQC):
