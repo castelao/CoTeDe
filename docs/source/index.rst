@@ -26,6 +26,7 @@ User Documentation
    getting_started
    commandline
    tests
+   history
 
 Indices and tables
 ==================
