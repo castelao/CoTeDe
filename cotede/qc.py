@@ -170,9 +170,12 @@ class ProfileQC(object):
                 print("Fail location_at_sea test")
 
         if self.saveauxiliary:
-            self.auxiliary['common'] = {}
-            self.auxiliary['common']['descentPrate'] = \
-                    descentPrate(self['timeS'], self['pressure'])
+            try:
+                self.auxiliary['common'] = {}
+                self.auxiliary['common']['descentPrate'] = \
+                    descentPrate(self.input)
+            except:
+                pass
 
     def evaluate(self, v, cfg):
 
@@ -406,9 +409,9 @@ class ProfileQC(object):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
 
-        self.auxiliary['common'] = {}
-        self.auxiliary['common']['descentPrate'] = \
-            descentPrate(self['timeS'], self['pressure'])
+        #self.auxiliary['common'] = {}
+        #self.auxiliary['common']['descentPrate'] = \
+        #    descentPrate(self.input)
 
 
 class fProfileQC(ProfileQC):
