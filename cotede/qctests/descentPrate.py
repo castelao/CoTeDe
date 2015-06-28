@@ -6,7 +6,7 @@
 from numpy import ma
 
 
-def descentPrate(t, p):
+def descentPrate(data):
     """
 
         It's probably a good idea to smooth it with a window of 2-5 seconds.
@@ -17,7 +17,10 @@ def descentPrate(t, p):
 
         Consider to create another test looking for excessive ups and downs.
     """
-    assert t.shape == p.shape, "t and p have different sizes"
+    assert ('timeS' in data), "timeS is not available"
+    assert ('pressure' in data), "pressure is not available"
+    assert data['timeS'].shape == data['pressure'].shape, \
+            "t and p have different sizes"
     y = ma.masked_all(t.shape, dtype=t.dtype)
     dt = ma.diff(t)
     dp = ma.diff(p)
