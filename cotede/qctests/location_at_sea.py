@@ -10,13 +10,22 @@ def location_at_sea(data, cfg):
           level, hence at sea.
     """
     assert hasattr(data, 'attributes'), "Missing attributes"
-    assert ('latitude' in data.attributes), \
+
+    # Temporary solution while migrating to OceanSites variables syntax
+    if ('LATITUDE' not in data.attributes) and \
+            ('latitude' in data.attributes):
+                data.attributes['latitude'] = data.attributes['LATITUDE']
+    if ('LONGITUDE' not in data.attributes) and \
+            ('longitude' in data.attributes):
+                data.attributes['longitude'] = data.attributes['LONGITUDE']
+
+    assert ('LATITUDE' in data.attributes), \
             "Missing latitude in attributes"
-    assert ('longitude' in data.attributes), \
+    assert ('LONGITUDE' in data.attributes), \
             "Missing longitude in attributes"
 
-    depth = get_depth(data.attributes['latitude'],
-            data.attributes['longitude'],
+    depth = get_depth(data.attributes['LATITUDE'],
+            data.attributes['LONGITUDE'],
             cfg=cfg)
 
     if depth < 0:
