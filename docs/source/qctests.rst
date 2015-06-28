@@ -83,6 +83,8 @@ EuroGOOS
 TSG
 ~~~
 
+Based on AOML procedure. Realtime data is evaluatd by tests 1 to 10, while the delayed mode is evaluated by tests 1 to 15.
+
   1. Platform Identification
   2. `Valid Date`_
   3. Impossible Location
