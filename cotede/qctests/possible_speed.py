@@ -49,9 +49,15 @@ def possible_speed(data, cfg):
     """
     s = speed(data)
 
-    if s < 60:
-        return 1
-    elif flag >= 60:
-        return 3
-    else:
-        return 0
+    flag = np.zeros(s.shape, dtype='i1')
+
+    #flag[np.nonzero(ds >= cfg['threshold'])] = cfg['flag_good']
+    #flag[np.nonzero(ds < cfg['threshold'])] = cfg['flag_bad']
+    flag[s <= 60] = 1
+    flag[s > 60] = 3
+
+    # Flag as 9 any masked input value
+    for v in ['latitude', 'longitude']:
+        flag[ma.getmaskarray(data[v])] = 9
+
+    return flag, s
