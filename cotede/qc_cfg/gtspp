@@ -1,5 +1,5 @@
 {"main": {
-    "valid_date": null,
+    "valid_datetime": null,
     "at_sea": {
         "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
         }
