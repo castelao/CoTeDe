@@ -190,6 +190,15 @@ class ProfileQC(object):
             if v not in self.auxiliary.keys():
                 self.auxiliary[v] = {}
 
+        if 'platform_identification' in cfg:
+            print "Sorry I'm not ready to evaluate platform_identification()"
+
+        if 'valid_geolocation' in cfg:
+            print "Sorry I'm not ready to evaluate valid_geolocation()"
+
+        if 'valid_speed' in cfg:
+            print "Sorry I'm not ready to evaluate valid_speed()"
+
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
                     dtype='i1')
@@ -201,6 +210,12 @@ class ProfileQC(object):
             ind = (self.input[v] < cfg['global_range']['minval']) | \
                     (self.input[v] > cfg['global_range']['maxval'])
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
+
+        if 'regional_range' in cfg:
+            pass
+
+        if 'pressure_increasing' in cfg:
+            pass
 
         if 'profile_envelope' in cfg:
             self.flags[v]['profile_envelope'] = profile_envelope(
@@ -290,6 +305,21 @@ class ProfileQC(object):
                     = 1
 
             self.flags[v]['spike_depthconditional'] = flag
+
+        if 'stuck_value' in cfg:
+            print "Sorry I'm not ready to evaluate stuck_value()"
+
+        if 'grey_list' in cfg:
+            print "Sorry I'm not ready to evaluate grey_list()"
+
+        if 'gross_sensor_drift' in cfg:
+            print "Sorry I'm not ready to evaluate gross_sensor_drift()"
+
+        if 'frozen_profile' in cfg:
+            print "Sorry I'm not ready to evaluate frozen_profile()"
+
+        if 'deepest_pressure' in cfg:
+            print "Sorry I'm not ready to evaluate deepest_pressure()"
 
         if 'tukey53H_norm' in cfg:
             """
