@@ -30,15 +30,15 @@ def density_inversion(data, cfg, saveaux=False):
 
         Must decide where to set the flags.
     """
-    assert ('temperature' in data.keys()), \
-            "Missing temperature"
-    assert ('salinity' in data.keys()), \
-            "Missing salinity"
-    assert ('pressure' in data.keys()), \
-            "Missing pressure"
+    assert ('TEMP' in data.keys()), \
+            "Missing TEMP"
+    assert ('PSAL' in data.keys()), \
+            "Missing PSAL"
+    assert ('PRES' in data.keys()), \
+            "Missing PRES"
 
-    ds = densitystep(data['temperature'], data['salinity'],
-            data['pressure'])
+    ds = densitystep(data['TEMP'], data['PSAL'],
+            data['PRES'])
 
     flag = np.zeros(ds.shape, dtype='i1')
 
