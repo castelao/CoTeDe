@@ -228,21 +228,21 @@ class ProfileQC(object):
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
 
@@ -271,21 +271,21 @@ class ProfileQC(object):
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
 
