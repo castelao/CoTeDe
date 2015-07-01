@@ -397,7 +397,7 @@ class ProfileQC(object):
                     self.attributes['datetime'],
                     self.attributes['latitude'],
                     self.attributes['longitude'],
-                    self.input['pressure'],
+                    self.input['PRES'],
                     cfg['woa_comparison'])
 
             if woa is None:
@@ -430,7 +430,7 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['pstep'] = ma.concatenate(
                         [ma.masked_all(1),
-                            np.diff(self.input['pressure'][ind])])
+                            np.diff(self.input['PRES'][ind])])
 
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
