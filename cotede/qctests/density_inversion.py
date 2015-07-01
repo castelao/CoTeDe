@@ -46,8 +46,8 @@ def density_inversion(data, cfg, saveaux=False):
     flag[np.nonzero(ds < cfg['threshold'])] = cfg['flag_bad']
 
     # Flag as 9 any masked input value
-    for v in ['temperature', 'salinity', 'pressure']:
-        flag[ma.getmaskarray(data[v])] = 9
+    #for v in ['TEMP', 'PSAL', 'PRES']:
+    #    flag[ma.getmaskarray(data[v])] = 9
 
     if saveaux:
         return flag, ds
