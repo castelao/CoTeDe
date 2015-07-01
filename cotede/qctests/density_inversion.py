@@ -19,7 +19,7 @@ def densitystep(S, T, P):
         rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
         ds = ma.append(ma.masked_all(1),
                 np.sign(np.diff(P))*np.diff(rho0))
-        return ds
+        return ma.fix_invalid(ds)
 
     except ImportError:
         print("Package gsw is required and is not available.")
