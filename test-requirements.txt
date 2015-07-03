@@ -4,3 +4,4 @@ PyDAP
 pandas
 netCDF4
 pyARGO
+gsw
