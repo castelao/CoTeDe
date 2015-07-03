@@ -17,4 +17,4 @@ def test_answer():
             'potemperature', 'potemperature2', 'PSAL', 'PSAL2',
             'flag']
     assert ped.keys() == keys
-    assert len(ped.attributes) == 12
+    assert len(ped.attributes) == 13
