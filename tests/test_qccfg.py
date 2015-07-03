@@ -15,5 +15,5 @@ def test_multiple_cfg():
     pqc = cotede.qc.ProfileQC(data, cfg='cotede')
     pqc = cotede.qc.ProfileQC(data, cfg='gtspp')
     # Manually defined
-    pqc = cotede.qc.ProfileQC(data, cfg={'temperature': {"spike": 6.0,}})
+    pqc = cotede.qc.ProfileQC(data, cfg={'TEMP': {"spike": 6.0,}})
     assert len(pqc.flags) > 0

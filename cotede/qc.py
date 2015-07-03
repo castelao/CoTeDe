@@ -41,7 +41,10 @@ class ProfileQC(object):
         """
         self.logger = logger or logging.getLogger(__name__)
 
-        self.name = input.filename
+        try:
+            self.name = input.filename
+        except:
+            self.name = None
         self.verbose = verbose
 
         if attributes is None:
@@ -170,10 +173,12 @@ class ProfileQC(object):
                 print("Fail location_at_sea test")
 
         if self.saveauxiliary:
+            self.auxiliary['common'] = {}
+            # Need to improve this. descentPrate doesn't make sense
+            #   for ARGO. That's why the try.
             try:
-                self.auxiliary['common'] = {}
                 self.auxiliary['common']['descentPrate'] = \
-                    descentPrate(self.input)
+                        descentPrate(self.input)
             except:
                 pass
 
@@ -184,6 +189,15 @@ class ProfileQC(object):
         if self.saveauxiliary:
             if v not in self.auxiliary.keys():
                 self.auxiliary[v] = {}
+
+        if 'platform_identification' in cfg:
+            print "Sorry I'm not ready to evaluate platform_identification()"
+
+        if 'valid_geolocation' in cfg:
+            print "Sorry I'm not ready to evaluate valid_geolocation()"
+
+        if 'valid_speed' in cfg:
+            print "Sorry I'm not ready to evaluate valid_speed()"
 
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
@@ -197,21 +211,15 @@ class ProfileQC(object):
                     (self.input[v] > cfg['global_range']['maxval'])
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
+        if 'regional_range' in cfg:
+            pass
+
+        if 'pressure_increasing' in cfg:
+            pass
+
         if 'profile_envelope' in cfg:
-            # Probably not the best way to do this, but works for now.
-            self.flags[v]['profile_envelope'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            for layer in cfg['profile_envelope']:
-                ind = np.nonzero(
-                        eval("(%s %s) & (%s %s)" %
-                            ("self.input['pressure']", layer[0],
-                                "self.input['pressure']", layer[1]))
-                            )[0]
-                f = eval("(%s > %s) & (%s < %s)" %
-                        ("self.input[v][ind]", layer[2],
-                        "self.input[v][ind]", layer[3]))
-                self.flags[v]['profile_envelope'][ind[f == True]] = 1
-                self.flags[v]['profile_envelope'][ind[f == False]] = 4
+            self.flags[v]['profile_envelope'] = profile_envelope(
+                    self.input, cfg['profile_envelope'], v)
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
@@ -235,21 +243,21 @@ class ProfileQC(object):
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
 
@@ -278,25 +286,40 @@ class ProfileQC(object):
             # ---- Shallow zone -----------------
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] <= cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g > threshold))] \
                     = 4
             flag[np.nonzero( \
-                    (self['pressure'] > cfg_tmp['pressure_threshold']) & \
+                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
                     (g <= threshold))] \
                     = 1
 
             self.flags[v]['spike_depthconditional'] = flag
+
+        if 'stuck_value' in cfg:
+            print "Sorry I'm not ready to evaluate stuck_value()"
+
+        if 'grey_list' in cfg:
+            print "Sorry I'm not ready to evaluate grey_list()"
+
+        if 'gross_sensor_drift' in cfg:
+            print "Sorry I'm not ready to evaluate gross_sensor_drift()"
+
+        if 'frozen_profile' in cfg:
+            print "Sorry I'm not ready to evaluate frozen_profile()"
+
+        if 'deepest_pressure' in cfg:
+            print "Sorry I'm not ready to evaluate deepest_pressure()"
 
         if 'tukey53H_norm' in cfg:
             """
@@ -331,6 +354,7 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
+        # ARGO, test #12. (10C, 5PSU)
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
@@ -356,9 +380,12 @@ class ProfileQC(object):
         if 'density_inversion' in cfg:
             try:
                 if self.saveauxiliary:
-                    self.flags[v]['density_inversion'],
-                    self.auxiliary[v]['density_step'] = density_inversion(
-                            self.input, cfg['density_inversion'])
+                    self.flags[v]['density_inversion'], \
+                            self.auxiliary[v]['density_step'] = \
+                            density_inversion(
+                                    self.input,
+                                    cfg['density_inversion'],
+                                    saveaux=True)
                 else:
                     self.flags[v]['density_inversion'] = density_inversion(
                             self.input, cfg['density_inversion'])
@@ -370,7 +397,7 @@ class ProfileQC(object):
                     self.attributes['datetime'],
                     self.attributes['latitude'],
                     self.attributes['longitude'],
-                    self.input['pressure'],
+                    self.input['PRES'],
                     cfg['woa_comparison'])
 
             if woa is None:
@@ -403,15 +430,18 @@ class ProfileQC(object):
             if self.saveauxiliary:
                 self.auxiliary[v]['pstep'] = ma.concatenate(
                         [ma.masked_all(1),
-                            np.diff(self.input['pressure'][ind])])
+                            np.diff(self.input['PRES'][ind])])
 
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
 
-        #self.auxiliary['common'] = {}
-        #self.auxiliary['common']['descentPrate'] = \
-        #    descentPrate(self.input)
+        self.auxiliary['common'] = {}
+        try:
+            self.auxiliary['common']['descentPrate'] = \
+                    descentPrate(self.input)
+        except:
+            self.logger.warn("Failled to run descentPrate")
 
 
 class fProfileQC(ProfileQC):

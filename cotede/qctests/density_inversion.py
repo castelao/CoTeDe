@@ -19,7 +19,7 @@ def densitystep(S, T, P):
         rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
         ds = ma.append(ma.masked_all(1),
                 np.sign(np.diff(P))*np.diff(rho0))
-        return ds
+        return ma.fix_invalid(ds)
 
     except ImportError:
         print("Package gsw is required and is not available.")
@@ -30,15 +30,15 @@ def density_inversion(data, cfg, saveaux=False):
 
         Must decide where to set the flags.
     """
-    assert ('temperature' in data.keys()), \
-            "Missing temperature"
-    assert ('salinity' in data.keys()), \
-            "Missing salinity"
-    assert ('pressure' in data.keys()), \
-            "Missing pressure"
+    assert ('TEMP' in data.keys()), \
+            "Missing TEMP"
+    assert ('PSAL' in data.keys()), \
+            "Missing PSAL"
+    assert ('PRES' in data.keys()), \
+            "Missing PRES"
 
-    ds = densitystep(data['temperature'], data['salinity'],
-            data['pressure'])
+    ds = densitystep(data['TEMP'], data['PSAL'],
+            data['PRES'])
 
     flag = np.zeros(ds.shape, dtype='i1')
 
@@ -46,8 +46,8 @@ def density_inversion(data, cfg, saveaux=False):
     flag[np.nonzero(ds < cfg['threshold'])] = cfg['flag_bad']
 
     # Flag as 9 any masked input value
-    for v in ['temperature', 'salinity', 'pressure']:
-        flag[ma.getmaskarray(data[v])] = 9
+    #for v in ['TEMP', 'PSAL', 'PRES']:
+    #    flag[ma.getmaskarray(data[v])] = 9
 
     if saveaux:
         return flag, ds

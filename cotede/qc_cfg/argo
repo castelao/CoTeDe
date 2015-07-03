@@ -1,0 +1,72 @@
+{"main": {
+    "valid_datetime": null,
+    "at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf",
+        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+        }
+    },
+"TEMP": {
+    "deepest_pressure": null,
+    "platform_identification": null,
+    "valid_geolocation": null,
+    "valid_speed": null,
+    "global_range": {
+        "minval": -2.5,
+        "maxval": 45
+        },
+    "regional_range": null,
+    "pressure_increasing": null,
+    "spike_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 6.0,
+        "deep_max": 2.0
+        },
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 9.0,
+        "deep_max": 3.0
+        },
+    "digit_roll_over": 10,
+    "stuck_value": null,
+    "density_inversion": {
+        "threshold": -0.03,
+        "flag_good": 1,
+        "flag_bad": 4
+        },
+    "grey_list": null,
+    "gross_sensor_drift": null,
+    "frozen_profile": null
+    },
+"PSAL": {
+    "deepest_pressure": null,
+    "platform_identification": null,
+    "valid_geolocation": null,
+    "valid_speed": null,
+    "global_range": {
+        "minval": 2.0,
+        "maxval": 41.0
+        },
+    "regional_range": null,
+    "pressure_increasing": null,
+    "spike_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 0.9,
+        "deep_max": 0.3
+        },
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 1.5,
+        "deep_max": 0.5
+        },
+    "digit_roll_over": 5,
+    "stuck_value": null,
+    "density_inversion": {
+        "threshold": -0.03,
+        "flag_good": 1,
+        "flag_bad": 4
+        },
+    "grey_list": null,
+    "gross_sensor_drift": null,
+    "frozen_profile": null
+    }
+}
