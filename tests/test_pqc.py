@@ -20,9 +20,9 @@ def test_answer():
 
     pqc = func(datafile=datafile, saveauxiliary=True)
 
-    keys = ['timeS', 'pressure', 'temperature', 'temperature2', 'conductivity',
-            'conductivity2', 'potemperature', 'potemperature2', 'salinity',
-            'salinity2', 'flag']
+    keys = ['timeS', 'PRES', 'TEMP', 'TEMP2', 'CNDC', 'CNDC2',
+            'potemperature', 'potemperature2', 'PSAL',
+            'PSAL2', 'flag']
     assert pqc.keys() == keys
     assert len(pqc.attributes) == 12
 
