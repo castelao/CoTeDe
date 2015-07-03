@@ -19,5 +19,14 @@ def test_argo():
     print pqc.flags
 
     assert hasattr(pqc, 'flags')
+    for v in ['TEMP', 'PSAL']:
+        assert v in pqc.keys()
+        assert len(pqc[v]) == 1034
+        assert v in pqc.flags
+        for f in pqc.flags[v]:
+            assert len(pqc.flags[v][f]) == 1034
+
+    for a in ['datetime', 'LATITUDE', 'LONGITUDE']:
+        assert a in pqc.attributes
+
     assert type(pqc.attributes['datetime']) == datetime
-    assert 'TEMP' in pqc.keys()
