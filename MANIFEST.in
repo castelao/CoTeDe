@@ -1,3 +1,5 @@
+include HISTORY.rst
+
 #include distribute_setup.py
 include *.txt
 #recursive-include docs *.txt
