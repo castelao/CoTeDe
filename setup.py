@@ -9,7 +9,9 @@ import sys
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
-NEWS = open(os.path.join(here, 'NEWS.txt')).read()
+
+with open('HISTORY.rst') as history_file:
+    history = history_file.read().replace('.. :changelog:', '')
 
 install_requires = [
     'numpy>=1.1',
@@ -28,7 +30,7 @@ setup(
     url='http://cotede.castelao.net',
     license='License :: OSI Approved :: BSD License',
     description='Quality Control of Temperature and Salinity profiles',
-    long_description=open('README.rst').read(),
+    long_description=open('README.rst').read() + '\n\n' + history,
     install_requires=install_requires,
     classifiers=[
         'Development Status :: 3 - Alpha',
