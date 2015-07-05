@@ -18,8 +18,8 @@ def descentPrate(data):
         Consider to create another test looking for excessive ups and downs.
     """
     assert ('timeS' in data), "timeS is not available"
-    assert ('pressure' in data), "pressure is not available"
-    assert data['timeS'].shape == data['pressure'].shape, \
+    assert ('PRES' in data), "pressure is not available"
+    assert data['timeS'].shape == data['PRES'].shape, \
             "t and p have different sizes"
     y = ma.masked_all(t.shape, dtype=t.dtype)
     dt = ma.diff(t)
