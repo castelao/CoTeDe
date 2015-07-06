@@ -14,6 +14,11 @@ Since 0.7 some of the most important changes.
 * Included haversine to avoid dependency on MAUD.
 * tox and travis support.
 
+0.9 - Dec, 2013
+---------------
+
+* Going public
+
 0.7.3
 -----
 
@@ -24,8 +29,8 @@ Since 0.7 some of the most important changes.
 
 * Including Tukey53H test
 
-0.5.0 - ?, 2013
------------------
+0.5.0
+-----
 
 * Implemented ProfileQCCollection
 
