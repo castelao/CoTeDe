@@ -5,13 +5,14 @@
 
 import numpy as np
 from numpy import ma
-#from scipy.stats import norm, rayleigh, expon, halfnorm, exponpow, exponweib
+# from scipy.stats import norm, rayleigh, expon, halfnorm, exponpow, exponweib
 from scipy.stats import exponweib
-#from scipy.stats import kstest
+# from scipy.stats import kstest
 
 from cotede.utils import ProfilesQCPandasCollection
 from cotede.misc import combined_flag
 from cotede.humanqc import HumanQC
+
 
 def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
     """
@@ -37,14 +38,14 @@ def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
         samp = features[test][ind & np.isfinite(features[test])]
         ind_top = samp > samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
-        output[test] = {'param':param,
+        output[test] = {'param': param,
                 'qlimit': samp.quantile(q)}
 
         if verbose == True:
             import pylab
             x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
-            pylab.plot(x,pdf_fitted,'b-')
+            pylab.plot(x, pdf_fitted, 'b-')
             pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
             pylab.title(test)
             pylab.show()
@@ -111,8 +112,9 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
     params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
             verbose=verbose)
     prob = estimate_anomaly(aux, params)
-    if verbose == True:
-        pylab.hist(prob); pylab.show()
+    if verbose is True:
+        pylab.hist(prob)
+        pylab.show()
 
     p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
             flag_ref[indices['ind_test']])
@@ -120,16 +122,16 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
     # I can extract only .data, since split_data_groups already eliminated
     #   all non valid positions.
     false_negative = (prob[indices['ind_err']] < p_optimal) & \
-        (flag_ref[indices['ind_err']].data == True)
+        (flag_ref[indices['ind_err']].data is True)
     false_positive = (prob[indices['ind_err']] > p_optimal) & \
-        (flag_ref[indices['ind_err']].data == False)
+        (flag_ref[indices['ind_err']].data is False)
     err = np.nonzero(false_negative)[0].size + \
             np.nonzero(false_positive)[0].size
     err_ratio = float(err)/prob[indices['ind_err']].size
     false_negative = (prob < p_optimal) & \
-        (flag_ref.data == True) & (ma.getmaskarray(flag_ref)==False)
+        (flag_ref.data is True) & (ma.getmaskarray(flag_ref) is False)
     false_positive = (prob > p_optimal) & \
-        (flag_ref.data == False) & (ma.getmaskarray(flag_ref)==False)
+        (flag_ref.data is False) & (ma.getmaskarray(flag_ref) is False)
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
@@ -157,7 +159,7 @@ def split_data_groups(ind):
     ind_valid = ~ma.getmaskarray(ind)
 
     # ==== Good data ==================
-    ind_good = np.nonzero((ind == True) & ind_valid)[0]
+    ind_good = np.nonzero((ind is True) & ind_valid)[0]
     N_good = ind_good.size
     perm = np.random.permutation(N_good)
     N_fit = int(round(N_good*.6))
@@ -170,7 +172,7 @@ def split_data_groups(ind):
     ind_err[ind_good[perm[-N_test:]]] = True
 
     # ==== Bad data ===================
-    ind_bad = np.nonzero((ind == False) & ind_valid)[0]
+    ind_bad = np.nonzero((ind is False) & ind_valid)[0]
     N_bad = ind_bad.size
     perm = np.random.permutation(N_bad)
     N_test = int(round(N_bad*.5))
@@ -193,8 +195,8 @@ def flags2binflag(flags, reference_flags):
     flags = combined_flag(flags, reference_flags)
 
     output = ma.masked_all(N, dtype='bool')
-    output[flags==1] = True
-    output[(flags==3) | (flags==4)] = False
+    output[flags == 1] = True
+    output[(flags == 3) | (flags == 4)] = False
 
     return output
 
@@ -205,7 +207,7 @@ def order_unprobable_profiles(datadir, varname):
     qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
     reference_flags = ['global_range', 'gradient_depthconditional',
             'spike_depthconditional', 'digit_roll_over']
-    #hardlimit_flags = ['global_range']
+    # hardlimit_flags = ['global_range']
 
     db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
     aux = db.auxiliary[varname]
@@ -227,7 +229,7 @@ def calibrate_anomaly_detection(datadir, varname):
     qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
     reference_flags = ['global_range', 'gradient_depthconditional',
             'spike_depthconditional', 'digit_roll_over']
-    #hardlimit_flags = ['global_range']
+    # hardlimit_flags = ['global_range']
 
     db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
     aux = db.auxiliary[varname]
@@ -248,7 +250,7 @@ def human_calibrate_mistakes(datadir, varname, niter=5):
     qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
     reference_flags = ['global_range', 'gradient_depthconditional',
             'spike_depthconditional', 'digit_roll_over']
-    #hardlimit_flags = ['global_range']
+    # hardlimit_flags = ['global_range']
 
     db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
 
@@ -283,10 +285,10 @@ def human_calibrate_mistakes(datadir, varname, niter=5):
                     np.array(data[varname][ind_p]),
                     np.array(data['pressure'][ind_p]),
                     baseflag=ind_humanqc[ind_p],
-                    fails=mistakes)#, doubt = ind_doubt[ind])
-            ind_humanqc[np.nonzero(ind_p)[0][h=='good']] = True
-            ind_humanqc[np.nonzero(ind_p)[0][h=='bad']] = False
-            ind_humanqc.mask[np.nonzero(ind_p)[0][h=='doubt']] = True
+                    fails=mistakes)  #, doubt = ind_doubt[ind])
+            ind_humanqc[np.nonzero(ind_p)[0][h == 'good']] = True
+            ind_humanqc[np.nonzero(ind_p)[0][h == 'bad']] = False
+            ind_humanqc.mask[np.nonzero(ind_p)[0][h == 'doubt']] = True
 
             result = adjust_anomaly_coefficients(ind_humanqc, qctests, aux)
             error_log.append({'err': result['err'],
@@ -295,5 +297,5 @@ def human_calibrate_mistakes(datadir, varname, niter=5):
 
         print error_log[-2]
         print error_log[-1]
-    return {'ind_humanqc':ind_humanqc, 'error_log': error_log,
+    return {'ind_humanqc': ind_humanqc, 'error_log': error_log,
             'result': result}
