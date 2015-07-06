@@ -25,7 +25,6 @@ User Documentation
    install
    getting_started
    commandline
-   tests
    qctests
    history
 
