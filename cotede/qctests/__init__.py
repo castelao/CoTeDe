@@ -6,3 +6,4 @@ from descentPrate import descentPrate
 from location_at_sea import location_at_sea
 from density_inversion import density_inversion
 from profile_envelope import profile_envelope
+from fuzzylogic import fuzzylogic

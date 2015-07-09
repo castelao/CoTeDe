@@ -432,6 +432,12 @@ class ProfileQC(object):
                         [ma.masked_all(1),
                             np.diff(self.input['PRES'][ind])])
 
+        if 'fuzzylogic' in cfg:
+            self.flags[v]['fuzzylogic'] = fuzzylogic(
+                    self.input,
+                    v,
+                    cfg['fuzzylogic'])
+
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
