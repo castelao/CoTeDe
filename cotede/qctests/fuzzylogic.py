@@ -29,6 +29,7 @@ def fuzzylogic(data, v, cfg):
 
     # It's not clear at Morello 2014 what is the operator K()
     # Q is the uncertainty, hence Q_low is the low uncertainty
+    # Seems like K() is just a linear factor, which would give the level of uncertainty, like 0.1 for low, 0.5 for medium and 0.9 for high would define weights for each level?! I'm not sure. But the result would be a composite curve, so when the Qs are joinned it would give a curve with the possible values on Q (maybe multiple dimensions) and the y would be the composite result [0, 1].
     Q_low = u_low   # K_low(u_low)
     Q_medium = u_medium   # K_medium(u_medium)
     Q_high = u_high   # K_high(u_high)
