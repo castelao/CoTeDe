@@ -174,7 +174,7 @@ def load_cfg(cfg=None):
         return cfg
     except:
         # Otherwise, search at use's home dirIf can't find inside cotede, try to load from users directory
-        cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
+        cfg = json.loads(expanduser('~/.cotederc/cfg/%s.json' % cfg))
         #self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
         return cfg
