@@ -3,6 +3,12 @@
 History
 -------
 
+0.13 July, 2015
+----
+
+* Partial support to TSG
+* Working on WOA test to generalize for profiles and tracks
+
 0.12
 ----
 

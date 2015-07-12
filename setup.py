@@ -19,7 +19,7 @@ install_requires = [
     'scipy',
     ]
 
-version = '0.13.0'
+version = '0.13.1'
 
 setup(
     name='cotede',
