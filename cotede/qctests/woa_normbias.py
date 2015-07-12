@@ -33,9 +33,9 @@ def woa_normbias(data, v, cfg):
 
     flag = np.zeros(data[v].shape, dtype='i1')
 
-    ind = np.nonzero(woa_normbias <= cfg['woa_comparison']['sigma_threshold'])
+    ind = np.nonzero(woa_normbias <= cfg['sigma_threshold'])
     flag[ind] = 1   # cfg['flag_good']
-    ind = np.nonzero(woa_normbias > cfg['woa_comparison']['sigma_threshold'])
+    ind = np.nonzero(woa_normbias > cfg['sigma_threshold'])
     flag[ind] = 3   # cfg['flag_bad']
 
     # Flag as 9 any masked input value
