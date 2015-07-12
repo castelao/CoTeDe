@@ -2,6 +2,7 @@
 
 from os.path import expanduser
 import re
+from datetime import datetime
 
 import numpy as np
 from numpy import ma
@@ -19,6 +20,7 @@ except:
     print("PyDAP is not available")
 
 from scipy.interpolate import RectBivariateSpline, interp1d
+from scipy.interpolate import griddata
 
 
 # ============================================================================
@@ -184,5 +186,118 @@ def woa_track_from_file(d, lat, lon, filename, varnames=None):
 
     for v in varnames:
         output[v] = ma.fix_invalid(output[v])
+
+    return output
+
+# ---- unifinished, under development ----
+def build_input(doy, depth, lat, lon, filename, varnames):
+    """ Subsample WOA from nc file
+
+        To improve efficiency of interpolation
+    """
+    nc = netCDF4.Dataset(expanduser(filename), 'r')
+
+    output = {}
+    for v in (u'time', u'depth', u'lat', u'lon'):
+        output[v] = nc.variables[v][:]
+    for v in varnames:
+        output[v] = nc.variables[v][:]
+
+    return output
+    # Get the nearest point. In the future interpolate.
+    dn = slice(
+            (np.abs(np.min(doy) - nc.variables['time'][:])).argmin() - 1,
+            (np.abs(np.max(doy) - nc.variables['time'][:])).argmin() + 1
+            )
+    zn = slice(
+            (np.abs(np.min(depth) - nc.variables['depth'][:])).argmin() - 1,
+            (np.abs(np.max(depth) - nc.variables['depth'][:])).argmin() + 1
+            )
+    xn = slice(
+            (np.abs(np.min(lon) - nc.variables['lon'][:])).argmin() - 1,
+            (np.abs(np.max(lon) - nc.variables['lon'][:])).argmin() + 1
+            )
+    yn = slice(
+            (np.abs(np.min(lat) - nc.variables['lat'][:])).argmin() - 1,
+            (np.abs(np.max(lat) - nc.variables['lat'][:])).argmin() + 1
+            )
+
+    # Temporary solution. Improve in the future
+    if dn.start < 0:
+        dn = slice(0, dn.stop, dn.step)
+    if zn.start < 0:
+        zn = slice(0, zn.stop, zn.step)
+    if xn.start < 0:
+        xn = slice(0, xn.stop, xn.step)
+    if yn.start < 0:
+        yn = slice(0, yn.stop, yn.step)
+
+
+def woa_from_file(doy, depth, lat, lon, filename, varnames=None):
+    """
+    Monthly Climatologic Mean and Standard Deviation from WOA,
+    used either for temperature or salinity.
+
+    INPUTS
+        doy: [day of year]
+        lat: [-90<lat<90]
+        lon: [-180<lon<180]
+        depth: [meters]
+
+    Reads the WOA Monthly Climatology NetCDF file and
+    returns the corresponding WOA values of salinity or temperature mean and
+    standard deviation for the given time, lat, lon, depth.
+    """
+
+    doy = np.asanyarray(doy)
+    depth = np.asanyarray(depth)
+    lat = np.asanyarray(lat)
+    lon = np.asanyarray(lon)
+
+    assert np.all(depth >= 0)
+
+    if lon < 0:
+        lon = lon + 360
+
+    nc = netCDF4.Dataset(expanduser(filename), 'r')
+
+    if varnames is None:
+        varnames = []
+        for v in nc.variables.keys():
+            if nc.variables[v].dimensions == (u'time', u'depth', u'lat', u'lon'):
+                varnames.append(v)
+
+    woa = build_input(doy, depth, lat, lon, filename, varnames)
+
+    points_out = []
+    for tn in doy:
+        for zn in depth:
+            for yn in lat:
+                for xn in lon:
+                    points_out.append([tn, zn, yn, xn])
+
+    import pdb; pdb.set_trace()
+    output = []
+    for v in varnames:
+        values = []
+        points = []
+        ind = np.nonzero(~ma.getmaskarray(woa[v]))
+        points = np.array([
+            woa['time'][ind[0]],
+            woa['depth'][ind[0]],
+            woa['lat'][ind[0]],
+            woa['lon'][ind[0]]
+            ]).T
+        values = woa[v][ind]
+
+        for nt, tn in enumerate(woa['time']):
+            for nz, zn in enumerate(woa['depth']):
+                for ny, yn in enumerate(woa['lat']):
+                    for nx, xn in enumerate(woa['lon']):
+                        points.append([tn, zn, yn, xn])
+                        values.append(woa[v][nt, nz, ny, nx])
+        points = np.array(points)
+        values = np.array(points)
+        output[v] = griddata(points, values, points_out)
 
     return output
