@@ -4,23 +4,35 @@
 
 """
 
+from datetime import timedelta
+
 import numpy as np
 from numpy import ma
-from cotede.utils import woa_profile
+from cotede.utils import woa_profile, woa_track_from_file
 
 
 def woa_normbias(data, v, cfg):
 
-    if ('latitude' not in data.keys()) and \
-            ('longitude' not in data.keys()):
+    if ('latitude' in data.keys()) and \
+            ('longitude' in data.keys()):
+                print("Temporary solution!! This is wrong!!")
+                #if 'datetime' not in data.keys():
+                #    d0 = data.attributes['datetime']
+                #    data.data['datetime'] = \
+                #            [d0 + timedelta(seconds=t) for t in data['timeS']]
+                woa = woa_track_from_file(
+                        [data.attributes['datetime']]*len(data['latitude']),
+                        data['latitude'],
+                        data['longitude'],
+                        cfg['file'],
+                        varnames=cfg['vars'])
+    else:
                 woa = woa_profile(v,
-                        data.self.attributes['datetime'],
+                        data.attributes['datetime'],
                         data.attributes['latitude'],
                         data.attributes['longitude'],
                         data['PRES'],
                         cfg)
-    else:
-        woa = None
 
     if woa is None:
         # self.logger.warn("%s - WOA is not available at this site" %
