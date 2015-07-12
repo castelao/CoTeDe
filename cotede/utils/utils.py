@@ -1,6 +1,8 @@
 import os
 from os.path import expanduser
 import re
+import pkg_resources
+import json
 
 import numpy as np
 from numpy import ma
@@ -128,3 +130,51 @@ def savePQCCollection_pandas(db, filename):
         shutil.rmtree("%s.tar.bz2" % filename)
     finally:
         shutil.rmtree(tmpdir)
+
+
+def load_cfg(cfg=None):
+    """ Load the QC configurations
+
+        The possible inputs are:
+            - None: Will use the CoTeDe's default configuration
+
+            - Preset config name [string]: A string with the name of
+                pre-set rules, like 'cotede', 'egoos' or 'gtspp'.
+
+            - User configs [dict]: a dictionary composed by the variables
+                to be evaluated as keys, and inside it another dictionary
+                with the tests to perform as keys. example
+                {'main':{
+                    'valid_datetime': None,
+                    },
+                'temperature':{
+                    'global_range':{
+                        'minval': -2.5,
+                        'maxval': 45,
+                        },
+                    },
+                }
+    """
+    # A given manual configuration has priority
+    if type(cfg) is dict:
+        #self.cfg = cfg
+        #self.logger.debug("%s - User's QC cfg." % self.name)
+        return cfg
+
+    # Need to safe_eval before allow to load rules from .cotederc
+    if cfg is None:
+        cfg = 'cotede'
+
+    #if cfg in pkg_resources.resource_listdir('cotede', 'qc_cfg'):
+    try:
+        # If cfg is available in qc_cfg, use it
+        cfg = json.loads(pkg_resources.resource_string('cotede',
+            "qc_cfg/%s.json" % cfg))
+        #self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
+        return cfg
+    except:
+        # Otherwise, search at use's home dirIf can't find inside cotede, try to load from users directory
+        cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
+        #self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
+        #            (self.name, cfg))
+        return cfg

@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 from cotede.qctests import *
 from cotede.misc import combined_flag
 from cotede.utils import get_depth, woa_profile
+from cotede.utils import load_cfg
 
 
 class ProfileQC(object):
@@ -51,7 +52,7 @@ class ProfileQC(object):
             assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
 
-        self.load_cfg(cfg)
+        self.cfg = load_cfg(cfg)
 
         self.input = input
         if attributes is None:
@@ -91,52 +92,6 @@ class ProfileQC(object):
         """ Return the key array from self.data
         """
         return self.input[key]
-
-    def load_cfg(self, cfg):
-        """ Load the QC configurations
-
-            The possible inputs are:
-                - None: Will use the CoTeDe's default configuration
-
-                - Preset config name [string]: A string with the name of
-                    pre-set rules, like 'cotede', 'egoos' or 'gtspp'.
-
-                - User configs [dict]: a dictionary composed by the variables
-                    to be evaluated as keys, and inside it another dictionary
-                    with the tests to perform as keys. example
-                    {'main':{
-                        'valid_datetime': None,
-                        },
-                    'temperature':{
-                        'global_range':{
-                            'minval': -2.5,
-                            'maxval': 45,
-                            },
-                        },
-                    }
-        """
-        # A given manual configuration has priority
-        if type(cfg) is dict:
-            self.cfg = cfg
-            self.logger.debug("%s - User's QC cfg." % self.name)
-            return
-
-        # Need to safe_eval before allow to load rules from .cotederc
-        if cfg is None:
-            cfg = 'cotede'
-
-        # If it's a name of a config, try to get from CoTeDe's package
-        try:
-            self.cfg = json.loads(pkg_resources.resource_string(__name__,
-                "qc_cfg/%s" % cfg))
-            if self.verbose is True:
-                self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
-        # If can't find inside cotede, try to load from users directory
-        except:
-            self.cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
-            if self.verbose is True:
-                self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
-                        (self.name, cfg))
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():

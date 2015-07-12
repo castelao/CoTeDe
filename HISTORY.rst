@@ -8,6 +8,8 @@ History
 
 * Partial support to TSG
 * Working on WOA test to generalize for profiles and tracks
+* Adding .json to default QC configuration files
+* Moved load_cfg from qc to utils
 
 0.12
 ----
