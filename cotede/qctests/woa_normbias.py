@@ -39,7 +39,7 @@ def woa_normbias(data, v, cfg):
     flag[ind] = 3   # cfg['flag_bad']
 
     # Flag as 9 any masked input value
-    flags[ma.getmaskarray(data[v])] = 9
+    flag[ma.getmaskarray(data[v])] = 9
 
 
     return flag, woa_normbias
