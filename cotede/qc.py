@@ -3,7 +3,7 @@
 
 import pkg_resources
 from datetime import datetime
-from os.path import basename, expanduser
+from os.path import basename
 import re
 import json
 import logging
@@ -17,7 +17,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
-from cotede.utils import get_depth, woa_profile
 from cotede.utils import load_cfg
 
 
