@@ -23,3 +23,8 @@ def test_woa_profile_from_file():
             cfg={"file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
                 "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}}
             )
+
+
+def  test_woa_track_from_file():
+    output = woa.woa_track_from_file([datetime.now()]*2, [0, -34], [-30, -40],
+            filename="~/.cotederc/data/temperature_seasonal_5deg.nc")
