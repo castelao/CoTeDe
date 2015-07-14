@@ -147,7 +147,7 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
 def split_data_groups(ind):
     """ Splits randomly the indices into fit, test and error groups
 
-        Return 3 indices set:
+        Return a dictionary with 3 indices set:
             - ind_fit with 60% of the good
             - ind_test with 20% of the good and 50% of the bad
             - ind_eval with 20% of the good and 50% of the bad
@@ -159,7 +159,7 @@ def split_data_groups(ind):
     ind_valid = ~ma.getmaskarray(ind)
 
     # ==== Good data ==================
-    ind_good = np.nonzero((ind is True) & ind_valid)[0]
+    ind_good = np.nonzero(ind  & ind_valid)[0]
     N_good = ind_good.size
     perm = np.random.permutation(N_good)
     N_fit = int(round(N_good*.6))
@@ -172,7 +172,7 @@ def split_data_groups(ind):
     ind_err[ind_good[perm[-N_test:]]] = True
 
     # ==== Bad data ===================
-    ind_bad = np.nonzero((ind is False) & ind_valid)[0]
+    ind_bad = np.nonzero(ind & ind_valid)[0]
     N_bad = ind_bad.size
     perm = np.random.permutation(N_bad)
     N_test = int(round(N_bad*.5))
