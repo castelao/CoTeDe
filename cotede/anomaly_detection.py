@@ -41,7 +41,7 @@ def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
         output[test] = {'param': param,
                 'qlimit': samp.quantile(q)}
 
-        if verbose == True:
+        if verbose is True:
             import pylab
             x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
@@ -67,12 +67,12 @@ def estimate_p_optimal(prob, qc, verbose=False):
     err = []
     P = 10.**np.arange(-12, 0, 0.1)
     for p in P:
-        false_negative = (prob < p) & (qc == True)
-        false_positive = (prob > p) & (qc == False)
+        false_negative = (prob < p) & (qc is True)
+        false_positive = (prob > p) & (qc is False)
         err.append(np.nonzero(false_negative)[0].size + \
                 np.nonzero(false_positive)[0].size)
     err = np.array(err)
-    if verbose == True:
+    if verbose is True:
         pylab.plot(P, err , 'b'); pylab.show()
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
