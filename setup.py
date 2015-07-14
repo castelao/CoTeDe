@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
 
 try:
     from setuptools import setup
@@ -37,7 +39,7 @@ setup(
     ],
     package_dir = {'cotede':
                    'cotede'},
-    license='License :: OSI Approved :: BSD License',
+    license='3-clause BSD',
     install_requires=install_requires,
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -45,6 +47,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
+        'License :: OSI Approved :: BSD License',
         ],
     keywords='CTD TSG SeaBird ARGO Quality Control oceanography hydrography',
     include_package_data=True,
