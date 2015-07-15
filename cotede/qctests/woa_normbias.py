@@ -13,24 +13,24 @@ from cotede.utils import woa_profile, woa_track_from_file
 
 def woa_normbias(data, v, cfg):
 
-    if ('latitude' in data.keys()) and \
-            ('longitude' in data.keys()):
+    if ('LATITUDE' in data.keys()) and \
+            ('LONGITUDE' in data.keys()):
                 print("Temporary solution!! This is wrong!!")
                 #if 'datetime' not in data.keys():
                 #    d0 = data.attributes['datetime']
                 #    data.data['datetime'] = \
                 #            [d0 + timedelta(seconds=t) for t in data['timeS']]
                 woa = woa_track_from_file(
-                        [data.attributes['datetime']]*len(data['latitude']),
-                        data['latitude'],
-                        data['longitude'],
+                        [data.attributes['datetime']]*len(data['LATITUDE']),
+                        data['LATITUDE'],
+                        data['LONGITUDE'],
                         cfg['file'],
                         varnames=cfg['vars'])
     else:
                 woa = woa_profile(v,
                         data.attributes['datetime'],
-                        data.attributes['latitude'],
-                        data.attributes['longitude'],
+                        data.attributes['LATITUDE'],
+                        data.attributes['LONGITUDE'],
                         data['PRES'],
                         cfg)
 
