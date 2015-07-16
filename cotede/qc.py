@@ -12,7 +12,7 @@ import numpy as np
 from numpy import ma
 
 from seabird import cnv, CNVError
-from seabird.utils import basic_logger
+#from seabird.utils import basic_logger
 logging.basicConfig(level=logging.DEBUG)
 
 from cotede.qctests import *
@@ -39,7 +39,8 @@ class ProfileQC(object):
                 not defined, take the default value.
             - Is the best return another dictionary?
         """
-        self.logger = logger or logging.getLogger(__name__)
+        #self.logger = logger or logging.getLogger(__name__)
+        logging.getLogger(logger or __name__)
 
         try:
             self.name = input.filename
@@ -72,9 +73,8 @@ class ProfileQC(object):
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
-                    if verbose is True:
-                        self.logger.debug(" %s - evaluating: %s, as type: %s" %
-                                (self.name, v, c))
+                    logging.debug(" %s - evaluating: %s, as type: %s" %
+                            (self.name, v, c))
                     self.evaluate(v, self.cfg[c])
                     break
 
@@ -94,7 +94,7 @@ class ProfileQC(object):
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
-            self.logger.warn("ATTENTION, there is no main setup in the QC cfg")
+            logging.warn("ATTENTION, there is no main setup in the QC cfg")
             return
 
         self.flags['common'] = {}
@@ -166,10 +166,10 @@ class ProfileQC(object):
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
         if 'regional_range' in cfg:
-            pass
+            logging.warn("Sorry, I'm no ready to evaluate regional_range()")
 
         if 'pressure_increasing' in cfg:
-            pass
+            logging.warn("Sorry, I'm no ready to evaluate pressure_increasing()")
 
         if 'profile_envelope' in cfg:
             self.flags[v]['profile_envelope'] = profile_envelope(
@@ -261,19 +261,19 @@ class ProfileQC(object):
             self.flags[v]['spike_depthconditional'] = flag
 
         if 'stuck_value' in cfg:
-            print "Sorry I'm not ready to evaluate stuck_value()"
+            logging.warn("Sorry I'm not ready to evaluate stuck_value()")
 
         if 'grey_list' in cfg:
-            print "Sorry I'm not ready to evaluate grey_list()"
+            logging.warn("Sorry I'm not ready to evaluate grey_list()")
 
         if 'gross_sensor_drift' in cfg:
-            print "Sorry I'm not ready to evaluate gross_sensor_drift()"
+            logging.warn("Sorry I'm not ready to evaluate gross_sensor_drift()")
 
         if 'frozen_profile' in cfg:
-            print "Sorry I'm not ready to evaluate frozen_profile()"
+            logging.warn("Sorry I'm not ready to evaluate frozen_profile()")
 
         if 'deepest_pressure' in cfg:
-            print "Sorry I'm not ready to evaluate deepest_pressure()"
+            logging.warn("Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
             """
@@ -362,6 +362,7 @@ class ProfileQC(object):
                 del(tmp)
 
         if 'woa_comparison' in cfg:
+            logging.warn("ATTENTION!!! woa_comparison is deprecated")
             raise
 
         if 'pstep' in cfg:
@@ -380,7 +381,7 @@ class ProfileQC(object):
             self.auxiliary['common']['descentPrate'] = \
                     descentPrate(self.input)
         except:
-            self.logger.warn("Failled to run descentPrate")
+            logging.warn("Failled to run descentPrate")
 
 
 class fProfileQC(ProfileQC):
@@ -390,7 +391,8 @@ class fProfileQC(ProfileQC):
             logger=None):
         """
         """
-        self.logger = logger or logging.getLogger(__name__)
+        #self.logger = logger or logging.getLogger(__name__)
+        logging.getLogger(logger or __name__)
         self.name = 'fProfileQC'
 
         try:
@@ -399,11 +401,12 @@ class fProfileQC(ProfileQC):
             input = cnv.fCNV(inputfile, logger=None)
         except CNVError as e:
             #self.attributes['filename'] = basename(inputfile)
-            self.logger.error(e.msg)
+            logging.error(e.msg)
             raise
 
         super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary, verbose=verbose)
+                saveauxiliary=saveauxiliary, verbose=verbose,
+                logger=logger)
 
 
 class ProfileQCed(ProfileQC):
