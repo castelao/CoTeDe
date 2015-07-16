@@ -17,11 +17,11 @@ with open('HISTORY.rst') as history_file:
 
 install_requires = [
     'numpy>=1.1',
-    'seabird>=0.5.8',
+    'seabird>=0.6.1',
     'scipy',
     ]
 
-version = '0.13.2'
+version = '0.13.3'
 
 setup(
     name='cotede',
