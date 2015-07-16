@@ -9,7 +9,7 @@ import multiprocessing as mp
 import numpy as np
 from numpy import ma
 
-from seabird import cnv, CNVError
+from seabird import CNVError
 
 from cotede.utils import make_file_list
 #from cotede.qc import fProfileQC
@@ -26,8 +26,7 @@ def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
             p = cotede.qc.fProfileQC(f, cfg, saveauxiliary, verbose=verbose)
             profiles.append(p)
         except CNVError as e:
-            #print e.msg
-            pass
+            print e.msg
     return profiles
 
 
@@ -37,7 +36,6 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
     """
     npes = 2 * mp.cpu_count()
     npes = min(npes, len(inputfiles))
-    pool = mp.Pool(npes)
     queuesize = 3*npes
     qout = mp.Queue(queuesize)
     teste = []
@@ -60,7 +58,7 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
             pool[-1].start()
 
         for i, f in enumerate(inputfiles[npes:]):
-            n = i%npes
+            n = i % npes
             pool[n].join(timeout)
             if pool[n].is_alive():
                 print("timeout: %s" % pool[n])
@@ -83,7 +81,7 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
     profiles = []
     while worker.is_alive() or not qout.empty():
         if qout.empty():
-            #print("Queue is empty. I'll give a break.")
+            # print("Queue is empty. I'll give a break.")
             time.sleep(2)
         else:
             # Dummy way to fix pickling on Queue
@@ -113,7 +111,7 @@ class ProfilesQCCollection(object):
 
         self.profiles = process_profiles(self.inputfiles, cfg, saveauxiliary,
                 timeout=timeout)
-        #self.profiles = process_profiles_serial(self.inputfiles, cfg,
+        # self.profiles = process_profiles_serial(self.inputfiles, cfg,
         #        saveauxiliary)
 
         self.data = {'id': [], 'profileid': [], 'profilename': []}
@@ -127,7 +125,7 @@ class ProfilesQCCollection(object):
 
             # Be sure that all have the same lenght.
             for v in p.keys():
-                assert p[v].size== N
+                assert p[v].size == N
             ids = offset + np.arange(N)
             self.data['id'] = np.append(self.data['id'],
                     ids).astype('i')
@@ -238,12 +236,12 @@ class ProfilesQCPandasCollection(object):
 
     def save(self, filename):
         store = pd.HDFStore(filename)
-        #self.data.to_hdf("%s_data.hdf" % filename, 'df')
+        # self.data.to_hdf("%s_data.hdf" % filename, 'df')
         store.append('data', self.data)
         for k in self.flags.keys():
-            #self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+            # self.flags[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
             store.append("flags_%s" % k, self.flags[k])
         if hasattr(self, 'auxiliary'):
             for k in self.auxiliary.keys():
-                #self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
+                # self.auxiliary[k].to_hdf("%s_flags_%s.hdf" % (filename, k), 'df')
                 store.append("auxiliary_%s" % k, self.auxiliary[k])
