@@ -307,6 +307,10 @@ def rank_files(datadir, varname, cfg=None):
 
 
     """
+    import pandas as pd
+
+    assert type(varname) is str
+
     qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
     reference_flags = ['global_range', 'gradient_depthconditional',
             'spike_depthconditional', 'digit_roll_over']
