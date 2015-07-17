@@ -301,7 +301,7 @@ def human_calibrate_mistakes(datadir, varname, niter=5):
             'result': result}
 
 
-def rank_files(datadir, varname, cfg):
+def rank_files(datadir, varname, cfg=None):
     """
         Ordered list from datadir files of probably bad data
 
@@ -312,7 +312,7 @@ def rank_files(datadir, varname, cfg):
             'spike_depthconditional', 'digit_roll_over']
     # hardlimit_flags = ['global_range']
 
-    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
+    db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
     ind = db.flags[varname]['global_range'] == 1
     aux = db.auxiliary[varname][ind]
 
