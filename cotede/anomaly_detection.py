@@ -299,3 +299,30 @@ def human_calibrate_mistakes(datadir, varname, niter=5):
         print error_log[-1]
     return {'ind_humanqc': ind_humanqc, 'error_log': error_log,
             'result': result}
+
+
+def rank_files(datadir, varname, cfg):
+    """
+        Ordered list from datadir files of probably bad data
+
+
+    """
+    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
+    reference_flags = ['global_range', 'gradient_depthconditional',
+            'spike_depthconditional', 'digit_roll_over']
+    # hardlimit_flags = ['global_range']
+
+    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
+    ind = db.flags[varname]['global_range'] == 1
+    aux = db.auxiliary[varname][ind]
+
+    features = aux.drop(['id','profileid'], axis=1)
+    params = fit_tests(features)
+    prob = estimate_anomaly(aux, params)
+
+    tmp = db.data.loc[ind, ['profilename']]
+    tmp.loc[:, 'anomaly_detection'] = pd.Series(prob, index=tmp.index)
+    grp = tmp.groupby('profilename')
+    output = grp.min().sort('anomaly_detection').index.tolist()
+
+    return output
