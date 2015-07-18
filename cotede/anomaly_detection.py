@@ -306,6 +306,18 @@ def rank_files(datadir, varname, cfg=None):
         Ordered list from datadir files of probably bad data
 
 
+        The concept is for a recommendation system for Human Q.C.
+
+            - Input: Lista de arquivo | diretório
+            - Pandas Collection:
+                - Load all files and return flags plus features (aux)
+            - Fit features, on full DB, there is no split data
+            - With the parameters on the previous step estimate the
+                probability of each measurement
+            - Create a list sorted by:
+                - Produtorium of all probabilities or,
+                - Min(P(x_i)), the lowest probability for each measurement
+            - The output would be a list to feed the Human Q.C. system
     """
     import pandas as pd
 
