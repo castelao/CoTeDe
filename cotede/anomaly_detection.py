@@ -53,13 +53,35 @@ def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
     return output
 
 
-def estimate_anomaly(aux, params):
-    prob = ma.ones(aux.shape[0])
+def estimate_anomaly(features, params, method='produtorium'):
+    """ Estimate probability from PDF defined by params
+
+        The output is the natural logarithm of the estimated probability.
+
+        params are the parameters that define the PDF for each feature
+          in features. This function estimate the combined probability of
+          each row in features as the produtorium between the probabilities
+          of the different features on the same row.
+    """
+    assert hasattr(params, 'keys')
+    assert hasattr(features, 'keys')
+
+    prob = ma.zeros(features.shape[0])
+
     for t in params.keys():
         param = params[t]['param']
-        ind = np.array(np.isfinite(aux[t]))
-        prob[ind] = prob[ind] * \
-                exponweib.sf(aux[t][ind], *param[:-2], loc=param[-2], scale=param[-1])
+        ind = np.array(np.isfinite(features[t]))
+        if method == 'produtorium':
+            prob[ind] = prob[ind] + \
+                    ma.log(exponweib.sf(features[t][ind],
+                        *param[:-2], loc=param[-2], scale=param[-1]))
+        elif method == 'min':
+            prob[ind] = min(prob[ind], \
+                    ma.log(exponweib.sf(features[t][ind],
+                        *param[:-2], loc=param[-2], scale=param[-1])))
+        else:
+            return
+
     return prob
 
 
