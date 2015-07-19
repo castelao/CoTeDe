@@ -223,28 +223,6 @@ def flags2binflag(flags, reference_flags):
     return output
 
 
-def order_unprobable_profiles(datadir, varname):
-    """ Return a list of profiles ordered by less probable data
-    """
-    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
-    reference_flags = ['global_range', 'gradient_depthconditional',
-            'spike_depthconditional', 'digit_roll_over']
-    # hardlimit_flags = ['global_range']
-
-    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
-    aux = db.auxiliary[varname]
-
-    params = fit_tests(aux, qctests, q=.9,)
-    prob = estimate_anomaly(aux, params)
-
-    profilename = np.asanyarray(db.data['profilename'])
-    output = []
-    for pid in np.unique(profilename):
-        output.append([pid, min(prob[profilename == pid])])
-
-    return [x[0] for x in sorted(output, key=lambda x: x[1])]
-
-
 def calibrate_anomaly_detection(datadir, varname):
     """
     """
@@ -352,7 +330,7 @@ def rank_files(datadir, varname, cfg=None):
     aux = db.auxiliary[varname][ind]
     features = aux.drop(['id','profileid'], axis=1)
 
-    params = fit_tests(features)
+    params = fit_tests(features, q=.9)
     # Note that I'm already filtering to positions ind, i.e. valid
     #   global range limits. Global range is too obvious and should
     #   be left aside.
@@ -364,3 +342,10 @@ def rank_files(datadir, varname, cfg=None):
     output = grp.min().sort('anomaly_detection').index.tolist()
 
     return output
+
+    # profilename = np.asanyarray(db.data['profilename'])
+    # output = []
+    # for pid in np.unique(profilename):
+    #     output.append([pid, min(prob[profilename == pid])])
+
+    # return [x[0] for x in sorted(output, key=lambda x: x[1])]
