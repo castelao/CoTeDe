@@ -23,12 +23,22 @@ def test_split_data_groups():
     indices = split_data_groups(ind)
 
     assert type(indices) is dict
-    assert sorted(indices.keys()) == ['ind_err', 'ind_fit', 'ind_test']
+    assert sorted(indices.keys()) == ['err', 'fit', 'test']
     N = ind.size
     for k in indices:
         indices[k].size == N
         assert indices[k].any(), "%s are all True" % k
         assert (~indices[k]).any(), "%s are all False" % k
+
+    # Fit group is all True, but err & test must have both
+    assert ind[indices['fit']].all()
+    for k in ['err', 'test']:
+        assert (not ind[indices[k]].all()) and (ind[indices[k]].any())
+
+
+def test_estimate_anomaly():
+    # FIXME: Need to do it.
+    pass
 
 
 def test_rank_files():
