@@ -203,20 +203,25 @@ def split_data_groups(ind):
     return {'fit': ind_fit, 'test': ind_test, 'err': ind_err}
 
 
-def flags2binflag(flags, reference_flags):
+def flags2bin(flags, good_flags=[1,2], bad_flags=[3,4]):
     """
     """
 
-    # The different flags must have same ammount of data.
-    N = len(flags[flags.keys()[0]])
-    for f in flags:
-        assert len(flags[f]) == N
+    if hasattr(flags, 'keys'):
+        # The different flags must have same ammount of data.
+        N = len(flags[flags.keys()[0]])
+        for f in flags:
+            assert len(flags[f]) == N
 
-    flags = combined_flag(flags, reference_flags)
+        flags = combined_flag(flags, reference_flags)
+    else:
+        N = len(flags)
 
     output = ma.masked_all(N, dtype='bool')
-    output[flags == 1] = True
-    output[(flags == 3) | (flags == 4)] = False
+    for f in good_flags:
+        output[flags == f] = True
+    for f in bad_flags:
+        output[flags == f] = False
 
     return output
 

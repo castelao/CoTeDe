@@ -8,32 +8,29 @@ import tempfile
 import shutil
 
 import numpy as np
+from numpy import ma
 
 from cotede.utils.supportdata import download_testdata
 from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
+from cotede.anomaly_detection import flags2bin
 
 
 datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
 INPUTFILES = [download_testdata(f) for f in datalist]
 
 
-def test_split_data_groups():
-    ind = np.random.random(100) < 0.7
-    indices = split_data_groups(ind)
+def test_flags2bin(n=100):
+    flag = ma.concatenate([np.random.randint(0,5,n),
+        ma.masked_all(2, dtype='int8')])
 
-    assert type(indices) is dict
-    assert sorted(indices.keys()) == ['err', 'fit', 'test']
-    N = ind.size
-    for k in indices:
-        indices[k].size == N
-        assert indices[k].any(), "%s are all True" % k
-        assert (~indices[k]).any(), "%s are all False" % k
+    binflags = flags2bin(flag)
 
-    # Fit group is all True, but err & test must have both
-    assert ind[indices['fit']].all()
-    for k in ['err', 'test']:
-        assert (not ind[indices[k]].all()) and (ind[indices[k]].any())
+    assert type(binflags) == ma.MaskedArray
+    assert binflags.dtype == 'bool'
+    assert binflags.shape == (n+2,)
+    assert binflags.mask[flag.mask].all(), \
+            "All masked flags records should be also masked at binflags"
 
 
 def test_estimate_anomaly():
