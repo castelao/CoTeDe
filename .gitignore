@@ -39,3 +39,6 @@ nosetests.xml
 data/*
 
 docs/notebooks/.ipynb_checkpoints
+
+test_data
+references
