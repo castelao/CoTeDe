@@ -14,6 +14,7 @@ from cotede.utils.supportdata import download_testdata
 from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
 from cotede.anomaly_detection import flags2bin
+from cotede.anomaly_detection import estimate_p_optimal
 
 
 datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
@@ -50,3 +51,17 @@ def test_rank_files():
 
     assert type(output) is list
     assert output == ['dPIRX010.cnv', 'dPIRX003.cnv', 'PIRA001.cnv']
+
+
+def test_estimate_p_optimal(n=100):
+    prob = -1e2*np.random.random(n)
+
+    binflag = np.ones(n, dtype='bool')
+    p, err = estimate_p_optimal(prob, binflag)
+    assert p < prob.min()
+    assert err == 0
+
+    #binflag = np.zeros(n, dtype='bool')
+    #p, err = estimate_p_optimal(prob, binflag)
+    #assert p > prob.max()
+    #assert err = 0

@@ -85,17 +85,31 @@ def estimate_anomaly(features, params, method='produtorium'):
     return prob
 
 
-def estimate_p_optimal(prob, qc, verbose=False):
+def estimate_p_optimal(prob, binflag, verbose=False):
+    """ ATENTION: I'm not happy with this. Improve it
+
+        Maybe use flag as input, and optimize to give 3 thresholds
+    """
+    assert prob.shape == binflag.shape
+    assert binflag.dtype == 'bool'
+
     err = []
-    P = 10.**np.arange(-12, 0, 0.1)
-    for p in P:
-        false_negative = (prob < p) & (qc is True)
-        false_positive = (prob > p) & (qc is False)
-        err.append(np.nonzero(false_negative)[0].size + \
-                np.nonzero(false_positive)[0].size)
-    err = np.array(err)
+    p_limit = prob[np.nonzero(binflag)].min() - 0.1
+    P = -np.arange(0, -p_limit, 0.1)
+    N = P.size
+    err = np.empty(N)
+    false_negative = np.empty(N)
+    false_positive = np.empty(N)
+    for i, p in enumerate(P):
+        # The nonzero is necessary in case binflag is a masked array.
+        false_negative[i] = np.nonzero(prob[np.nonzero(binflag)] < p)[0].size
+        false_positive[i] = np.nonzero(prob[np.nonzero(~binflag)] > p)[0].size
+        err[i] = false_negative[i] + false_positive[i]
+
     if verbose is True:
+        import pylab
         pylab.plot(P, err , 'b'); pylab.show()
+
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
 
