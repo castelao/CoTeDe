@@ -37,7 +37,9 @@ def woa_normbias(data, v, cfg):
     if woa is None:
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
-        return None, None
+        flag = np.zeros(data[v].shape, dtype='i1')
+        woa_normbias = ma.masked_all(data[v].shape)
+        return flag, woa_normbias
 
     woa_bias = ma.absolute(data[v] - woa['woa_an'])
     woa_normbias = woa_bias/woa['woa_sd']
