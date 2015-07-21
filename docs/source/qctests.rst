@@ -5,6 +5,14 @@ Tests for Quality Control
 These are the tests available, and can be explicity accessed at cotede.qctests. 
 Most of them simply reproduce the procedure recommended by GTSPP, EuroGOOS, IMOS, ARGO and others.
 
+Although I slightly modified the names of some Q.C.test, the concept behind is still the same. 
+The goal was to normalize all tests to return True if the data is good and False if the data is bad. 
+For example, ARGO's manual define "Impossible Date Test", while here I call it "`Valid Date`_". 
+
+
+The result of each test for each measurement is coded according to recommendation of IOC given in the table below. 
+For example, if the climatology database is not available, the output flag would be 0, while a fail on the same climatology test would return a flag 3 for GTSPP procedure.
+
 Flag table
 
 ====    =======
@@ -25,6 +33,8 @@ Tests
 
 Valid Date
 ~~~~~~~~~~
+
+Check if date is available and it is valid. For ARGO, the year also must be later than 1997.
 
 Valid Position
 ~~~~~~~~~~~~~~
