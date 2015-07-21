@@ -231,7 +231,7 @@ class ProfilesQCPandasCollection(object):
         tmp = self.flags[key].copy()
         tmp[key] = self.data[key]
         tmp['timeS'] = self.data['timeS']
-        tmp['pressure'] = self.data['pressure']
+        tmp['PRES'] = self.data['PRES']
         return tmp
 
     def save(self, filename):
