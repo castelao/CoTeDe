@@ -34,6 +34,29 @@ def test_flags2bin(n=100):
             "All masked flags records should be also masked at binflags"
 
 
+def test_split_data_groups(n=100):
+    flag = ma.concatenate([np.random.randint(0,5,n),
+        ma.masked_all(2, dtype='int8')])
+
+    indices = split_data_groups(flag)
+
+    assert type(indices) is dict
+    assert sorted(indices.keys()) == ['err', 'fit', 'test']
+    for k in indices:
+        indices[k].size == n
+        assert indices[k].dtype == 'bool'
+        # Necessarily each group have trues and falses
+        assert indices[k].any(), "%s are all True" % k
+        assert (~indices[k]).any(), "%s are all False" % k
+        # Indices return only valid data. Ignore masked.
+        assert ~flag[indices[k]].mask.any()
+
+    # Fit group is all True, but err & test must have both
+    assert sorted(np.unique(flag[indices['fit']])) == [1,2]
+    for k in ['err', 'test']:
+        assert sorted(np.unique(flag[indices[k]])) == [1,2,3,4]
+
+
 def test_estimate_anomaly():
     # FIXME: Need to do it.
     pass

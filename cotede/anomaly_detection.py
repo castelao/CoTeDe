@@ -180,7 +180,7 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
     return output
 
 
-def split_data_groups(ind):
+def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     """ Splits randomly the indices into fit, test and error groups
 
         Return a dictionary with 3 indices set:
@@ -188,7 +188,13 @@ def split_data_groups(ind):
             - ind_test with 20% of the good and 50% of the bad
             - ind_eval with 20% of the good and 50% of the bad
     """
-    assert ind.dtype == 'bool'
+    assert flag.dtype != 'bool'
+
+    ind = ma.masked_all(len(flag), dtype='bool')
+    for f in good_flags:
+        ind[flag == f] = True
+    for f in bad_flags:
+        ind[flag == f] = False
 
     N = ind.size
     ind_base = np.zeros(N) == 1
