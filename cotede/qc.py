@@ -145,13 +145,13 @@ class ProfileQC(object):
                 self.auxiliary[v] = {}
 
         if 'platform_identification' in cfg:
-            print "Sorry I'm not ready to evaluate platform_identification()"
+            logging.warn("Sorry I'm not ready to evaluate platform_identification()")
 
         if 'valid_geolocation' in cfg:
-            print "Sorry I'm not ready to evaluate valid_geolocation()"
+            logging.warn("Sorry I'm not ready to evaluate valid_geolocation()")
 
         if 'valid_speed' in cfg:
-            print "Sorry I'm not ready to evaluate valid_speed()"
+            logging.warn("Sorry I'm not ready to evaluate valid_speed()")
 
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
