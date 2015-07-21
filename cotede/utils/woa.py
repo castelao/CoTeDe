@@ -25,6 +25,9 @@ from scipy.interpolate import griddata
 
 # ============================================================================
 def woa_profile(var, d, lat, lon, depth, cfg):
+    # Must improve here. This try make sense if fail because there isn't an
+    #   etopo file, but if fail for another reason, like there is no lat,
+    #   it will loose time trying from_dap.
     try:
         woa = woa_profile_from_file(var,
                 d, lat, lon, depth, cfg)
