@@ -15,6 +15,7 @@ from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
 from cotede.anomaly_detection import flags2bin
 from cotede.anomaly_detection import estimate_p_optimal
+from cotede.anomaly_detection import calibrate_anomaly_detection
 
 
 datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
@@ -83,3 +84,18 @@ def test_estimate_p_optimal(n=100):
     #p, err = estimate_p_optimal(prob, binflag)
     #assert p > prob.max()
     #assert err = 0
+
+
+def test_calibrate_anomaly_detection():
+    try:
+        tmpdir = tempfile.mkdtemp()
+        for f in INPUTFILES:
+            shutil.copy(f, tmpdir)
+
+        output = calibrate_anomaly_detection(tmpdir, 'TEMP', cfg='cotede')
+    finally:
+        shutil.rmtree(tmpdir)
+
+    assert type(output) is dict
+    assert sorted(output.keys()) == ['err', 'err_ratio', 'false_negative',
+            'false_positive', 'p_optimal', 'params', 'prob']
