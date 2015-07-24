@@ -1,0 +1,35 @@
+{"TEMP": {
+	"anomaly_detection": {
+		"threshold": -35.1,
+		"features": {
+			"spike": {
+				"model": "exponweib",
+				"qlimit": 0.000900,
+				"param": [0.517448, 0.801291 , 0.000300, 0.012925]
+			},
+			"tukey53H_norm": {
+				"model": "exponweib",
+				"qlimit": 0.001090,
+			       	"param": [0.650092, 0.728563, 0.001090, 0.005681]
+			}
+		}
+	}
+    },
+"PSAL": {
+	"anomaly_detection": {
+		"threshold": -37.4,
+		"features": {
+			"spike": {
+				"model": "exponweib",
+				"qlimit": 0.000300,
+				"param": [3.279995, 0.266685, 0.000300, 0.000131]
+			},
+			"tukey53H_norm": {
+				"model": "exponweib",
+				"qlimit": 0.001090,
+			       	"param": [2.115739, 0.471285, 0.001110, 0.000705]
+			}
+		}
+	}
+    }
+}
