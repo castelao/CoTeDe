@@ -361,10 +361,6 @@ class ProfileQC(object):
                         woa_normbias(self.input, v, cfg['woa_normbias'])
                 del(tmp)
 
-        if 'woa_comparison' in cfg:
-            logging.warn("ATTENTION!!! woa_comparison is deprecated")
-            raise
-
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
             if self.saveauxiliary:
