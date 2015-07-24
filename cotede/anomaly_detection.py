@@ -1,6 +1,32 @@
 # -*- coding: utf-8 -*-
 
 """
+
+
+Target: Initially two main functionalities
+
+- Quality control flagging
+    - Input:
+        - Lista de arquivo | diretório
+        - Q.C. config (can be a file)
+        - Features (just varnames)
+    - Pandas Collection:
+        - Load all files and return flags plus features (aux)
+    - Split groups: fit, test, eval
+    - Calibrate:
+        - Fit PDF parameters for each feature using fit group
+        - Define the optimal thresholds comparing with flags from Q.C. config
+            - There is the possibility to human interaction to overwrite the flags from the auto Q.C.
+        - Estimate the error
+        - The threshold between good or bad flags were defined on the second step, but now consider the whole dataset. The highest probability of any bad value is the thresholds between 1 and 2. In other words, all data with higher probability that this threshold where good. Between this threshold and the optimal previously defined there were bad data, but it was mostly good ones, hence flag 2 which means probably good. With the same concept define the threshold between flags 3 and 4.
+
+    With the coeficients determined, an independent procedure to flag all data. Independent because the anomaly detection flagging itself can simply be loaded by previsouly defined coeficients, hence start already from this point.
+    - Fit features, on full DB, there is no split data
+    - With the parameters on the previous step estimate the probability of each measurement
+    - Create a list sorted by:
+        - Produtorium of all probabilities or,
+        - Min(P(x_i)), the lowest probability for each measurement
+    - The output would be a list to feed the Human Q.C. system
 """
 
 import numpy as np
