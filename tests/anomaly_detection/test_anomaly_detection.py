@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Check density inversion QC test
+""" Check anomaly detection QC test
 """
 
 import tempfile
