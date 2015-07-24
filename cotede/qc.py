@@ -368,6 +368,22 @@ class ProfileQC(object):
                         [ma.masked_all(1),
                             np.diff(self.input['PRES'][ind])])
 
+        if 'anomaly_detection' in  cfg:
+            features = {}
+            for f in cfg['anomaly_detection']['features']:
+                if f == 'spike':
+                    features['spike'] = spike(self.input[v])
+                elif f == 'gradient':
+                    features['gradient'] = gradient(self.input[v])
+                elif f == 'tukey53H_norm':
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
+                            k=1.5)
+                else:
+                    logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
+
+            self.flags[v]['anomaly_detection'] = \
+                    anomaly_detection(features, cfg['anomaly_detection'])
+
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
