@@ -177,6 +177,7 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
 
     """
     indices = split_data_groups(flag_ref)
+    # aux.loc[:, qctests]
     params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
             verbose=verbose)
     prob = estimate_anomaly(aux, params)
