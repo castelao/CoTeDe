@@ -57,11 +57,6 @@ def test_split_data_groups(n=100):
         assert sorted(np.unique(flag[indices[k]])) == [1,2,3,4]
 
 
-def test_estimate_anomaly():
-    # FIXME: Need to do it.
-    pass
-
-
 def test_rank_files():
     try:
         tmpdir = tempfile.mkdtemp()
