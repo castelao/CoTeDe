@@ -59,23 +59,32 @@ def estimate_anomaly(features, params, method='produtorium'):
           in features. This function estimate the combined probability of
           each row in features as the produtorium between the probabilities
           of the different features on the same row.
+
+        ATENTION!! I should think more about what would I like from this
+          function. What should happens in case of a masked feature? And
+          if all features for one measurement are masked? Right now it
+          simply don't add for the estimate, so that all features masked
+          would lead to an expectation of 100% it's good.
     """
     assert hasattr(params, 'keys')
     assert hasattr(features, 'keys')
 
-    prob = ma.zeros(features.shape[0])
+    prob = ma.zeros(len(features[features.keys()[0]]))
 
     for t in params.keys():
         param = params[t]['param']
-        ind = np.array(np.isfinite(features[t]))
+        ind = ~ma.getmaskarray(features[t])
+
+        tmp = exponweib.sf(np.asanyarray(features[t])[ind],
+                *param[:-2], loc=param[-2], scale=param[-1])
+        # Arbitrary solution. No value can have a probability of 0.
+        tmp[tmp == 0] = 1e-15
+        p = ma.log(tmp)
+
         if method == 'produtorium':
-            prob[ind] = prob[ind] + \
-                    ma.log(exponweib.sf(features[t][ind],
-                        *param[:-2], loc=param[-2], scale=param[-1]))
+            prob[ind] = prob[ind] + p
         elif method == 'min':
-            prob[ind] = min(prob[ind], \
-                    ma.log(exponweib.sf(features[t][ind],
-                        *param[:-2], loc=param[-2], scale=param[-1])))
+            prob[ind] = min(prob[ind], p)
         else:
             return
 
