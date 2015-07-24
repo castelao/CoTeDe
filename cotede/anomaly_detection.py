@@ -14,7 +14,7 @@ from cotede.misc import combined_flag
 from cotede.humanqc import HumanQC
 
 
-def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
+def fit_tests(features, ind=True, q=0.90, verbose=False):
     """
 
         Input:
@@ -22,9 +22,6 @@ def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
               QC tests. For example, the gradient test values, not the
               flags, but the floats itself, like
               {'gradient': ma.array([.23, .12, .08]), 'spike': ...}
-          qctests: The name of the tests to fit. They must be in
-              features.keys().
-              ['gradient', 'spike', 'woa_bias']
           ind: The features values positions to be considered in the fit.
               It's usefull to eliminate out of range data, or to
               restrict to a subset of the data, like in the calibration
@@ -34,7 +31,7 @@ def fit_tests(features, qctests, ind=True, q=0.90, verbose=False):
               than .90) are considered in the fitting.
     """
     output = {}
-    for test in qctests:
+    for test in features:
         samp = features[test][ind & np.isfinite(features[test])]
         ind_top = samp > samp.quantile(q)
         param = exponweib.fit(samp[ind_top])
