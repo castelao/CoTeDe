@@ -252,25 +252,80 @@ def flags2bin(flags, good_flags=[1,2], bad_flags=[3,4]):
     return output
 
 
-def calibrate_anomaly_detection(datadir, varname):
+def calibrate_anomaly_detection(datadir, varname, cfg=None):
+    """ Calibrate coefficientes for Anomaly Detection
+
+        Input:
+            datadir: Directory with the data to be used on calibration
+            varname: Variable to calibrate. For example: TEMP
+            cfg: CoTeDe's QC configuration. Can be None for CoTeDe's default
+                a name for one of the preset configuration files, or a dict
+
+        Output:
+            false_negative:
+            false_positive:
+            prob:
+            p_optimal:
+            err:
+            err_ratio:
+            params:
+
+        Loads all the data in datadir, apply the Q.C. procedures according to
+          cfg, and than calibrate params and p_optimal so that anomaly
+          detection reproduces the combined flags from the Q.C.
     """
-    """
-    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
-    reference_flags = ['global_range', 'gradient_depthconditional',
-            'spike_depthconditional', 'digit_roll_over']
+    import pandas as pd
+
+    assert type(varname) is str, "varname must be a string"
+
+    db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
+
+    assert varname in db.keys()
+
+    # # Remove the value out of the possible range.
+    # ind_outofrange = np.nonzero(db.flags[varname]['global_range'] != 1)
+    # binflag.mask[ind_outofrange] = True
     # hardlimit_flags = ['global_range']
+    ind = db.flags[varname]['global_range'] == 1
+    aux = db.auxiliary[varname][ind]
+    features = aux.drop(['id','profileid'], axis=1)
+    flags = db.flags[varname][ind].drop(['id','profileid', 'density_inversion'], axis=1)
+    flags = combined_flag(flags)
+    binflags = flags2bin(flags)
 
-    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
-    aux = db.auxiliary[varname]
 
-    binflag = flags2binflag(db.flags[varname], reference_flags)
-    # Remove the value out of the possible range.
-    ind_outofrange = np.nonzero(db.flags[varname]['global_range'] != 1)
-    binflag.mask[ind_outofrange] = True
+    #ind = ma.masked_all(len(flags), dtype='bool')
+    #ind[(flags == 1) | (flags == 2)] = True
+    #ind[(flags == 3) | (flags == 4)] = False
+    #indices = split_data_groups(ind)
+    indices = split_data_groups(flags)
 
-    result = adjust_anomaly_coefficients(binflag, qctests, aux)
 
-    return result
+    params = fit_tests(features[indices['fit']], q=.9)
+    prob = estimate_anomaly(features, params)
+
+    #binflag = flags2binflag(db.flags[varname][ind], reference_flags)
+
+    p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
+            flags2bin(flags[indices['test']]))
+
+    false_negative = prob[indices['err'] & binflags] < p_optimal
+    false_positive = prob[indices['err'] & ~binflags] < p_optimal
+    err = np.nonzero(false_negative)[0].size + \
+            np.nonzero(false_positive)[0].size
+    err_ratio = float(err)/prob[indices['err']].size
+
+    output = {'false_negative': false_negative,
+            'false_positive': false_positive,
+            'prob': prob,
+            'p_optimal': p_optimal,
+            'err': err,
+            'err_ratio': err_ratio,
+            'params': params}
+
+    #result = adjust_anomaly_coefficients(binflag, qctests, aux)
+
+    return output
 
 
 def human_calibrate_mistakes(datadir, varname, niter=5):
