@@ -9,7 +9,7 @@ import multiprocessing as mp
 import numpy as np
 from numpy import ma
 
-from seabird import CNVError
+from seabird.exceptions import CNVError
 
 from cotede.utils import make_file_list
 #from cotede.qc import fProfileQC

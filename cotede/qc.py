@@ -11,7 +11,8 @@ import logging
 import numpy as np
 from numpy import ma
 
-from seabird import cnv, CNVError
+from seabird import cnv
+from seabird.exceptions import CNVError
 #from seabird.utils import basic_logger
 logging.basicConfig(level=logging.DEBUG)
 
