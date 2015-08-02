@@ -60,9 +60,10 @@ def fit_tests(features, ind=True, q=0.90, verbose=False):
     for test in features:
         samp = features[test][ind & np.isfinite(features[test])]
         ind_top = samp > samp.quantile(q)
-        param = exponweib.fit(samp[ind_top])
-        output[test] = {'param': param,
-                'qlimit': samp.quantile(q)}
+        if ind_top.any():
+            param = exponweib.fit(samp[ind_top])
+            output[test] = {'param': param,
+                    'qlimit': samp.quantile(q)}
 
         if verbose is True:
             import pylab
