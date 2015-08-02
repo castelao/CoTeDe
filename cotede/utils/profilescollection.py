@@ -188,7 +188,7 @@ class ProfilesQCPandasCollection(object):
         #self.profiles = process_profiles_serial(self.inputfiles, cfg,
         #        saveauxiliary)
 
-        self.data = None
+        self.data = pd.DataFrame()
         self.flags = {}
         if saveauxiliary is True:
             self.auxiliary = {}
@@ -200,27 +200,39 @@ class ProfilesQCPandasCollection(object):
                 profileid = p.attributes['md5']
                 tmp['profileid'] = profileid
                 tmp['profilename'] = p.attributes['filename']
-                tmp['id'] = id = tmp.index
+                cont_id = range(len(self.data), len(self.data)+len(tmp))
+                tmp['id'] = cont_id
+                tmp.set_index('id', inplace=True)
 
                 self.data = pd.concat([self.data, tmp])
 
                 # ---- Dealing with the flags --------------------------------
-                for v in p.flags.keys():
+                V = [v for v in p.flags.keys() if v != 'common']
+                for v in V:
+                    tmp = pd.DataFrame(p.flags[v])
+                    for f in p.flags['common']:
+                        tmp[f] = p.flags['common'][f]
+
+                    tmp['id'] = cont_id
+                    tmp.set_index('id', inplace=True)
+
                     if v not in self.flags:
-                        self.flags[v] = None
-                    tmp = p.flags[v]
-                    tmp['id'], tmp['profileid'] = id, profileid
-                    self.flags[v] = pd.concat([self.flags[v],
-                        pd.DataFrame(tmp)])
+                        self.flags[v] = pd.DataFrame(tmp)
+                    else:
+                        self.flags[v] = pd.concat([self.flags[v],
+                            pd.DataFrame(tmp)])
                 # ---- Dealing with the auxiliary -----------------------------
                 if saveauxiliary is True:
                     for a in p.auxiliary.keys():
+                        tmp = pd.DataFrame(p.auxiliary[a])
+                        tmp['id'] = cont_id
+                        tmp.set_index('id', inplace=True)
+
                         if a not in self.auxiliary:
-                            self.auxiliary[a] = None
-                        tmp = p.auxiliary[a]
-                        tmp['id'], tmp['profileid'] = id, profileid
-                        self.auxiliary[a] = pd.concat([self.auxiliary[a],
-                            pd.DataFrame(tmp)])
+                            self.auxiliary[a] = pd.DataFrame(tmp)
+                        else:
+                            self.auxiliary[a] = pd.concat([self.auxiliary[a],
+                                pd.DataFrame(tmp)])
             except:
                 print("Failled")
 
