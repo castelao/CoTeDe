@@ -17,7 +17,7 @@ with open('HISTORY.rst') as history_file:
 
 install_requires = [
     'numpy>=1.1',
-    'seabird>=0.6.1',
+    'seabird>=0.6.3',
     'scipy',
     ]
 
