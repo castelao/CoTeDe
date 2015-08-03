@@ -146,8 +146,8 @@ def estimate_p_optimal(prob, binflag, verbose=False):
     return P[err.argmin()], float(err.min())/prob.size#, {'P': P, 'err': err}
 
 
-def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
-    """ Adjust coeficients for Anomaly Detection, and estimate error
+def calibrate4flags(flags, features, q=0.90, verbose=False):
+    """ Adjust coeficients for Anomaly Detection to best reproduce given flags
 
         Inputs:
             flag_ref: Reference index. What the Anomaly Detection will try
@@ -177,37 +177,42 @@ def adjust_anomaly_coefficients(flag_ref, qctests, aux, q=0.90, verbose=False):
                 estimate_p_optimal()
 
     """
-    indices = split_data_groups(flag_ref)
-    # aux.loc[:, qctests]
-    params = fit_tests(aux, qctests, indices['ind_fit'], q=q,
-            verbose=verbose)
-    prob = estimate_anomaly(aux, params)
+    assert hasattr(flags, 'keys')
+
+    indices = split_data_groups(combined_flag(flags))
+    params = fit_tests(features[indices['fit']], q=q)
+    prob = estimate_anomaly(features, params)
+
     if verbose is True:
         pylab.hist(prob)
         pylab.show()
 
-    p_optimal, test_err = estimate_p_optimal(prob[indices['ind_test']],
-            flag_ref[indices['ind_test']])
+    binflags = flags2bin(combined_flag(flags))
+    p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
+            binflags[indices['test']])
+
+    false_negative = (prob < p_optimal) & binflags
+    false_positive = (prob > p_optimal) & ~binflags
+
+    mistake = false_positive | false_negative
 
     # I can extract only .data, since split_data_groups already eliminated
     #   all non valid positions.
-    false_negative = (prob[indices['ind_err']] < p_optimal) & \
-        (flag_ref[indices['ind_err']].data is True)
-    false_positive = (prob[indices['ind_err']] > p_optimal) & \
-        (flag_ref[indices['ind_err']].data is False)
-    err = np.nonzero(false_negative)[0].size + \
-            np.nonzero(false_positive)[0].size
-    err_ratio = float(err)/prob[indices['ind_err']].size
-    false_negative = (prob < p_optimal) & \
-        (flag_ref.data is True) & (ma.getmaskarray(flag_ref) is False)
-    false_positive = (prob > p_optimal) & \
-        (flag_ref.data is False) & (ma.getmaskarray(flag_ref) is False)
+    #err = np.nonzero(false_negative)[0].size + \
+    #        np.nonzero(false_positive)[0].size
+    n_err = float(np.nonzero(mistake[indices['err']])[0].shape[0])
+    #err_ratio = float(err)/prob[indices['ind_err']].size
+    err_ratio = n_err/indices['err'].astype('i').sum()
+    #false_negative = (prob < p_optimal) & \
+    #    (flag_ref.data is True) & (ma.getmaskarray(flag_ref) is False)
+    #false_positive = (prob > p_optimal) & \
+    #    (flag_ref.data is False) & (ma.getmaskarray(flag_ref) is False)
 
     output = {'false_negative': false_negative,
             'false_positive': false_positive,
             'prob': prob,
             'p_optimal': p_optimal,
-            'err': err,
+            'n_err': n_err,
             'err_ratio': err_ratio,
             'params': params}
 
@@ -315,102 +320,189 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     # binflag.mask[ind_outofrange] = True
     # hardlimit_flags = ['global_range']
     ind = db.flags[varname]['global_range'] == 1
-    aux = db.auxiliary[varname][ind]
-    features = aux.drop(['id','profileid'], axis=1)
-    flags = db.flags[varname][ind].drop(['id','profileid', 'density_inversion'], axis=1)
-    flags = combined_flag(flags)
-    binflags = flags2bin(flags)
+    #aux = db.auxiliary[varname][ind]
+    #features = aux.drop(['id','profileid'], axis=1)
+    features = db.auxiliary[varname][ind]
+    #flags = db.flags[varname][ind].drop(['id','profileid', 'density_inversion'], axis=1)
+    #flags = db.flags[varname][ind].drop(['density_inversion'], axis=1)
+    #flags = combined_flag(flags)
+    #flags = combined_flag(db.flags[varname][ind])
+    #binflags = flags2bin(flags)
 
+    result = calibrate4flags(db.flags[varname][ind],
+            db.auxiliary[varname][ind], q=0.90, verbose=False)
 
     #ind = ma.masked_all(len(flags), dtype='bool')
     #ind[(flags == 1) | (flags == 2)] = True
     #ind[(flags == 3) | (flags == 4)] = False
     #indices = split_data_groups(ind)
-    indices = split_data_groups(flags)
+    #indices = split_data_groups(flags)
 
+
+    #params = fit_tests(features[indices['fit']], q=.9)
+    #prob = estimate_anomaly(features, params)
+
+    #binflag = flags2binflag(db.flags[varname][ind], reference_flags)
+
+    #p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
+    #        flags2bin(flags[indices['test']]))
+
+    #false_negative = prob[indices['err'] & binflags] < p_optimal
+    #false_positive = prob[indices['err'] & ~binflags] < p_optimal
+    #err = np.nonzero(false_negative)[0].size + \
+    #        np.nonzero(false_positive)[0].size
+    #err_ratio = float(err)/prob[indices['err']].size
+
+    #output = {'false_negative': false_negative,
+    #        'false_positive': false_positive,
+    #        'prob': prob,
+    #        'p_optimal': p_optimal,
+    #        'err': err,
+    #        'err_ratio': err_ratio,
+    #        'params': params}
+
+    #result = adjust_anomaly_coefficients(binflag, qctests, aux)
+
+    #return output
+    return result
+
+
+def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
+    """
+    """
+    import pandas as pd
+
+    #qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
+    #reference_flags = ['global_range', 'gradient_depthconditional',
+    #        'spike_depthconditional', 'digit_roll_over']
+    # hardlimit_flags = ['global_range']
+
+    db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
+
+    assert varname in db.keys()
+
+    # Remove the value out of the possible range.
+    ##data = db.data.loc[ind_valid, ['profileid', 'pressure', varname]]
+    #ind = db.flags[varname]['global_range'] == 1
+    #data = db.data.loc[ind]
+    data = db.data
+    #aux = db.auxiliary[varname].loc[ind]
+    #features = aux.drop(['id','profileid'], axis=1)
+    features = db.auxiliary[varname]
+    #flags = db.flags[varname].loc[ind]
+    #flags = flags.drop(['id','profileid', 'density_inversion'], axis=1)
+    flags = db.flags[varname]
+    binflags = flags2bin(combined_flag(flags))
+
+
+    result = calibrate4flags(db.flags[varname],
+            db.auxiliary[varname], q=0.90, verbose=False)
+
+    indices = split_data_groups(combined_flag(flags))
 
     params = fit_tests(features[indices['fit']], q=.9)
     prob = estimate_anomaly(features, params)
 
-    #binflag = flags2binflag(db.flags[varname][ind], reference_flags)
-
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
-            flags2bin(flags[indices['test']]))
+            flags2bin(combined_flag(flags)[indices['test']]))
+    #false_negative = prob[indices['err'] & binflags] < p_optimal
+    #false_positive = prob[indices['err'] & ~binflags] < p_optimal
+    false_negative = (prob < p_optimal) & binflags
+    false_positive = (prob > p_optimal) & ~binflags
+    #mistakes = np.nonzero(false_positive | false_negative)[0]
+    mistake = false_positive | false_negative
 
-    false_negative = prob[indices['err'] & binflags] < p_optimal
-    false_positive = prob[indices['err'] & ~binflags] < p_optimal
-    err = np.nonzero(false_negative)[0].size + \
-            np.nonzero(false_positive)[0].size
-    err_ratio = float(err)/prob[indices['err']].size
+    n_err = float(np.nonzero(mistake[indices['err']])[0].shape[0])
+    err_ratio = n_err/indices['err'].astype('i').sum()
 
-    output = {'false_negative': false_negative,
-            'false_positive': false_positive,
-            'prob': prob,
-            'p_optimal': p_optimal,
-            'err': err,
-            'err_ratio': err_ratio,
-            'params': params}
+    #profileslist = aux['profileid'].iloc[mistake].iloc[
+    #        np.absolute(prob[mistake] - p_optimal).argsort()
+    #        ].unique()
 
-    #result = adjust_anomaly_coefficients(binflag, qctests, aux)
-
-    return output
-
-
-def human_calibrate_mistakes(datadir, varname, niter=5):
-    """
-    """
-    qctests = ['gradient', 'step', 'tukey53H_norm', 'woa_relbias']
-    reference_flags = ['global_range', 'gradient_depthconditional',
-            'spike_depthconditional', 'digit_roll_over']
-    # hardlimit_flags = ['global_range']
-
-    db = ProfilesQCPandasCollection(datadir, saveauxiliary=True)
-
-    # Remove the value out of the possible range.
-    ind_valid = db.flags[varname]['global_range'] == 1
-    data = db.data.loc[ind_valid, ['profileid', 'pressure', varname]]
-    flags = db.flags[varname][ind_valid]
-    aux = db.auxiliary[varname][ind_valid]
-
-    binflag = flags2binflag(flags, reference_flags)
-
-    result = adjust_anomaly_coefficients(binflag, qctests, aux)
-    error_log = [{'err': result['err'], 'err_ratio': result['err_ratio'],
-                     'p_optimal': result['p_optimal']}]
+    #result = adjust_anomaly_coefficients(binflags, qctests=features.keys(), aux=features)
+    #error_log = [{'err': result['err'], 'err_ratio': result['err_ratio'],
+    #                 'p_optimal': result['p_optimal']}]
+    error_log = [{'err': n_err, 'err_ratio': err_ratio,
+                     'p_optimal': p_optimal}]
 
     # I don't like this approach. Improve this in the future.
-    ind_humanqc = binflag.copy()
-    for i in range(niter):
-        # Profiles with any failure
-        mistakes = (result['false_positive'] | result['false_negative'])
-        profileids = data['profileid'].iloc[mistakes].unique()
-        if len(profileids) == 0:
-            break
-        # Only 5 profiles each time
-        for pid in np.random.permutation(profileids)[:5]:
-            print("Profile: %s" % pid)
-            ind_p = np.array(data.profileid == pid)
-            print data.profilename[ind_p].iloc[0]
-            mistakes = (result['false_positive'][ind_p] |
-                    result['false_negative'][ind_p])
-            h = HumanQC().eval(
-                    np.array(data[varname][ind_p]),
-                    np.array(data['pressure'][ind_p]),
-                    baseflag=ind_humanqc[ind_p],
-                    fails=mistakes)  #, doubt = ind_doubt[ind])
-            ind_humanqc[np.nonzero(ind_p)[0][h == 'good']] = True
-            ind_humanqc[np.nonzero(ind_p)[0][h == 'bad']] = False
-            ind_humanqc.mask[np.nonzero(ind_p)[0][h == 'doubt']] = True
+    if 'human' not in flags:
+        #flags['human'] = np.nan
+        #flags['human'] = None
+        flags['human'] = 0
+        doubt = np.zeros(len(flags['human']), dtype='bool')
 
-            result = adjust_anomaly_coefficients(ind_humanqc, qctests, aux)
-            error_log.append({'err': result['err'],
-                'err_ratio': result['err_ratio'],
-                'p_optimal': result['p_optimal']})
+    #ind_humanqc = binflags.copy()
+    for i in range(niter):
+        import pdb; pdb.set_trace()
+        # Profiles with any failure
+        #mistakes = (result['false_positive'] | result['false_negative'])
+        #profileids = db[varname]['profileid'].iloc[mistakes].unique()
+        # Must be without humaneval
+        #profileids = data['profileid'].iloc[mistake].iloc[
+        #    np.absolute(prob[mistake] - p_optimal).argsort()
+        #    ].unique()
+        derr = np.absolute(prob[np.nonzero(mistake)] - p_optimal)
+        #ind_toeval = mistake & (flags['human'] != 6)
+        ind_toeval = np.nonzero(mistake & ~doubt)
+        profileids = data['profileid'].iloc[ind_toeval].iloc[derr.argsort()
+            ].unique()
+        #if len(profileids) == 0:
+        #    break
+        # Only 5 profiles each time
+        #for pid in np.random.permutation(profileids)[:5]:
+        import pdb; pdb.set_trace()
+        for pid in profileids[:3]:
+            print("Profile: %s" % pid)
+            ind_p = data.profileid == pid
+            #print data.profilename[ind_p].iloc[0]
+            #mistakes = (result['false_positive'][ind_p] |
+            #        result['false_negative'][ind_p])
+            mistake.mask[doubt] = True
+            h = HumanQC().eval(
+                    data[varname][ind_p],
+                    data['PRES'][ind_p],
+                    baseflag=binflags[np.array(ind_p)],
+                    fails=mistake[np.array(ind_p)])  #, doubt = ind_doubt[ind])
+            #ind_humanqc[np.nonzero(ind_p)[0][h == 'good']] = True
+            flags.loc[np.nonzero(ind_p)[0][h == 'good'], 'human'] = 1
+            #ind_humanqc[np.nonzero(ind_p)[0][h == 'bad']] = False
+            flags.loc[np.nonzero(ind_p)[0][h == 'bad'], 'human'] = 4
+            #flags.loc[np.nonzero(ind_p)[0][h == 'doubt'], 'human'] = 6
+            doubt[np.nonzero(ind_p)[0][h == 'doubt']] = True
+            #ind_humanqc.mask[np.nonzero(ind_p)[0][h == 'doubt']] = True
+
+        #result = adjust_anomaly_coefficients(ind_humanqc, qctests, aux)
+        binflags = flags2bin(combined_flag(flags))
+        indices = split_data_groups(combined_flag(flags))
+        params = fit_tests(features[indices['fit']], q=.9)
+        prob = estimate_anomaly(features, params)
+        p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
+                flags2bin(combined_flag(flags)[indices['test']]))
+        false_negative = (prob < p_optimal) & binflags
+        false_positive = (prob > p_optimal) & ~binflags
+        mistake = false_positive | false_negative
+
+        #n_err = float(np.nonzero(mistake[indices['err']])[0].shape[0])
+        #err_ratio = n_err/indices['err'].astype('i').sum()
+
+        #result = calibrate4flags(flags, features, q=0.90, verbose=False)
+
+
+        error_log.append({'err': n_err,
+            'err_ratio': err_ratio,
+            'p_optimal': p_optimal})
+        #error_log.append({'err': result['n_err'],
+        #    'err_ratio': result['err_ratio'],
+        #    'p_optimal': result['p_optimal']})
 
         print error_log[-2]
         print error_log[-1]
-    return {'ind_humanqc': ind_humanqc, 'error_log': error_log,
-            'result': result}
+
+    return {'ind_humanqc': binflags, 'error_log': error_log,
+            'p_optimal': p_optimal}
+    #return {'ind_humanqc': binflags, 'error_log': error_log,
+    #        'result': result}
 
 
 def rank_files(datadir, varname, cfg=None):
