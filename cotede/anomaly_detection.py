@@ -531,14 +531,13 @@ def rank_files(datadir, varname, cfg=None):
 
     # hardlimit_flags = ['global_range']
     ind = db.flags[varname]['global_range'] == 1
-    aux = db.auxiliary[varname][ind]
-    features = aux.drop(['id','profileid'], axis=1)
+    features = db.auxiliary[varname][ind]
 
-    params = fit_tests(features, q=.9)
+    params = fit_tests(features, q=.85)
     # Note that I'm already filtering to positions ind, i.e. valid
     #   global range limits. Global range is too obvious and should
     #   be left aside.
-    prob = estimate_anomaly(aux, params)
+    prob = estimate_anomaly(features, params)
 
     tmp = db.data.loc[ind, ['profilename']]
     tmp.loc[:, 'anomaly_detection'] = pd.Series(prob, index=tmp.index)
