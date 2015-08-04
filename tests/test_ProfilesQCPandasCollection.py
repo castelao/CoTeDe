@@ -29,9 +29,11 @@ def test_ProfilesQCPandasCollection():
         for f in INPUTFILES:
             shutil.copy(f, tmpdir)
 
-        profiles = ProfilesQCPandasCollection(tmpdir, saveauxiliary=True)
+        profiles = ProfilesQCPandasCollection(tmpdir, cfg='cotede',
+                saveauxiliary=True)
         #check_profiles(profiles)
-        profiles = ProfilesQCPandasCollection(tmpdir, saveauxiliary=False)
+        profiles = ProfilesQCPandasCollection(tmpdir, cfg='cotede',
+                saveauxiliary=False)
         #check_profiles(profiles)
 
     finally:
