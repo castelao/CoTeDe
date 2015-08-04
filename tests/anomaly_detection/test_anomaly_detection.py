@@ -10,6 +10,7 @@ import shutil
 import numpy as np
 from numpy import ma
 
+from cotede.utils import ProfilesQCPandasCollection
 from cotede.utils.supportdata import download_testdata
 from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
@@ -88,7 +89,6 @@ def test_estimate_p_optimal(n=100):
 
 
 def test_calibrate4flags():
-    from cotede.utils import ProfilesQCPandasCollection
     varname = 'TEMP'
     try:
         tmpdir = tempfile.mkdtemp()
