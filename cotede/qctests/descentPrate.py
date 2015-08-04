@@ -17,12 +17,11 @@ def descentPrate(data):
 
         Consider to create another test looking for excessive ups and downs.
     """
-    assert ('timeS' in data), "timeS is not available"
-    assert ('PRES' in data), "pressure is not available"
+    assert ('timeS' in data.keys()), "timeS is not available"
+    assert ('PRES' in data.keys()), "pressure is not available"
     assert data['timeS'].shape == data['PRES'].shape, \
             "t and p have different sizes"
-    y = ma.masked_all(t.shape, dtype=t.dtype)
-    dt = ma.diff(t)
-    dp = ma.diff(p)
-    y[1:] = dp/dt
+    dt = ma.diff(data['timeS'])
+    dp = ma.diff(data['PRES'])
+    y = ma.append(ma.masked_all(1, dtype='i'), dp/dt)
     return y
