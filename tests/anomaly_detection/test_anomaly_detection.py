@@ -16,6 +16,7 @@ from cotede.anomaly_detection import rank_files
 from cotede.anomaly_detection import flags2bin
 from cotede.anomaly_detection import estimate_p_optimal
 from cotede.anomaly_detection import calibrate_anomaly_detection
+from cotede.anomaly_detection import calibrate4flags
 
 
 datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
@@ -85,6 +86,21 @@ def test_estimate_p_optimal(n=100):
     #assert p > prob.max()
     #assert err = 0
 
+
+def test_calibrate4flags():
+    from cotede.utils import ProfilesQCPandasCollection
+    varname = 'TEMP'
+    try:
+        tmpdir = tempfile.mkdtemp()
+        for f in INPUTFILES:
+            shutil.copy(f, tmpdir)
+
+        db = ProfilesQCPandasCollection(tmpdir, cfg='cotede',
+                saveauxiliary=True)
+        output = calibrate4flags(flags=db.flags[varname],
+                features=db.auxiliary[varname], q=0.90)
+    finally:
+        shutil.rmtree(tmpdir)
 
 def test_calibrate_anomaly_detection():
     try:
