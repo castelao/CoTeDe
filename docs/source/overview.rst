@@ -2,9 +2,8 @@
 Overview
 ********
 
-This package is intended to quality control CTD stations by applying
-a sequence of tests. It uses the Seabird package to interpret the
-SeaBird's .cnv output file.
+This package is intended to quality control temperature and salinity profiles by applying a sequence of tests.
+For CTD profiles and TSG timeseries it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
 
 This is the result from several generations of quality control systems,
 which started in 2006, while I was in charge of the quality control
@@ -13,7 +12,7 @@ quality control of the brazilian hydrography of PIRATA.
 
 CoTeDe can apply different quality control procedures:
   - The default GTSPP or EGOOS procedure;
-  - A custom set of tests and user defined thresholds;
+  - A custom set of tests, including user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
 
 My opinion on quality control
