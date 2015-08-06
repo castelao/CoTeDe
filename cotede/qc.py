@@ -184,7 +184,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['gradient'] = g
 
             flag = np.zeros(g.shape, dtype='i1')
-            flag[self.input[v].mask == True] = 9
+            flag[ma.getmaskarray(self.input[v])] = 9
             flag[np.nonzero(g > threshold)] = 4
             flag[np.nonzero(g <= threshold)] = 1
             self.flags[v]['gradient'] = flag
