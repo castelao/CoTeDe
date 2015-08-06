@@ -177,9 +177,14 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
                 estimate_p_optimal()
 
     """
-    assert hasattr(flags, 'keys')
+    if hasattr(flags, 'keys'):
+        flags = combined_flag(flags)
 
-    indices = split_data_groups(combined_flag(flags))
+    assert not hasattr(flags, 'keys')
+    assert hasattr(features, 'keys')
+    assert len(features[features.keys()[0]]) == len(flags)
+
+    indices = split_data_groups(flags)
     params = fit_tests(features[indices['fit']], q=q)
     prob = estimate_anomaly(features, params)
 
@@ -187,7 +192,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
         pylab.hist(prob)
         pylab.show()
 
-    binflags = flags2bin(combined_flag(flags))
+    binflags = flags2bin(flags)
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
             binflags[indices['test']])
 
