@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
 from numpy import ma
+from numpy import radians
 
+AVG_EARTH_RADIUS = 6371000  # in m
 
 def haversine(lat_a, lon_a, lat_b, lon_b):
     """
@@ -26,14 +29,14 @@ def speed(data):
     #assert hasattr(data, 'attributes'), "Missing attributes"
     assert ('timeS' in data.keys()), \
             "Missing timeS in input data"
-    assert ('latitude' in data.keys()), \
-            "Missing latitude in input data"
-    assert ('longitude' in data.keys()), \
-            "Missing longitude in input data"
+    assert ('LATITUDE' in data.keys()), \
+            "Missing LATITUDE in input data"
+    assert ('LONGITUDE' in data.keys()), \
+            "Missing LONGITUDE in input data"
     
 
-    dL = haversine(data['longitude'][:-1], data['latitude'][:-1],
-            data['longitude'][1:], data['latitude'][1:])
+    dL = haversine(data['LONGITUDE'][:-1], data['LATITUDE'][:-1],
+            data['LONGITUDE'][1:], data['LATITUDE'][1:])
     dt = ma.diff(data['timeS'])
 
     speed = ma.append(ma.masked_array([0], [True]),
@@ -51,13 +54,15 @@ def possible_speed(data, cfg):
 
     flag = np.zeros(s.shape, dtype='i1')
 
-    #flag[np.nonzero(ds >= cfg['threshold'])] = cfg['flag_good']
-    #flag[np.nonzero(ds < cfg['threshold'])] = cfg['flag_bad']
-    flag[s <= 60] = 1
-    flag[s > 60] = 3
+    flag[s <= cfg['threshold']] = cfg['flag_good']
+    flag[s > cfg['threshold']] = cfg['flag_bad']
 
     # Flag as 9 any masked input value
-    for v in ['latitude', 'longitude']:
-        flag[ma.getmaskarray(data[v])] = 9
+    #for v in ['LATITUDE', 'LONGITUDE']:
+    #    flag[ma.getmaskarray(data[v])] = 9
+    # I'm not sure if it's a good idea. I should flag as 9 if the variable
+    #   being tested is invalid. For example, if I have a good temperature,
+    #   but no valid location, the possible_speed test should return 0, i.e.
+    #   no Q.C. evaluated.
 
     return flag, s

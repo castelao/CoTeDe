@@ -8,3 +8,4 @@ from density_inversion import density_inversion
 from profile_envelope import profile_envelope
 from woa_normbias import woa_normbias
 from anomaly_detection import anomaly_detection
+from possible_speed import possible_speed
