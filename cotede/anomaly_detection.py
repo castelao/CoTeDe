@@ -196,8 +196,13 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
             binflags[indices['test']])
 
+    # Guarantee the the false_* indices will be np.array
     false_negative = (prob < p_optimal) & binflags
+    false_negative[ma.getmaskarray(false_negative)] = False
+    false_negative = np.array(false_negative)
     false_positive = (prob > p_optimal) & ~binflags
+    false_positive[ma.getmaskarray(false_positive)] = False
+    false_positive = np.array(false_positive)
 
     mistake = false_positive | false_negative
 
