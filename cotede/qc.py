@@ -152,7 +152,16 @@ class ProfileQC(object):
             logging.warn("Sorry I'm not ready to evaluate valid_geolocation()")
 
         if 'valid_speed' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate valid_speed()")
+            # Think about. ARGO also has a test  valid_speed, but that is
+            #   in respect to sucessive profiles. How is the best way to
+            #   distinguish them here?
+            try:
+                if self.saveauxiliary:
+                    self.flags[v]['valid_speed'], \
+                            self.auxiliary[v]['valid_speed'] = \
+                            possible_speed(self.input, cfg['valid_speed'])
+            except:
+                print("Fail on valid_speed")
 
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
