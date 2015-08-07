@@ -49,7 +49,13 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-docs:
+fluxogram:
+	# Depends on pylint
+	pyreverse -o png -p CoTeDe cotede
+	mv packages_CoTeDe.png ./docs
+	mv classes_CoTeDe.png ./docs
+
+docs: fluxogram
 	#rm -f docs/cotede.rst
 	#rm -f docs/modules.rst
 	#sphinx-apidoc -o docs/ cotede
