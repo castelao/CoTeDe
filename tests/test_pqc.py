@@ -6,6 +6,8 @@ import numpy as np
 from seabird import cnv
 import cotede.qc
 from cotede.utils.supportdata import download_testdata
+from cotede.misc import combined_flag
+
 
 def func(datafile, saveauxiliary):
     data = cnv.fCNV(datafile)
@@ -36,3 +38,17 @@ def test_answer():
 
     assert hasattr(pqc, 'auxiliary')
     assert type(pqc.auxiliary) is dict
+
+
+def test_all_valid_no_9():
+    """ If all measurements are valid it can't return flag 9
+
+        This is to test a special condition when all values are valid, .mask
+          return False, instead of an array on the same size with False.
+
+        This test input all valid values, and check if there is no flag 9.
+    """
+    datafile = download_testdata("dPIRX010.cnv")
+    pqc = cotede.qc.fProfileQC(datafile)
+    assert pqc['TEMP'].mask == False
+    assert ~(combined_flag(pqc.flags['TEMP']) == 9).any()

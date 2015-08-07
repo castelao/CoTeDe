@@ -5,3 +5,4 @@ pandas
 netCDF4
 pyARGO
 gsw
+matplotlib

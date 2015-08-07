@@ -3,10 +3,24 @@
 History
 -------
 
+0.14
+----
+
+* Interface for human calibration of anomaly detection
+
+0.13 - July, 2015
+----
+
+* Major improvements in the anomaly detection submodule
+* Partial support to thermosalinographs (TSG)
+* Working on WOA test to generalize for profiles and tracks
+* Adding .json to default QC configuration filenames
+* Moved load_cfg from qc to utils
+
 0.12
 ----
 
-Since 0.7 some of the most important changes.
+Since 0.9 some of the most important changes.
 
 * Following CF vocabulary for variables names (PRES, TEMP, PSAL...)
 * Partial support to ARGO profiles

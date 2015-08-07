@@ -11,7 +11,7 @@
         },
     "gradient": 10.0,
     "spike": 2.0,
-    "woa_comparison": {
+    "woa_normbias": {
         "sigma_threshold": 3,
         "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
         "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
@@ -38,7 +38,7 @@
         },
     "gradient": 5.0,
     "spike": 0.3,
-    "woa_comparison": {
+    "woa_normbias": {
         "sigma_threshold": 3,
         "file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
         "vars": {"woa_an": "s_an", "woa_sd": "s_sd", "woa_n": "s_dd"},

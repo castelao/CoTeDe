@@ -5,14 +5,9 @@
         "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
         }
     },
-"temperature": {
-    "density_inversion": {
-        "threshold": -0.03,
-        "flag_good": 1,
-        "flag_bad": 4
-        },
+"TEMP": {
     "pstep": null,
-    "woa_comparison": {
+    "woa_normbias": {
         "sigma_threshold": 6,
         "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
@@ -54,8 +49,8 @@
         ["> 5500", "<= 12000", -1.5, 4]
         ]
     },
-"salinity": {
-    "woa_comparison": {
+"PSAL": {
+    "woa_normbias": {
         "sigma_threshold": 6,
         "file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
         "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},

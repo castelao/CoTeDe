@@ -34,8 +34,12 @@ nosetests.xml
 .project
 .pydevproject
 
+.*.swp
 *.hdf
 .cache
 data/*
 
 docs/notebooks/.ipynb_checkpoints
+
+test_data
+references

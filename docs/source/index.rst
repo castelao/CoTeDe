@@ -26,6 +26,7 @@ User Documentation
    getting_started
    commandline
    qctests
+   anomaly_detection
    history
 
 Indices and tables

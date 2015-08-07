@@ -3,7 +3,7 @@
 
 import pkg_resources
 from datetime import datetime
-from os.path import basename, expanduser
+from os.path import basename
 import re
 import json
 import logging
@@ -11,13 +11,14 @@ import logging
 import numpy as np
 from numpy import ma
 
-from seabird import cnv, CNVError
-from seabird.utils import basic_logger
+from seabird import cnv
+from seabird.exceptions import CNVError
+#from seabird.utils import basic_logger
 logging.basicConfig(level=logging.DEBUG)
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
-from cotede.utils import get_depth, woa_profile
+from cotede.utils import load_cfg
 
 
 class ProfileQC(object):
@@ -39,7 +40,8 @@ class ProfileQC(object):
                 not defined, take the default value.
             - Is the best return another dictionary?
         """
-        self.logger = logger or logging.getLogger(__name__)
+        #self.logger = logger or logging.getLogger(__name__)
+        logging.getLogger(logger or __name__)
 
         try:
             self.name = input.filename
@@ -51,7 +53,7 @@ class ProfileQC(object):
             assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
 
-        self.load_cfg(cfg)
+        self.cfg = load_cfg(cfg)
 
         self.input = input
         if attributes is None:
@@ -72,9 +74,8 @@ class ProfileQC(object):
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("%s\d?$" % c, v):
-                    if verbose is True:
-                        self.logger.debug(" %s - evaluating: %s, as type: %s" %
-                                (self.name, v, c))
+                    logging.debug(" %s - evaluating: %s, as type: %s" %
+                            (self.name, v, c))
                     self.evaluate(v, self.cfg[c])
                     break
 
@@ -92,55 +93,9 @@ class ProfileQC(object):
         """
         return self.input[key]
 
-    def load_cfg(self, cfg):
-        """ Load the QC configurations
-
-            The possible inputs are:
-                - None: Will use the CoTeDe's default configuration
-
-                - Preset config name [string]: A string with the name of
-                    pre-set rules, like 'cotede', 'egoos' or 'gtspp'.
-
-                - User configs [dict]: a dictionary composed by the variables
-                    to be evaluated as keys, and inside it another dictionary
-                    with the tests to perform as keys. example
-                    {'main':{
-                        'valid_datetime': None,
-                        },
-                    'temperature':{
-                        'global_range':{
-                            'minval': -2.5,
-                            'maxval': 45,
-                            },
-                        },
-                    }
-        """
-        # A given manual configuration has priority
-        if type(cfg) is dict:
-            self.cfg = cfg
-            self.logger.debug("%s - User's QC cfg." % self.name)
-            return
-
-        # Need to safe_eval before allow to load rules from .cotederc
-        if cfg is None:
-            cfg = 'cotede'
-
-        # If it's a name of a config, try to get from CoTeDe's package
-        try:
-            self.cfg = json.loads(pkg_resources.resource_string(__name__,
-                "qc_cfg/%s" % cfg))
-            if self.verbose is True:
-                self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
-        # If can't find inside cotede, try to load from users directory
-        except:
-            self.cfg = json.loads(expanduser('~/.cotederc/%s' % cfg))
-            if self.verbose is True:
-                self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
-                        (self.name, cfg))
-
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
-            self.logger.warn("ATTENTION, there is no main setup in the QC cfg")
+            logging.warn("ATTENTION, there is no main setup in the QC cfg")
             return
 
         self.flags['common'] = {}
@@ -191,13 +146,22 @@ class ProfileQC(object):
                 self.auxiliary[v] = {}
 
         if 'platform_identification' in cfg:
-            print "Sorry I'm not ready to evaluate platform_identification()"
+            logging.warn("Sorry I'm not ready to evaluate platform_identification()")
 
         if 'valid_geolocation' in cfg:
-            print "Sorry I'm not ready to evaluate valid_geolocation()"
+            logging.warn("Sorry I'm not ready to evaluate valid_geolocation()")
 
         if 'valid_speed' in cfg:
-            print "Sorry I'm not ready to evaluate valid_speed()"
+            # Think about. ARGO also has a test  valid_speed, but that is
+            #   in respect to sucessive profiles. How is the best way to
+            #   distinguish them here?
+            try:
+                if self.saveauxiliary:
+                    self.flags[v]['valid_speed'], \
+                            self.auxiliary[v]['valid_speed'] = \
+                            possible_speed(self.input, cfg['valid_speed'])
+            except:
+                print("Fail on valid_speed")
 
         if 'global_range' in cfg:
             self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
@@ -212,10 +176,10 @@ class ProfileQC(object):
             self.flags[v]['global_range'][np.nonzero(ind)] = 4
 
         if 'regional_range' in cfg:
-            pass
+            logging.warn("Sorry, I'm no ready to evaluate regional_range()")
 
         if 'pressure_increasing' in cfg:
-            pass
+            logging.warn("Sorry, I'm no ready to evaluate pressure_increasing()")
 
         if 'profile_envelope' in cfg:
             self.flags[v]['profile_envelope'] = profile_envelope(
@@ -229,7 +193,7 @@ class ProfileQC(object):
                 self.auxiliary[v]['gradient'] = g
 
             flag = np.zeros(g.shape, dtype='i1')
-            flag[self.input[v].mask == True] = 9
+            flag[ma.getmaskarray(self.input[v])] = 9
             flag[np.nonzero(g > threshold)] = 4
             flag[np.nonzero(g <= threshold)] = 1
             self.flags[v]['gradient'] = flag
@@ -307,19 +271,19 @@ class ProfileQC(object):
             self.flags[v]['spike_depthconditional'] = flag
 
         if 'stuck_value' in cfg:
-            print "Sorry I'm not ready to evaluate stuck_value()"
+            logging.warn("Sorry I'm not ready to evaluate stuck_value()")
 
         if 'grey_list' in cfg:
-            print "Sorry I'm not ready to evaluate grey_list()"
+            logging.warn("Sorry I'm not ready to evaluate grey_list()")
 
         if 'gross_sensor_drift' in cfg:
-            print "Sorry I'm not ready to evaluate gross_sensor_drift()"
+            logging.warn("Sorry I'm not ready to evaluate gross_sensor_drift()")
 
         if 'frozen_profile' in cfg:
-            print "Sorry I'm not ready to evaluate frozen_profile()"
+            logging.warn("Sorry I'm not ready to evaluate frozen_profile()")
 
         if 'deepest_pressure' in cfg:
-            print "Sorry I'm not ready to evaluate deepest_pressure()"
+            logging.warn("Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
             """
@@ -392,38 +356,20 @@ class ProfileQC(object):
             except:
                 print("Fail on density_inversion")
 
-        if 'woa_comparison' in cfg:
-            woa = woa_profile(v,
-                    self.attributes['datetime'],
-                    self.attributes['latitude'],
-                    self.attributes['longitude'],
-                    self.input['PRES'],
-                    cfg['woa_comparison'])
-
-            if woa is None:
-                self.logger.warn("%s - WOA is not available at this site" %
-                        self.name)
-                return
-
-            woa_bias = ma.absolute(self.input[v] - woa['woa_an'])
-
+        if 'woa_normbias' in cfg:
             if self.saveauxiliary:
-                for k in woa.keys():
-                    self.auxiliary[v][k] = woa[k]
-                self.auxiliary[v]['woa_bias'] = woa_bias
-                self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
-
-            self.flags[v]['woa_comparison'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            # Flag as 9 any masked input value
-            self.flags[v]['woa_comparison'][ma.getmaskarray(self.input[v])] = 9
-
-            ind = woa_bias/woa['woa_sd'] <= \
-                    cfg['woa_comparison']['sigma_threshold']
-            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 1
-            ind = woa_bias/woa['woa_sd'] > \
-                    cfg['woa_comparison']['sigma_threshold']
-            self.flags[v]['woa_comparison'][np.nonzero(ind)] = 3
+                self.flags[v]['woa_normbias'], \
+                        self.auxiliary[v]['woa_relbias'] = \
+                        woa_normbias(self.input, v, cfg['woa_normbias'])
+                #for k in woa.keys():
+                #    self.auxiliary[v][k] = woa[k]
+                #self.auxiliary[v]['woa_bias'] = woa_bias
+                #self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
+            else:
+                self.flags[v]['woa_normbias'], \
+                        tmp = \
+                        woa_normbias(self.input, v, cfg['woa_normbias'])
+                del(tmp)
 
         if 'pstep' in cfg:
             ind = np.isfinite(self.input[v])
@@ -431,6 +377,22 @@ class ProfileQC(object):
                 self.auxiliary[v]['pstep'] = ma.concatenate(
                         [ma.masked_all(1),
                             np.diff(self.input['PRES'][ind])])
+
+        if 'anomaly_detection' in  cfg:
+            features = {}
+            for f in cfg['anomaly_detection']['features']:
+                if f == 'spike':
+                    features['spike'] = spike(self.input[v])
+                elif f == 'gradient':
+                    features['gradient'] = gradient(self.input[v])
+                elif f == 'tukey53H_norm':
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
+                            k=1.5)
+                else:
+                    logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
+
+            self.flags[v]['anomaly_detection'] = \
+                    anomaly_detection(features, cfg['anomaly_detection'])
 
         if 'fuzzylogic' in cfg:
             self.flags[v]['fuzzylogic'] = fuzzylogic(
@@ -447,7 +409,7 @@ class ProfileQC(object):
             self.auxiliary['common']['descentPrate'] = \
                     descentPrate(self.input)
         except:
-            self.logger.warn("Failled to run descentPrate")
+            logging.warn("Failled to run descentPrate")
 
 
 class fProfileQC(ProfileQC):
@@ -457,7 +419,8 @@ class fProfileQC(ProfileQC):
             logger=None):
         """
         """
-        self.logger = logger or logging.getLogger(__name__)
+        #self.logger = logger or logging.getLogger(__name__)
+        logging.getLogger(logger or __name__)
         self.name = 'fProfileQC'
 
         try:
@@ -466,11 +429,12 @@ class fProfileQC(ProfileQC):
             input = cnv.fCNV(inputfile, logger=None)
         except CNVError as e:
             #self.attributes['filename'] = basename(inputfile)
-            self.logger.error(e.msg)
+            logging.error(e.msg)
             raise
 
         super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary, verbose=verbose)
+                saveauxiliary=saveauxiliary, verbose=verbose,
+                logger=logger)
 
 
 class ProfileQCed(ProfileQC):
