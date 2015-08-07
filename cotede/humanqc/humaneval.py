@@ -18,7 +18,7 @@ class HumanQC(object):
     def __init__(self):
         pass
 
-    def eval(self, x, z, baseflag=None, fails=[],
+    def eval(self, x, z, baseflag=None, fails=None,
             humanflag=None, refname=None):
         """
         """
@@ -41,7 +41,7 @@ class HumanQC(object):
             assert self.baseflag.shape == self.x.shape
 
         if fails is None:
-            self.fails = ma.ones(x.size).astype('bool')
+            self.fails = ma.zeros(x.size).astype('bool')
         else:
             self.fails = np.asanyarray(fails)
             assert self.fails.shape == self.x.shape
