@@ -3,6 +3,11 @@
 History
 -------
 
+0.14
+----
+
+* Interface for human calibration of anomaly detection
+
 0.13 - July, 2015
 ----
 
