@@ -6,11 +6,6 @@
         }
     },
 "TEMP": {
-    "density_inversion": {
-        "threshold": -0.03,
-        "flag_good": 1,
-        "flag_bad": 4
-        },
     "pstep": null,
     "woa_normbias": {
         "sigma_threshold": 6,
