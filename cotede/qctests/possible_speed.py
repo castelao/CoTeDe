@@ -6,6 +6,7 @@ from numpy import radians
 
 AVG_EARTH_RADIUS = 6371000  # in m
 
+
 def haversine(lat_a, lon_a, lat_b, lon_b):
     """
 
@@ -26,14 +27,12 @@ def haversine(lat_a, lon_a, lat_b, lon_b):
 def speed(data):
     """
     """
-    #assert hasattr(data, 'attributes'), "Missing attributes"
     assert ('timeS' in data.keys()), \
             "Missing timeS in input data"
     assert ('LATITUDE' in data.keys()), \
             "Missing LATITUDE in input data"
     assert ('LONGITUDE' in data.keys()), \
             "Missing LONGITUDE in input data"
-    
 
     dL = haversine(data['LATITUDE'][:-1], data['LONGITUDE'][:-1],
             data['LATITUDE'][1:], data['LONGITUDE'][1:])
@@ -58,7 +57,7 @@ def possible_speed(data, cfg):
     flag[s > cfg['threshold']] = cfg['flag_bad']
 
     # Flag as 9 any masked input value
-    #for v in ['LATITUDE', 'LONGITUDE']:
+    # for v in ['LATITUDE', 'LONGITUDE']:
     #    flag[ma.getmaskarray(data[v])] = 9
     # I'm not sure if it's a good idea. I should flag as 9 if the variable
     #   being tested is invalid. For example, if I have a good temperature,
