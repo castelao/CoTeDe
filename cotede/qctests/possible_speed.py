@@ -35,8 +35,8 @@ def speed(data):
             "Missing LONGITUDE in input data"
     
 
-    dL = haversine(data['LONGITUDE'][:-1], data['LATITUDE'][:-1],
-            data['LONGITUDE'][1:], data['LATITUDE'][1:])
+    dL = haversine(data['LATITUDE'][:-1], data['LONGITUDE'][:-1],
+            data['LATITUDE'][1:], data['LONGITUDE'][1:])
     dt = ma.diff(data['timeS'])
 
     speed = ma.append(ma.masked_array([0], [True]),
