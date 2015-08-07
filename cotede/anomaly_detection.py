@@ -406,24 +406,7 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
 
 
     result = calibrate4flags(db.flags[varname],
-            db.auxiliary[varname], q=0.90, verbose=False)
-
-    indices = split_data_groups(combined_flag(flags))
-
-    params = fit_tests(features[indices['fit']], q=.9)
-    prob = estimate_anomaly(features, params)
-
-    p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
-            flags2bin(combined_flag(flags)[indices['test']]))
-    #false_negative = prob[indices['err'] & binflags] < p_optimal
-    #false_positive = prob[indices['err'] & ~binflags] < p_optimal
-    false_negative = (prob < p_optimal) & binflags
-    false_positive = (prob > p_optimal) & ~binflags
-    #mistakes = np.nonzero(false_positive | false_negative)[0]
-    mistake = false_positive | false_negative
-
-    n_err = float(np.nonzero(mistake[indices['err']])[0].shape[0])
-    err_ratio = n_err/indices['err'].astype('i').sum()
+            features, q=0.90, verbose=False)
 
     #profileslist = aux['profileid'].iloc[mistake].iloc[
     #        np.absolute(prob[mistake] - p_optimal).argsort()
