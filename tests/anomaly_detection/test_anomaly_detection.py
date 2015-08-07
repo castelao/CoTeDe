@@ -113,5 +113,6 @@ def test_calibrate_anomaly_detection():
         shutil.rmtree(tmpdir)
 
     assert type(output) is dict
-    assert sorted(output.keys()) == ['err', 'err_ratio', 'false_negative',
-            'false_positive', 'p_optimal', 'params', 'prob']
+    assert sorted(output.keys()) == ['err_ratio', 'false_negative',
+            'false_positive', 'n_err', 'n_misfit', 'p_optimal', 'params',
+            'prob']

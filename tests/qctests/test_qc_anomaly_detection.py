@@ -14,4 +14,6 @@ def test():
     """
     datafile = download_testdata("dPIRX010.cnv")
     pqc = fProfileQC(datafile, cfg='anomaly_detection')
-    assert sorted(np.unique(pqc.flags['TEMP']['anomaly_detection'])) == [1,4]
+    # While anomaly detection is limited to spike, gradient and tukey tests it
+    #   will always return 0 for the first and last.
+    assert sorted(np.unique(pqc.flags['TEMP']['anomaly_detection'])) == [0,1,4]
