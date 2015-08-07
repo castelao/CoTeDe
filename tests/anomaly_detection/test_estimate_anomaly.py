@@ -10,7 +10,7 @@ import pandas as pd
 from cotede.anomaly_detection import estimate_anomaly
 
 
-dummy_params= {
+dummy_params = {
     "spike": {
             "model": "exponweib",
             "qlimit": 0.000900,
@@ -27,8 +27,7 @@ dummy_params= {
 def test_estimate_anomaly_pandas():
     features = pd.DataFrame(
             {'spike': [0, 1, -.5],
-                'tukey53H_norm': [-1, 0, 2]
-                })
+                'tukey53H_norm': [-1, 0, 2]})
     output = estimate_anomaly(features, dummy_params)
 
     assert len(output) == len(features[features.keys()[0]])
@@ -68,4 +67,3 @@ def test_estimate_anomaly_maskedarray():
     # Compare this example with the previous where spike[1] is not masked
     #   anymore.
     assert ~ma.getmaskarray(output).any()
-
