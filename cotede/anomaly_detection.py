@@ -218,6 +218,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
     #   all non valid positions.
     #err = np.nonzero(false_negative)[0].size + \
     #        np.nonzero(false_positive)[0].size
+    tot_misfit = np.nonzero(mistake)[0].size
     n_err = float(np.nonzero(mistake[indices['err']])[0].shape[0])
     #err_ratio = float(err)/prob[indices['ind_err']].size
     err_ratio = n_err/indices['err'].astype('i').sum()
@@ -230,6 +231,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
             'false_positive': false_positive,
             'prob': prob,
             'p_optimal': p_optimal,
+            'tot_misfit': tot_misfit,
             'n_err': n_err,
             'err_ratio': err_ratio,
             'params': params}
@@ -464,7 +466,7 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
         error_log.append({'err': result['n_err'],
             'err_ratio': result['err_ratio'],
             'p_optimal': result['p_optimal'],
-            'n_misfit': result['n_misfit']})
+            'tot_misfit': result['tot_misfit']})
 
         print error_log[-2]
         print error_log[-1]

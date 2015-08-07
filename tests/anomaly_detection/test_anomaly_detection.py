@@ -114,5 +114,5 @@ def test_calibrate_anomaly_detection():
 
     assert type(output) is dict
     assert sorted(output.keys()) == ['err_ratio', 'false_negative',
-            'false_positive', 'n_err', 'n_misfit', 'p_optimal', 'params',
-            'prob']
+            'false_positive', 'n_err', 'p_optimal', 'params', 'prob',
+            'tot_misfit']
