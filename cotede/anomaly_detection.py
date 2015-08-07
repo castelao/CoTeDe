@@ -95,23 +95,31 @@ def estimate_anomaly(features, params, method='produtorium'):
     """
     assert hasattr(params, 'keys')
     assert hasattr(features, 'keys')
+    for k in params.keys():
+        assert k in features.keys(), "features doesn't have: %s" % k
 
-    prob = ma.zeros(len(features[features.keys()[0]]))
+    prob = ma.masked_all(len(features[features.keys()[0]]))
 
     for t in params.keys():
         param = params[t]['param']
-        ind = ~ma.getmaskarray(features[t])
+        valid = ~ma.fix_invalid(features[t]).mask
 
-        tmp = exponweib.sf(np.asanyarray(features[t])[ind],
+        tmp = exponweib.sf(np.asanyarray(features[t]),
                 *param[:-2], loc=param[-2], scale=param[-1])
         # Arbitrary solution. No value can have a probability of 0.
         tmp[tmp == 0] = 1e-15
         p = ma.log(tmp)
 
+        # Update prob if new value is valid and prob is masked
+        ind = prob.mask & valid
+        prob[ind] = p[ind]
+
+        # If both are valid, operate as choosed method.
+        ind = ~prob.mask & valid
         if method == 'produtorium':
-            prob[ind] = prob[ind] + p
+            prob[ind] = prob[ind] + p[ind]
         elif method == 'min':
-            prob[ind] = min(prob[ind], p)
+            prob[ind] = min(prob[ind], p[ind])
         else:
             return
 
