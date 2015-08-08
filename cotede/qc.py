@@ -405,7 +405,7 @@ class ProfileQC(object):
 
         if 'fuzzylogic' in cfg:
             self.flags[v]['fuzzylogic'] = fuzzylogic(
-                    self.input,
+                    self.auxiliary[v],
                     v,
                     cfg['fuzzylogic'])
 
