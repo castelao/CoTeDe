@@ -1,0 +1,45 @@
+{"main": {
+    "valid_datetime": null,
+    "location_at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf",
+        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+        }
+    },
+"TEMP": {
+    "spike": 6.0,
+    "woa_normbias": {
+        "sigma_threshold": 6,
+        "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
+        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
+        "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
+        },
+    "RoC": 4,
+    "fuzzylogic": {
+	"output": {
+            "small": [0.0, 0.225, 0.45],
+            "medium": [0.275, 0.5, 0.725],
+            "high": [0.55, 0.775, 1.0]
+	    },
+	"features": {    
+            "spike": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 0.07, 0.2],
+                "medium": [0.07, 0.2, 2, 6],
+                "high": [2, 6, 1e30, 1e30]
+                },
+            "woa_relbias": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 3, 4],
+                "medium": [3, 4, 5, 6],
+                "high": [5, 6, 1e30, 1e30]
+                },
+            "RoC": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 0.5, 1.5],
+                "medium": [0.5, 1.5, 3, 4],
+                "high": [3, 4, 1e30, 1e30]
+                }
+            }
+        }
+    }
+}
