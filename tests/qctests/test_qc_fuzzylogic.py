@@ -18,3 +18,5 @@ def test():
     #   will always return 0 for the first and last.
     assert sorted(np.unique(pqc.flags['TEMP']['fuzzylogic'])) == [1,4]
     assert sorted(np.unique(pqc.flags['TEMP2']['fuzzylogic'])) == [1]
+    assert sorted(np.unique(pqc.flags['PSAL']['fuzzylogic'])) == [1,4]
+    assert sorted(np.unique(pqc.flags['PSAL2']['fuzzylogic'])) == [1]

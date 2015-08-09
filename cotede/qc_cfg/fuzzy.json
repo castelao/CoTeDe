@@ -20,7 +20,7 @@
             "medium": [0.275, 0.5, 0.725],
             "high": [0.55, 0.775, 1.0]
 	    },
-	"features": {    
+	"features": {
             "spike": {
                 "weight": 1,
                 "small": [-1e30, -1e30, 0.07, 0.2],
@@ -37,6 +37,43 @@
                 "weight": 1,
                 "small": [-1e30, -1e30, 0.5, 1.5],
                 "medium": [0.5, 1.5, 3, 4],
+                "high": [3, 4, 1e30, 1e30]
+                }
+            }
+        }
+    },
+"PSAL": {
+    "spike": 0.9,
+    "woa_normbias": {
+        "sigma_threshold": 6,
+	"file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
+	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
+	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
+        },
+    "RoC": 4,
+    "fuzzylogic": {
+	"output": {
+            "small": [0.0, 0.225, 0.45],
+            "medium": [0.275, 0.5, 0.725],
+            "high": [0.55, 0.775, 1.0]
+	    },
+	"features": {
+            "spike": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 0.05, 0.15],
+                "medium": [0.05, 0.15, 0.5, 0.9],
+                "high": [0.5, 0.9, 1e30, 1e30]
+                },
+            "woa_relbias": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 3, 4],
+                "medium": [3, 4, 5, 6],
+                "high": [5, 6, 1e30, 1e30]
+                },
+            "RoC": {
+                "weight": 1,
+                "small": [-1e30, -1e30, 1, 2],
+                "medium": [1, 2, 3, 4],
                 "high": [3, 4, 1e30, 1e30]
                 }
             }
