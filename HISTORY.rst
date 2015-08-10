@@ -7,6 +7,7 @@ History
 ----
 
 * Interface for human calibration of anomaly detection
+* Implemented fuzzy logic criteria
 
 0.13 - July, 2015
 ----
