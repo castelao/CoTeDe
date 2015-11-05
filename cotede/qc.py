@@ -371,12 +371,13 @@ class ProfileQC(object):
                         woa_normbias(self.input, v, cfg['woa_normbias'])
                 del(tmp)
 
-        if 'pstep' in cfg:
-            ind = np.isfinite(self.input[v])
-            if self.saveauxiliary:
-                self.auxiliary[v]['pstep'] = ma.concatenate(
-                        [ma.masked_all(1),
-                            np.diff(self.input['PRES'][ind])])
+        #if 'pstep' in cfg:
+        #    ind = np.isfinite(self.input[v])
+        #    ind = ma.getmaskarray(self.input[v])
+        #    if self.saveauxiliary:
+        #        self.auxiliary[v]['pstep'] = ma.concatenate(
+        #                [ma.masked_all(1),
+        #                    np.diff(self.input['PRES'][ind])])
 
         if 'anomaly_detection' in  cfg:
             features = {}
