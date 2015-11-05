@@ -64,6 +64,7 @@ class ProfileQC(object):
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
             #self.auxiliary = {}
+            # build_auxiliary is not exactly the best way to do it.
             self.build_auxiliary()
 
         # I should use common or main, but must be consistent
