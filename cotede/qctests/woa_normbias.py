@@ -13,20 +13,25 @@ from cotede.utils import woa_profile, woa_track_from_file
 
 def woa_normbias(data, v, cfg):
 
-    if ('LATITUDE' in data.keys()) and \
-            ('LONGITUDE' in data.keys()):
-                print("Temporary solution!! This is wrong!!")
-                #if 'datetime' not in data.keys():
-                #    d0 = data.attributes['datetime']
-                #    data.data['datetime'] = \
-                #            [d0 + timedelta(seconds=t) for t in data['timeS']]
-                woa = woa_track_from_file(
-                        [data.attributes['datetime']]*len(data['LATITUDE']),
-                        data['LATITUDE'],
-                        data['LONGITUDE'],
-                        cfg['file'],
-                        varnames=cfg['vars'])
-    else:
+    if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
+        if 'datetime' in data.keys():
+            d = data['datetime']
+        elif ('datetime' in data.attributes):
+            d0 = data.attributes['datetime']
+            if ('timeS' in data.keys()):
+                d = [d0 + timedelta(seconds=s) for s in data['timeS']]
+            else:
+                d = [data.attributes['datetime']]*len(data['LATITUDE']),
+
+        woa = woa_track_from_file(
+                d,
+                data['LATITUDE'],
+                data['LONGITUDE'],
+                cfg['file'],
+                varnames=cfg['vars'])
+    elif ('LATITUDE' in data.attributes.keys()) and \
+            ('LONGITUDE' in data.attributes.keys()) and \
+            ('PRES' in data.keys()):
                 woa = woa_profile(v,
                         data.attributes['datetime'],
                         data.attributes['LATITUDE'],
