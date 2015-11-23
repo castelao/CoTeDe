@@ -27,6 +27,7 @@ User Documentation
    commandline
    qctests
    anomaly_detection
+   fuzzy_logic
    history
 
 Indices and tables

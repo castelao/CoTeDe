@@ -380,6 +380,15 @@ class ProfileQC(object):
         #                [ma.masked_all(1),
         #                    np.diff(self.input['PRES'][ind])])
 
+        if 'RoC' in cfg:
+            x = ma.concatenate([ma.masked_all(1), ma.diff(self.input[v])])
+            if self.saveauxiliary:
+                self.auxiliary[v]['RoC'] = x
+            self.flags[v]['RoC'] = np.zeros(x.shape, dtype='i1')
+            self.flags[v]['RoC'][np.nonzero(x <= cfg['RoC'])] = 1
+            self.flags[v]['RoC'][np.nonzero(x > cfg['RoC'])] = 4
+            self.flags[v]['RoC'][ma.getmaskarray(self.input[v])] = 9
+
         if 'anomaly_detection' in  cfg:
             features = {}
             for f in cfg['anomaly_detection']['features']:
@@ -395,6 +404,12 @@ class ProfileQC(object):
 
             self.flags[v]['anomaly_detection'] = \
                     anomaly_detection(features, cfg['anomaly_detection'])
+
+        if 'fuzzylogic' in cfg:
+            self.flags[v]['fuzzylogic'] = fuzzylogic(
+                    self.auxiliary[v],
+                    v,
+                    cfg['fuzzylogic'])
 
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
