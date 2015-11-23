@@ -17,8 +17,9 @@ def densitystep(S, T, P):
     try:
         import gsw
         rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
-        ds = ma.append(ma.masked_all(1),
-                np.sign(np.diff(P))*np.diff(rho0))
+        assert S.ndim == 1, "Not able to densitystep an array ndim > 1"
+        ds = ma.concatenate([ma.masked_all(1),
+                np.sign(np.diff(P))*np.diff(rho0)])
         return ma.fix_invalid(ds)
 
     except ImportError:
