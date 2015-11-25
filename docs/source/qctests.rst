@@ -34,13 +34,37 @@ Tests
 Valid Date
 ~~~~~~~~~~
 
-Check if date is available and it is valid. For ARGO, the year also must be later than 1997.
+Check if date is available and it is valid.
+
+For ARGO, the year also must be later than 1997.
 
 Valid Position
 ~~~~~~~~~~~~~~
 
+The GTSPP and EGOOS consider two different tests: first if the position is valid, and second if it is at sea, but here it is applied as a combined test.
+This test is evaluated using the ETOPO1, which provides a bathymetry with resolution of 1 minute.
+It is considered at sea if the interpolated position has a negative vertical level.
+If there is a valid position for the profile and it is at sea, it is flagged 1; otherwise, it is flagged 3.
+IMOS also uses flag 3 for fail on this test.
+
+
 Location at Sea
 ~~~~~~~~~~~~~~~
+
+Global Range
+~~~~~~~~~~~~
+
+Regional Range
+~~~~~~~~~~~~~~
+
+Digit Roll Over
+~~~~~~~~~~~~~~~
+
+Every sensor has a limit of bits available to store the sample value, with this limit planned to cover the possible range.
+A spurious value over the bit range would be recorded as the scale rollover, resulting in a misleading value inside the possible scale.
+This test identifies extreme jumps on consecutive measurements, that area wider than expected, suggesting a rollover error.
+
+If the difference on consecutive measurements is smaller or equal to the threshold, it is flagged 1; otherwise, it is flagged 4.
 
 Gradient
 ~~~~~~~~
@@ -78,56 +102,56 @@ CTD
 
 GTSPP
 
-+-----------------+------------+--------+-------------+----------+
-| Test            |         Flag        |       Threshold        |
-+-----------------+------------+--------+-------------+----------+
-|                 | if succeed | if fail| Temperature | Salinity |
-+=================+============+========+=============+==========+
-|                 |            |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| `Valid Date`_   |  1         | 4      |                        |
-+-----------------+------------+--------+-------------+----------+
-| Valid Position  |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| Location at Sea |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| Global Range    |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| `Gradient`_     |  1         | 4      | 10.0 C      | 5        |
-+-----------------+------------+--------+-------------+----------+
-| `Spike`_        |  1         |        | 2.0 C       | 0.3      |
-+-----------------+------------+--------+-------------+----------+
-| `Climatology`_  |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
++--------------------+------------+--------+-------------+----------+
+| Test               |         Flag        |       Threshold        |
++--------------------+------------+--------+-------------+----------+
+|                    | if succeed | if fail| Temperature | Salinity |
++====================+============+========+=============+==========+
+|                    |            |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Valid Date`_      |  1         | 4      |                        |
++--------------------+------------+--------+-------------+----------+
+| `Valid Position`_  |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Location at Sea`_ |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Global Range`_    |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Gradient`_        |  1         | 4      | 10.0 C      | 5        |
++--------------------+------------+--------+-------------+----------+
+| `Spike`_           |  1         |        | 2.0 C       | 0.3      |
++--------------------+------------+--------+-------------+----------+
+| `Climatology`_     |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
 
 
 EuroGOOS
 
-+-----------------+------------+--------+-------------+----------+
-| Test            |         Flag        |       Threshold        |
-+-----------------+------------+--------+-------------+----------+
-|                 | if succeed | if fail| Temperature | Salinity |
-+=================+============+========+=============+==========+
-|                 |            |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| `Valid Date`_   |  1         | 4      |                        |
-+-----------------+------------+--------+-------------+----------+
-| Valid Position  |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| Location at Sea |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| Global Range    |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
-| Digit Roll Over |  1         | 4      |  10.0 C     | 5        |
-+-----------------+------------+--------+-------------+----------+
-| Gradient Cond.  |  1         | 4      |             |          |
-|  - < 500        |            |        | 9.0 C       | 1.5      |
-|  - > 500        |            |        | 3.0 C       | 0.5      |
-+-----------------+------------+--------+-------------+----------+
-| Spike Cond.     |  1         | 4      |             |          |
-+-----------------+------------+--------+-------------+----------+
-| `Climatology`_  |  1         |        |                        |
-+-----------------+------------+--------+-------------+----------+
++--------------------+------------+--------+-------------+----------+
+| Test               |         Flag        |       Threshold        |
++--------------------+------------+--------+-------------+----------+
+|                    | if succeed | if fail| Temperature | Salinity |
++====================+============+========+=============+==========+
+|                    |            |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Valid Date`_      |  1         | 4      |                        |
++--------------------+------------+--------+-------------+----------+
+| `Valid Position`_  |  1         | 4      |                        |
++--------------------+------------+--------+-------------+----------+
+| `Location at Sea`_ |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Global Range`_    |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
+| `Digit Roll Over`_ |  1         | 4      |  10.0 C     | 5        |
++--------------------+------------+--------+-------------+----------+
+| Gradient Cond.     |  1         | 4      |             |          |
+|  - < 500           |            |        | 9.0 C       | 1.5      |
+|  - > 500           |            |        | 3.0 C       | 0.5      |
++--------------------+------------+--------+-------------+----------+
+| Spike Cond.        |  1         | 4      |             |          |
++--------------------+------------+--------+-------------+----------+
+| `Climatology`_     |  1         |        |                        |
++--------------------+------------+--------+-------------+----------+
 
 
 
@@ -139,13 +163,13 @@ Based on AOML procedure. Realtime data is evaluatd by tests 1 to 10, while the d
   1. Platform Identification
   2. `Valid Date`_
   3. Impossible Location
-  4. Location at Sea
+  4. `Location at Sea`_
   5. Impossible Speed
-  6. Global Ranges
+  6. `Global Range`_
   7. Regional Ranges
-  8. Spike
+  8. `Spike`_
   9. Constant Value
-  10. Gradient
+  10. `Gradient`_
   11. Climatology
 ..  12. NCEP Weekly analysis
 ..  13. Buddy Check
@@ -163,13 +187,13 @@ ARGO
   3. Impossible location test
   4. Position on land test
   5. Impossible speed test
-  6. Global range test
+  6. `Global range`_
   7. Regional range test
   8. Pressure increasing test
-  9. Spike test
+  9. `Spike`_
   10. Top an dbottom spike test: obsolete
   11. `Gradient`_
-  12. Digit rollover test
+  12. `Digit Roll Over`_
   13. Stuck value test
   14. Density inversion
   15. Grey list
