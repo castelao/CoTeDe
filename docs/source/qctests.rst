@@ -5,7 +5,7 @@ Tests for Quality Control
 These are the tests available, and can be explicity accessed at cotede.qctests. 
 Most of them simply reproduce the procedure recommended by GTSPP, EuroGOOS, IMOS, ARGO and others.
 
-Although I slightly modified the names of some Q.C.test, the concept behind is still the same. 
+Although I slightly modified the names of some Q.C. test, the concept behind is still the same. 
 The goal was to normalize all tests to return True if the data is good and False if the data is bad. 
 For example, ARGO's manual define "Impossible Date Test", while here I call it "`Valid Date`_". 
 
@@ -34,37 +34,38 @@ Tests
 Valid Date
 ~~~~~~~~~~
 
-Check if date is available and it is valid.
-
-For ARGO, the year also must be later than 1997.
+Check if there is a valid date and time associated with the measurement.
 
 Valid Position
 ~~~~~~~~~~~~~~
 
-The GTSPP and EGOOS consider two different tests: first if the position is valid, and second if it is at sea, but here it is applied as a combined test.
-This test is evaluated using the ETOPO1, which provides a bathymetry with resolution of 1 minute.
-It is considered at sea if the interpolated position has a negative vertical level.
-If there is a valid position for the profile and it is at sea, it is flagged 1; otherwise, it is flagged 3.
-IMOS also uses flag 3 for fail on this test.
-
+Check if there is a valid position associated with the measuremnt. It should have a latitude between -90 and 90, and a longitude between -180 and 360.
 
 Location at Sea
 ~~~~~~~~~~~~~~~
 
+Check if the position is at sea, which is evaluated using ETOPO1, a bathymetry with resolution of 1 minute.
+It is considered at sea if the interpolated position has a negative vertical level.
+
+This test implicitly requires to be approved by the `Valid Position`_ test.
+
 Global Range
 ~~~~~~~~~~~~
+
+This test evaluates if the measurement is a possible value in the ocean in normal conditions. 
+The thresholds used are extreme values, wide enough to accommodate all possible values and do not discard uncommon, but possible, conditions.
 
 Regional Range
 ~~~~~~~~~~~~~~
 
-Digit Roll Over
+Digit Rollover
 ~~~~~~~~~~~~~~~
 
 Every sensor has a limit of bits available to store the sample value, with this limit planned to cover the possible range.
 A spurious value over the bit range would be recorded as the scale rollover, resulting in a misleading value inside the possible scale.
 This test identifies extreme jumps on consecutive measurements, that area wider than expected, suggesting a rollover error.
 
-If the difference on consecutive measurements is smaller or equal to the threshold, it is flagged 1; otherwise, it is flagged 4.
+The difference on consecutive measurements must be smaller or equal to the threshold to be approved.
 
 Gradient
 ~~~~~~~~
@@ -115,7 +116,7 @@ GTSPP
 +--------------------+------------+--------+-------------+----------+
 | `Location at Sea`_ |  1         |        |                        |
 +--------------------+------------+--------+-------------+----------+
-| `Global Range`_    |  1         |        |                        |
+| `Global Range`_    |  1         |        | -2 to 40 C  | 0 to 41  |
 +--------------------+------------+--------+-------------+----------+
 | `Gradient`_        |  1         | 4      | 10.0 C      | 5        |
 +--------------------+------------+--------+-------------+----------+
@@ -138,11 +139,11 @@ EuroGOOS
 +--------------------+------------+--------+-------------+----------+
 | `Valid Position`_  |  1         | 4      |                        |
 +--------------------+------------+--------+-------------+----------+
-| `Location at Sea`_ |  1         |        |                        |
+| `Location at Sea`_ |  1         | 4      |                        |
 +--------------------+------------+--------+-------------+----------+
-| `Global Range`_    |  1         |        |                        |
+| `Global Range`_    |  1         | 4      | -2.5 to 40  | 2 to 41  |
 +--------------------+------------+--------+-------------+----------+
-| `Digit Roll Over`_ |  1         | 4      |  10.0 C     | 5        |
+| `Digit Rollover`_  |  1         | 4      |  10.0 C     | 5        |
 +--------------------+------------+--------+-------------+----------+
 | Gradient Cond.     |  1         | 4      |             |          |
 |  - < 500           |            |        | 9.0 C       | 1.5      |
@@ -183,7 +184,7 @@ ARGO
 ~~~~
 
   1. Platform Identification
-  2. `Valid Date`_
+  2. `Valid Date`_  For ARGO, the year also must be later than 1997.
   3. Impossible location test
   4. Position on land test
   5. Impossible speed test
@@ -193,7 +194,7 @@ ARGO
   9. `Spike`_
   10. Top an dbottom spike test: obsolete
   11. `Gradient`_
-  12. `Digit Roll Over`_
+  12. `Digit Rollover`_
   13. Stuck value test
   14. Density inversion
   15. Grey list
