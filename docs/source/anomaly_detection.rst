@@ -16,12 +16,11 @@ Than, rank all files based on how unexpected is each feature, i.e. a measurement
 
 rank_files(datadir, varname, cfg=None)
 
+- datadir: root directory with the data to be evaluated
+- varname: Variable to be evaluated, like TEMP
+- cfg: Q.C. rule to be considered
+
 Return a list of all files inside datadir ordered by the probablity of being all good data.
-
-datadir: root directory with the data to be evaluated
-varname: Variable to be evaluated, like TEMP
-cfg: Q.C. rule to be considered
-
 
 Calibrate Anomaly Detection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
