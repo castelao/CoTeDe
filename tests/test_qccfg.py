@@ -14,6 +14,7 @@ def test_multiple_cfg():
     pqc = cotede.qc.ProfileQC(data)
     pqc = cotede.qc.ProfileQC(data, cfg='cotede')
     pqc = cotede.qc.ProfileQC(data, cfg='gtspp')
+    pqc = cotede.qc.ProfileQC(data, cfg='eurogoos')
     # Manually defined
     pqc = cotede.qc.ProfileQC(data, cfg={'TEMP': {"spike": 6.0,}})
     assert len(pqc.flags) > 0
