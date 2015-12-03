@@ -333,7 +333,7 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
 
     db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
 
-    assert varname in db.keys()
+    assert varname in db.keys(), "db does not contain variable %s" % varname
 
     # # Remove the value out of the possible range.
     # ind_outofrange = np.nonzero(db.flags[varname]['global_range'] != 1)
