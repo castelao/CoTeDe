@@ -4,13 +4,13 @@ History
 =======
 
 0.14 - Aug, 2015
-----
+----------------
 
 * Interface for human calibration of anomaly detection
 * Implemented fuzzy logic criteria
 
 0.13 - July, 2015
-----
+-----------------
 
 * Major improvements in the anomaly detection submodule
 * Partial support to thermosalinographs (TSG)
@@ -60,3 +60,13 @@ Since 0.9 some of the most important changes.
 ------------------
 
 * Initial release.
+
+2011
+----
+
+* QC_ML, a machine learning approach to quality control hydrographic data, the initial prototype of CoTeDe. I refactored the system I developed to quality control TSG, to evaluate the PIRATA's CTD stations for INPE. At this point I migrated from my personal SVN server to Bitbucket, and I lost the history and logs before this point.
+
+2006
+----
+
+* A system to automaticaly quality control TSG data on realtime for AOML-NOAA. The data was handled in a PostgreSQL database, and only the traditional tests were applied, i.e. a sequence of binary tests (spike, gradient, valid position ...).
