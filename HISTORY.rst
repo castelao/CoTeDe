@@ -61,10 +61,10 @@ Since 0.9 some of the most important changes.
 
 * Initial release.
 
-2011
-----
+QC_ML - 2011
+------------
 
-* QC_ML, a machine learning approach to quality control hydrographic data, the initial prototype of CoTeDe. I refactored the system I developed to quality control TSG, to evaluate the PIRATA's CTD stations for INPE. At this point I migrated from my personal SVN server to Bitbucket, and I lost the history and logs before this point.
+* QC_ML, a machine learning approach to quality control hydrographic data, the initial prototype of CoTeDe. I refactored the system I developed to quality control TSG, to evaluate the PIRATA's CTD stations for INPE. At this point I migrated from my personal Subversion server to Bitbucket, and I lost the history and logs before this point.
 
 2006
 ----
