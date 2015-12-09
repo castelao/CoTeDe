@@ -38,7 +38,7 @@ Process multiple files in parallel, ideal for large datasets.
 Export output, original data plus flags, into netCDF files following OCEANSites data structure.
 
 Quick howto
-___________
+-----------
 
 To evaluate the records of a profile:
 
