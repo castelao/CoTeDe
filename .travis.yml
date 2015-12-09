@@ -1,6 +1,16 @@
 language: python
+
+sudo: false
+
 python:
   - "2.7"
+
+addons:
+  apt:
+    packages:
+      - libhdf5-serial-dev
+      - netcdf-bin
+      - libnetcdf-dev
 
 env:
   - TOX_ENV=py27
