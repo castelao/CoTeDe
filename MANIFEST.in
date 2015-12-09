@@ -1,4 +1,7 @@
+include AUTHORS.rst
 include HISTORY.rst
+include LICENSE.rst
+include README.rst
 
 #include distribute_setup.py
 include *.txt
