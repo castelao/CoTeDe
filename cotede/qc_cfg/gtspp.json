@@ -18,7 +18,7 @@
         "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
-    "profile_envelope": [
+    "profile_envelop": [
         ["> 0", "<= 25", -2, 37],
         ["> 25", "<= 50", -2, 36],
         ["> 50", "<= 100", -2, 36],
@@ -45,7 +45,7 @@
         "vars": {"woa_an": "s_an", "woa_sd": "s_sd", "woa_n": "s_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
-    "profile_envelope": [
+    "profile_envelop": [
         ["> 0", "<= 25", 0, 41],
         ["> 25", "<= 50", 0, 41],
         ["> 50", "<= 100", 1, 41],
