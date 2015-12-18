@@ -9,7 +9,7 @@ import numpy as np
 from numpy import ma
 
 
-def profile_envelope(data, cfg, varname):
+def profile_envelop(data, cfg, varname):
     """
 
         Probably not the best way to do this, but works for now.

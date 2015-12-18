@@ -1,10 +1,11 @@
 {"main": {
     "valid_datetime": null,
-    "at_sea": {
-        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+    "valid_position": null,
+    "location_at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf"
         }
     },
-"temperature": {
+"TEMP": {
     "global_range": {
         "minval": -2.0,
         "maxval": 40
@@ -14,10 +15,10 @@
     "woa_normbias": {
         "sigma_threshold": 3,
         "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
-        "vars": {"woa_an": "t_an", "woa_sd": "t_sd", "woa_n": "t_dd"},
+        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
-    "profile_envelope": [
+    "profile_envelop": [
         ["> 0", "<= 25", -2, 37],
         ["> 25", "<= 50", -2, 36],
         ["> 50", "<= 100", -2, 36],
@@ -31,7 +32,7 @@
         ["> 5500", "<= 12000", -1.5, 4]
         ]
     },
-"salinity": {
+"PSAL": {
     "global_range": {
         "minval": 0,
         "maxval": 41
@@ -41,10 +42,10 @@
     "woa_normbias": {
         "sigma_threshold": 3,
         "file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
-        "vars": {"woa_an": "s_an", "woa_sd": "s_sd", "woa_n": "s_dd"},
+        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
-    "profile_envelope": [
+    "profile_envelop": [
         ["> 0", "<= 25", 0, 41],
         ["> 25", "<= 50", 0, 41],
         ["> 50", "<= 100", 1, 41],

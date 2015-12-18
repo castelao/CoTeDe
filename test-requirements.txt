@@ -6,4 +6,5 @@ netCDF4
 pyARGO
 gsw
 matplotlib
+scipy>=0.9
 scikit-fuzzy
