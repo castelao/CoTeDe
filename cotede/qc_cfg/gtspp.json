@@ -5,7 +5,7 @@
         "file": "~/.cotederc/data/etopo5.cdf"
         }
     },
-"temperature": {
+"TEMP": {
     "global_range": {
         "minval": -2.0,
         "maxval": 40
@@ -32,7 +32,7 @@
         ["> 5500", "<= 12000", -1.5, 4]
         ]
     },
-"salinity": {
+"PSAL": {
     "global_range": {
         "minval": 0,
         "maxval": 41
