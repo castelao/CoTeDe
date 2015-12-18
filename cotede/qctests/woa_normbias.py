@@ -2,6 +2,9 @@
 
 """
 
+
+    Create a test to check if cfg['vars'] does exist in the climatology file,
+      to avoid error like have t_mn in one and t_an in the other.
 """
 
 from datetime import timedelta
