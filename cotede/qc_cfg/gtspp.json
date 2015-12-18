@@ -1,8 +1,8 @@
 {"main": {
     "valid_datetime": null,
     "valid_position": null,
-    "at_sea": {
-        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+    "location_at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf"
         }
     },
 "temperature": {

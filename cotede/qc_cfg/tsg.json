@@ -2,7 +2,7 @@
     "platform_identification": null,
     "valid_datetime": null,
     "valid_position": null,
-    "at_sea": {
+    "location_at_sea": {
         "file": "~/.cotederc/data/etopo5.cdf",
         "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
         }
