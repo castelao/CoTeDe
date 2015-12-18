@@ -1,8 +1,30 @@
+
+import pkg_resources
+import json
+
 import numpy as np
 
 from seabird import cnv
 import cotede.qc
 from cotede.utils.supportdata import download_testdata
+
+
+def test_cfg_json():
+    """ All config files should comply with json format
+
+        In the future, when move load cfg outside, refactor here.
+    """
+    cfgfiles = [f for f in
+            pkg_resources.resource_listdir('cotede', 'qc_cfg')
+            if f[-5:] == ".json"]
+
+    for cfgfile in cfgfiles:
+        cfg = json.loads(pkg_resources.resource_string('cotede',
+                        "qc_cfg/%s" % cfgfile))
+
+        assert type(cfg) is dict
+        for k in cfg.keys():
+            assert len(cfg[k]) > 0
 
 
 def test_multiple_cfg():
