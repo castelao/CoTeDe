@@ -7,3 +7,4 @@ pyARGO
 gsw
 matplotlib
 scikit-fuzzy
+pyWOA
