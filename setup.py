@@ -19,9 +19,10 @@ install_requires = [
     'numpy>=1.1',
     'seabird>=0.6.3',
     'scipy',
+    'pyWOA'
     ]
 
-version = '0.14.2'
+version = '0.15.0'
 
 setup(
     name='cotede',

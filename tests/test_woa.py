@@ -6,7 +6,7 @@
 from datetime import datetime
 import numpy as np
 
-from cotede.utils import woa
+from WOA import woa
 #from cotede.utils import supportdata
 #supportdata.download_supportdata()
 

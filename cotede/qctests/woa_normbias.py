@@ -11,7 +11,7 @@ from datetime import timedelta
 
 import numpy as np
 from numpy import ma
-from cotede.utils import woa_profile, woa_track_from_file
+from WOA import woa_profile, woa_track_from_file
 
 
 def woa_normbias(data, v, cfg):
