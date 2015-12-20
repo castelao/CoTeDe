@@ -2,13 +2,16 @@
 
 """
 
+
+    Create a test to check if cfg['vars'] does exist in the climatology file,
+      to avoid error like have t_mn in one and t_an in the other.
 """
 
 from datetime import timedelta
 
 import numpy as np
 from numpy import ma
-from cotede.utils import woa_profile, woa_track_from_file
+from WOA import woa_profile, woa_track_from_file
 
 
 def woa_normbias(data, v, cfg):

@@ -9,8 +9,8 @@ CoTe De l'eau
    :target: https://readthedocs.org/projects/cotede/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://img.shields.io/travis/castelao/cotede.svg
-        :target: https://travis-ci.org/castelao/cotede
+.. image:: https://img.shields.io/travis/castelao/CoTeDe.svg
+        :target: https://travis-ci.org/castelao/CoTeDe
 
 .. image:: https://img.shields.io/pypi/v/cotede.svg
         :target: https://pypi.python.org/pypi/cotede

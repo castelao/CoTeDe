@@ -27,16 +27,37 @@ def test_cfg_json():
             assert len(cfg[k]) > 0
 
 
+def test_cfg_existentprocedure():
+    """ Check if all procedures requested by the cfg are available.
+    """
+    cfgfiles = [f for f in
+            pkg_resources.resource_listdir('cotede', 'qc_cfg')
+            if f[-5:] == ".json"]
+    QCTESTS = dir(cotede.qctests)
+    for cfgfile in cfgfiles:
+        print(cfgfile)
+        cfg = json.loads(pkg_resources.resource_string('cotede',
+                        "qc_cfg/%s" % cfgfile))
+        assert type(cfg) is dict
+        for v in cfg.keys():
+            for c in cfg[v]:
+                print("yoooh %s.%s.%s" % (cfgfile[:-5], v, c))
+                assert c in QCTESTS, \
+                        "Test %s.%s.%s is not available at cotede.qctests" % \
+                        (cfgfile[:-5], v, c)
+
+
 def test_multiple_cfg():
     """ I should think about a way to test if the output make sense.
     """
 
     datafile = download_testdata("dPIRX010.cnv")
     data = cnv.fCNV(datafile)
-    pqc = cotede.qc.ProfileQC(data)
-    pqc = cotede.qc.ProfileQC(data, cfg='cotede')
-    pqc = cotede.qc.ProfileQC(data, cfg='gtspp')
-    pqc = cotede.qc.ProfileQC(data, cfg='eurogoos')
+    for cfg in [None, 'cotede', 'gtspp', 'eurogoos']:
+        pqc = cotede.qc.ProfileQC(data, cfg=cfg)
+        assert sorted(pqc.flags.keys()) == \
+                ['PSAL', 'PSAL2', 'TEMP', 'TEMP2', 'common'], \
+                "Incomplete flagging for %s: %s" % (cfg, pqc.flags.keys())
     # Manually defined
     pqc = cotede.qc.ProfileQC(data, cfg={'TEMP': {"spike": 6.0,}})
     assert len(pqc.flags) > 0

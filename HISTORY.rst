@@ -3,6 +3,11 @@
 History
 =======
 
+0.15 - Dec, 2015
+----------------
+
+* Moved procedures to handle climatology to external standalone packages.
+
 0.14 - Aug, 2015
 ----------------
 
