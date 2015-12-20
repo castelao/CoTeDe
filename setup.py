@@ -22,7 +22,7 @@ install_requires = [
     'pyWOA'
     ]
 
-version = '0.15.0'
+version = '0.15.1'
 
 setup(
     name='cotede',

@@ -8,6 +8,11 @@ def location_at_sea(data, cfg):
         Interpolate the depth from ETOPO for the data position.
           If local "height" is negative, means lower than sea
           level, hence at sea.
+
+        FIXME: It must allow to check Lat/Lon from data to work with
+          TSGs, i.e. one location for each measurement.
+          Double check other branches, I thought I had already done
+            this before.
     """
     assert hasattr(data, 'attributes'), "Missing attributes"
 
@@ -30,7 +35,12 @@ def location_at_sea(data, cfg):
 
     if depth < 0:
         return 1
-    elif flag >= 0:
-        return 3
-    else:
-        return 0
+
+    elif depth >= 0:
+        try:
+            return cfg['flag_bad']
+        except:
+            # Default flag if fail
+            return 4
+
+    return 0
