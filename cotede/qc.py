@@ -182,9 +182,9 @@ class ProfileQC(object):
         if 'pressure_increasing' in cfg:
             logging.warn("Sorry, I'm no ready to evaluate pressure_increasing()")
 
-        if 'profile_envelope' in cfg:
-            self.flags[v]['profile_envelope'] = profile_envelope(
-                    self.input, cfg['profile_envelope'], v)
+        if 'profile_envelop' in cfg:
+            self.flags[v]['profile_envelop'] = profile_envelop(
+                    self.input, cfg['profile_envelop'], v)
 
         if 'gradient' in cfg:
             threshold = cfg['gradient']
