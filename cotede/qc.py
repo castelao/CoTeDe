@@ -32,7 +32,8 @@ class ProfileQC(object):
                 - temperature[\d]:
                 - salinity[\d]:
 
-            cfg: config file with thresholds
+            cfg: Check cotede.utils.load_cfg() for the possible input formats
+                   for cfg.
 
             =======================
             - Must have a log system
