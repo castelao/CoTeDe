@@ -81,6 +81,20 @@ def fuzzylogic(features, v, cfg):
     output['high'] = fuzz.trimf(output_range, cfg['output']['high'])
 
 
+    # This is how Timms and Morello defined the Fuzzy Logic approach
+    flags = np.zeros(N, dtype='i1')
+    flags[(rules['low'] > 0.9)] = 1
+    flags[(rules['low'] > 0.5) & (rules['high'] < 0.3)] = 2
+    # Missing check if threshold was crossed, to flag as 4
+    # Everything else is flagged 3
+    ind = flags == 0
+    for f in features:
+        ind = ind & ~features[f].mask
+    flags[ind] = 3
+
+    return flags
+
+    # This would be the classic fuzzy approach.
     uncertainty = np.empty(N)
     for i in range(N):
         aggregated = np.fmax(np.fmin(rules['high'][i], output['high']),
