@@ -71,7 +71,7 @@ def fuzzylogic(features, v, cfg):
 
     output_range = np.arange(0, 1, 0.01)
     output = {}
-    output['low'] = fuzz.trimf(output_range, cfg['output']['small'])
+    output['low'] = fuzz.trimf(output_range, cfg['output']['low'])
     output['medium'] = fuzz.trimf(output_range, cfg['output']['medium'])
     output['high'] = fuzz.trimf(output_range, cfg['output']['high'])
 
