@@ -15,11 +15,16 @@ def fuzzylogic(features, v, cfg):
     features_list = cfg['features'].keys()
     N = features[features_list[0]].size
 
-    membership = {'low': {}, 'medium': {}, 'high': {}}
+    membership = {}
+    for f in cfg['output'].keys():
+        membership[f] = {} # = {'low': {}, 'medium': {}, 'high': {}}
+
     for t in features_list:
-        membership['low'][t] = fuzz.trapmf(features[t], cfg['features'][t]['small'])
-        membership['medium'][t] = fuzz.trapmf(features[t], cfg['features'][t]['medium'])
-        membership['high'][t] = fuzz.trapmf(features[t], cfg['features'][t]['high'])
+        for m in membership:
+            assert m in cfg['features'][t], \
+                    "Missing %s in %s" % (m, cfg['features'][t])
+
+            membership[m][t] = fuzz.trapmf(features[t], cfg['features'][t][m])
 
     # Rule Set
     rules = {}
