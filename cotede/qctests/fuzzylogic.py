@@ -10,9 +10,17 @@ from numpy import ma
 
 
 def fuzzylogic(features, v, cfg):
+    """
+
+        FIXME: Looks like fuzz.trapmf does not handle well masked values.
+               I must think better what to do with masked input values. What
+               to do when there is one feature, but the other features are
+               masked?
+    """
     import skfuzzy as fuzz
 
     features_list = cfg['features'].keys()
+
     N = features[features_list[0]].size
 
     membership = {}
