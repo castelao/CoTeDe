@@ -13,7 +13,7 @@
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
-    "RoC": 4,
+    "gradient": 4,
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
@@ -33,7 +33,7 @@
                 "medium": [3, 4, 5, 6],
                 "high": [5, 6, 1e30, 1e30]
                 },
-            "RoC": {
+            "gradient": {
                 "weight": 1,
                 "low": [-1e30, -1e30, 0.5, 1.5],
                 "medium": [0.5, 1.5, 3, 4],
@@ -50,7 +50,7 @@
 	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
 	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
-    "RoC": 4,
+    "gradient": 4,
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
@@ -70,7 +70,7 @@
                 "medium": [3, 4, 5, 6],
                 "high": [5, 6, 1e30, 1e30]
                 },
-            "RoC": {
+            "gradient": {
                 "weight": 1,
                 "low": [-1e30, -1e30, 1, 2],
                 "medium": [1, 2, 3, 4],
