@@ -83,6 +83,24 @@ Spike
 
    X_i = \left| V_i - \frac{V_{i+1} + V_{i-1}}{2} \right| - \left| \frac{V_{i+1} - V_{i-1}}{2} \right|
 
+Tukey 53H
+~~~~~~~~~
+
+This method to detect spikes is based on the procedure initially proposed by \citet{GoringNikora2002} for Acoustic Doppler Velocimeters, and similar to the one adopted by \citet{Morello2011}.
+It takes advantage of the robustness of the median to create a smoother data series, which is then compared with the observation.
+This difference is normalized by the standard deviation of the observed data series after removing the large--scale variability.
+
+For one individual measurement :math:`x_i`, where :math:`i` is the position of the observation, it is evaluated as follows:
+
+1. :math:`x^{(1)}` is the median of the five points from :math:`x_{i-2}` to :math:`x_{i+2}`;
+2. :math:`x^{(2)}` is the median of the three points from :math:`x^{(1)}_{i-1}` to :math:`x^{(1)}_{i+1}`;
+3. :math:`x^{(3)}` is the defined by the Hanning smoothing filter:
+        :math:`\frac{1}{4}\left( x^{(2)}_{i-1} +2x^{(2)}_{i} +x^{(2)}_{i+1} \right)`
+4. :math:`x_i` is a spike if :math:`\frac{|x_i-x^{(3)}|}{\sigma} > k`, where :math:`\sigma` is the standard deviation of the lowpass filtered data.
+
+
+The default behavior in CoTeDe is to flag 4 if the test yields values higher than :math:`k=1.5`, and flag 1 if it is lower.
+
 
 Climatology
 ~~~~~~~~~~~
