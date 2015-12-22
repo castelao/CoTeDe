@@ -294,11 +294,14 @@ class ProfileQC(object):
                   expected that CTD profiles has a typical depth
                   structure, with a range between surface and bottom.
             """
-            k = cfg['tukey53H_norm']['k']
-            s = tukey53H_norm(self.input[v], k)
+            s = tukey53H_norm(self.input[v],
+                    k = cfg['tukey53H_norm']['k'],
+                    l = cfg['tukey53H_norm']['l'])
 
             if self.saveauxiliary:
                 self.auxiliary[v]['tukey53H_norm'] = s
+
+            threshold = cfg['tukey53H_norm']['k']
 
             flag = np.zeros(s.shape, dtype='i1')
             # Flag as 9 any masked input value

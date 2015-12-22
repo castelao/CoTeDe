@@ -42,4 +42,4 @@ def tukey53H_norm(x, k=1.5, l=12):
     w = np.hamming(l)
     sigma = (np.convolve(x, w, mode='same') / w.sum()).std()
 
-    return Delta/(k*sigma)
+    return Delta/sigma
