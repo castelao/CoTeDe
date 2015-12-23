@@ -10,3 +10,4 @@ from woa_normbias import woa_normbias
 from anomaly_detection import anomaly_detection
 from possible_speed import possible_speed
 from fuzzylogic import fuzzylogic
+from cum_rate_of_change import cum_rate_of_change
