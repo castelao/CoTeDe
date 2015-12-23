@@ -38,7 +38,7 @@ lint:
 	flake8 cotede tests
 
 test:
-	py.test tests
+	py.test -n 4 tests
 
 test-all:
 	tox
