@@ -23,7 +23,7 @@ i = small, medium, large
 
 from numpy import ma
 
-def cum_rate_change(data, v, k):
+def cum_rate_of_change(data, v, k):
 
     assert v in data
 
