@@ -23,7 +23,7 @@ i = small, medium, large
 
 from numpy import ma
 
-def cum_rate_of_change(data, v, k):
+def cum_rate_of_change(data, v, memory):
 
     assert v in data
 
@@ -32,6 +32,6 @@ def cum_rate_of_change(data, v, k):
 
     for i in range(2, output.size):
         if output[i] < output[i-1]:
-            output[i] = (1-k) * output[i] + k * output[i-1]
+            output[i] = (1 - memory) * output[i] + memory * output[i-1]
 
     return output

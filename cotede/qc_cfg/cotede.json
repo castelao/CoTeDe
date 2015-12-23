@@ -36,6 +36,10 @@
     "digit_roll_over": 10,
     "bin_spike": 10,
     "RoC": 4,
+    "cRoC": {
+        "memory": 0.8,
+        "threshold": 4
+    },
     "profile_envelope": [
         ["> 0", "<= 25", -2, 37],
         ["> 25", "<= 50", -2, 36],
