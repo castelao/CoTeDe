@@ -166,16 +166,8 @@ class ProfileQC(object):
                 print("Fail on valid_speed")
 
         if 'global_range' in cfg:
-            self.flags[v]['global_range'] = np.zeros(self.input[v].shape,
-                    dtype='i1')
-            # Flag as 9 any masked input value
-            self.flags[v]['global_range'][ma.getmaskarray(self.input[v])] = 9
-            ind = (self.input[v] >= cfg['global_range']['minval']) & \
-                    (self.input[v] <= cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][np.nonzero(ind)] = 1
-            ind = (self.input[v] < cfg['global_range']['minval']) | \
-                    (self.input[v] > cfg['global_range']['maxval'])
-            self.flags[v]['global_range'][np.nonzero(ind)] = 4
+            self.flags[v]['global_range'] = global_range(
+                    self.input, v, cfg['global_range'])
 
         if 'regional_range' in cfg:
             logging.warn("Sorry, I'm no ready to evaluate regional_range()")
