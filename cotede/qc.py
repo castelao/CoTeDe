@@ -376,14 +376,11 @@ class ProfileQC(object):
         #                [ma.masked_all(1),
         #                    np.diff(self.input['PRES'][ind])])
 
-        if 'RoC' in cfg:
-            x = ma.concatenate([ma.masked_all(1), ma.diff(self.input[v])])
+        if 'rate_of_change' in cfg:
+            self.flags[v]['rate_of_change'], RoC = \
+                    rate_of_change(self.input, v, cfg['rate_of_change'])
             if self.saveauxiliary:
-                self.auxiliary[v]['RoC'] = x
-            self.flags[v]['RoC'] = np.zeros(x.shape, dtype='i1')
-            self.flags[v]['RoC'][np.nonzero(x <= cfg['RoC'])] = 1
-            self.flags[v]['RoC'][np.nonzero(x > cfg['RoC'])] = 4
-            self.flags[v]['RoC'][ma.getmaskarray(self.input[v])] = 9
+                self.auxiliary[v]['rate_of_change'] = RoC
 
         if 'cum_rate_of_change' in cfg:
             x = cum_rate_of_change(self.input, v,
