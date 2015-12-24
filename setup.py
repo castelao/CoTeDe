@@ -36,7 +36,7 @@ setup(
         'cotede.qctests',
         'cotede.utils',
         'cotede.humanqc',
-        'cotede.fuzzylogic',
+        'cotede.fuzzy',
     ],
     package_dir = {'cotede':
                    'cotede'},

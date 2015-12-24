@@ -8,8 +8,9 @@
 import numpy as np
 from numpy import ma
 
+import skfuzzy as fuzz
 
-def fuzzylogic(features, cfg):
+def fuzzyfy(features, cfg):
     """
 
         FIXME: Looks like fuzz.trapmf does not handle well masked values.
@@ -17,7 +18,6 @@ def fuzzylogic(features, cfg):
                to do when there is one feature, but the other features are
                masked?
     """
-    import skfuzzy as fuzz
 
     features_list = cfg['features'].keys()
 
@@ -34,7 +34,8 @@ def fuzzylogic(features, cfg):
             assert m in cfg['features'][t], \
                     "Missing %s in %s" % (m, cfg['features'][t])
 
-            membership[m][t] = fuzz.trapmf(features[t], cfg['features'][t][m])
+            membership[m][t] = fuzz.trapmf(np.asanyarray(features[t]),
+                    cfg['features'][t][m])
 
     # Rule Set
     rules = {}
@@ -46,6 +47,8 @@ def fuzzylogic(features, cfg):
     for f in features_list[1:]:
         tmp = np.vstack((tmp, membership['low'][f]))
 
+    # FIXME: If there is only one feature, it will return 1 value
+    #          instead of an array with N values.
     rules['low'] = np.mean(tmp, axis=0)
 
     # Medium: u_medium = mean(S_l(spike), S_l(clim)...)
@@ -84,25 +87,25 @@ def fuzzylogic(features, cfg):
 
     #CQ = bisector(Qs, ...
 
-    output_range = np.arange(0, 1, 0.01)
+    output_range = np.linspace(0, 1, 100)
     output = {}
     output['low'] = fuzz.trimf(output_range, cfg['output']['low'])
     output['medium'] = fuzz.trimf(output_range, cfg['output']['medium'])
     output['high'] = fuzz.trimf(output_range, cfg['output']['high'])
 
 
-    # This is how Timms and Morello defined the Fuzzy Logic approach
-    flags = np.zeros(N, dtype='i1')
-    flags[(rules['low'] > 0.9)] = 1
-    flags[(rules['low'] > 0.5) & (rules['high'] < 0.3)] = 2
-    # Missing check if threshold was crossed, to flag as 4
-    # Everything else is flagged 3
-    ind = flags == 0
-    for f in features:
-        ind = ind & ~features[f].mask
-    flags[ind] = 3
+    ## This is how Timms and Morello defined the Fuzzy Logic approach
+    #flags = np.zeros(N, dtype='i1')
+    #flags[(rules['low'] > 0.9)] = 1
+    #flags[(rules['low'] > 0.5) & (rules['high'] < 0.3)] = 2
+    ## Missing check if threshold was crossed, to flag as 4
+    ## Everything else is flagged 3
+    #ind = flags == 0
+    #for f in features:
+    #    ind = ind & ~features[f].mask
+    #flags[ind] = 3
 
-    return flags
+    #return flags
 
     # This would be the classic fuzzy approach.
     uncertainty = np.empty(N)
@@ -111,6 +114,8 @@ def fuzzylogic(features, cfg):
             np.fmax(np.fmin(rules['medium'][i], output['medium']),
                 np.fmin(rules['low'][i], output['low'])))
         uncertainty[i] = fuzz.defuzz(output_range, aggregated, 'bisector')
+
+    return uncertainty    
 
     flags = np.zeros(N, dtype='i1')
     flags[uncertainty <= 0.5] = 1
