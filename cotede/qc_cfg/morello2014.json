@@ -14,7 +14,7 @@
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
     "gradient": 4,
-    "fuzzylogic": {
+    "morello2014": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
             "medium": [0.275, 0.5, 0.725],
@@ -51,7 +51,7 @@
 	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
     "gradient": 4,
-    "fuzzylogic": {
+    "morello2014": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
             "medium": [0.275, 0.5, 0.725],
