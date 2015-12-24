@@ -1,5 +1,6 @@
 wheel==0.23.0
 pytest
+pytest-xdist
 PyDAP
 pandas
 netCDF4
