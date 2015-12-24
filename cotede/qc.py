@@ -406,10 +406,12 @@ class ProfileQC(object):
                     anomaly_detection(features, cfg['anomaly_detection'])
 
         if 'fuzzylogic' in cfg:
+            for feature in cfg['fuzzylogic']['features']:
+                assert feature in self.auxiliary[v]
+
             self.flags[v]['fuzzylogic'] = fuzzylogic(
-                    self.auxiliary[v],
-                    v,
-                    cfg['fuzzylogic'])
+                    features=self.auxiliary[v],
+                    cfg=cfg['fuzzylogic'])
 
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):

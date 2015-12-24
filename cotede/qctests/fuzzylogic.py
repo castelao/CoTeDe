@@ -9,7 +9,7 @@ import numpy as np
 from numpy import ma
 
 
-def fuzzylogic(features, v, cfg):
+def fuzzylogic(features, cfg):
     """
 
         FIXME: Looks like fuzz.trapmf does not handle well masked values.
@@ -23,9 +23,11 @@ def fuzzylogic(features, v, cfg):
 
     N = features[features_list[0]].size
 
+    # The fuzzy set are usually: low, medium, high
+    # The membership of each fuzzy set are each feature scaled.
     membership = {}
     for f in cfg['output'].keys():
-        membership[f] = {} # = {'low': {}, 'medium': {}, 'high': {}}
+        membership[f] = {}
 
     for t in features_list:
         for m in membership:
