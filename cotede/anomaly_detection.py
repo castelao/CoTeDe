@@ -496,6 +496,8 @@ def rank_files(datadir, varname, cfg=None):
                 - Produtorium of all probabilities or,
                 - Min(P(x_i)), the lowest probability for each measurement
             - The output would be a list to feed the Human Q.C. system
+
+        ATENTION: I must create some tests for this function.
     """
     import pandas as pd
 
@@ -516,7 +518,7 @@ def rank_files(datadir, varname, cfg=None):
     tmp = db.data.loc[ind, ['profilename']]
     tmp.loc[:, 'anomaly_detection'] = pd.Series(prob, index=tmp.index)
     grp = tmp.groupby('profilename')
-    output = grp.min().sort('anomaly_detection').index.tolist()
+    output = grp.min().sort_values(by='anomaly_detection').index.tolist()
 
     return output
 
