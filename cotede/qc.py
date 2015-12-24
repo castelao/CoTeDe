@@ -393,12 +393,18 @@ class ProfileQC(object):
             self.flags[v]['RoC'][np.nonzero(x > cfg['RoC'])] = 4
             self.flags[v]['RoC'][ma.getmaskarray(self.input[v])] = 9
 
-        if 'cRoC' in cfg:
-            x = cum_rate_of_change(data, v, cfg['cRoC']['memory'])
-            self.flags[v]['cRoC'] = np.zeros(x.shape, dtype='i1')
-            self.flags[v]['cRoC'][np.nonzero(x <= cfg['RoC']['threshold'])] = 1
-            self.flags[v]['cRoC'][np.nonzero(x > cfg['RoC']['threshold'])] = 4
-            self.flags[v]['cRoC'][ma.getmaskarray(self.input[v])] = 9
+        if 'cum_rate_of_change' in cfg:
+            x = cum_rate_of_change(self.input, v,
+                    cfg['cum_rate_of_change']['memory'])
+            self.flags[v]['cum_rate_of_change'] = np.zeros(x.shape, dtype='i1')
+            self.flags[v]['cum_rate_of_change'][
+                    np.nonzero(x <= cfg['cum_rate_of_change']['threshold'])
+                    ] = 1
+            self.flags[v]['cum_rate_of_change'][
+                    np.nonzero(x > cfg['cum_rate_of_change']['threshold'])
+                    ] = 4
+            self.flags[v]['cum_rate_of_change'][
+                    ma.getmaskarray(self.input[v])] = 9
 
         if 'anomaly_detection' in  cfg:
             features = {}

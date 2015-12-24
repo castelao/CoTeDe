@@ -25,8 +25,6 @@ from numpy import ma
 
 def cum_rate_of_change(data, v, memory):
 
-    assert v in data
-
     output = ma.masked_all_like(data[v])
     output[1:] = ma.absolute(ma.diff(data[v]))
 
