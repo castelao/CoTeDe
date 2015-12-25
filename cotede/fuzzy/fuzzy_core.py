@@ -8,12 +8,12 @@
 import numpy as np
 from numpy import ma
 
-import skfuzzy as fuzz
+import skfuzzy
 
 def fuzzyfy(features, cfg):
     """
 
-        FIXME: Looks like fuzz.trapmf does not handle well masked values.
+        FIXME: Looks like skfuzzy.trapmf does not handle well masked values.
                I must think better what to do with masked input values. What
                to do when there is one feature, but the other features are
                masked?
@@ -34,7 +34,7 @@ def fuzzyfy(features, cfg):
             assert m in cfg['features'][t], \
                     "Missing %s in %s" % (m, cfg['features'][t])
 
-            membership[m][t] = fuzz.trapmf(np.asanyarray(features[t]),
+            membership[m][t] = skfuzzy.trapmf(np.asanyarray(features[t]),
                     cfg['features'][t][m])
 
     # Rule Set
@@ -90,9 +90,9 @@ def fuzzyfy(features, cfg):
 
     output_range = np.linspace(0, 1, 100)
     output = {}
-    output['low'] = fuzz.trimf(output_range, cfg['output']['low'])
-    output['medium'] = fuzz.trimf(output_range, cfg['output']['medium'])
-    output['high'] = fuzz.trimf(output_range, cfg['output']['high'])
+    output['low'] = skfuzzy.trimf(output_range, cfg['output']['low'])
+    output['medium'] = skfuzzy.trimf(output_range, cfg['output']['medium'])
+    output['high'] = skfuzzy.trimf(output_range, cfg['output']['high'])
 
 
     # This would be the classic fuzzy approach.
@@ -101,7 +101,7 @@ def fuzzyfy(features, cfg):
         aggregated = np.fmax(np.fmin(rules['high'][i], output['high']),
             np.fmax(np.fmin(rules['medium'][i], output['medium']),
                 np.fmin(rules['low'][i], output['low'])))
-        uncertainty[i] = fuzz.defuzz(output_range, aggregated, 'bisector')
+        uncertainty[i] = skfuzzy.defuzz(output_range, aggregated, 'bisector')
 
     return uncertainty    
 
