@@ -73,6 +73,12 @@ def fuzzyfy(features, cfg):
 
     return rules
 
+
+def fuzz(features, cfg):
+    """
+
+        Temporary solution. Under-development.
+    """
     # It's not clear at Morello 2014 what is the operator K()
     # Q is the uncertainty, hence Q_low is the low uncertainty
     # Seems like K() is just a linear factor, which would give the level of uncertainty, like 0.1 for low, 0.5 for medium and 0.9 for high would define weights for each level?! I'm not sure. But the result would be a composite curve, so when the Qs are joinned it would give a curve with the possible values on Q (maybe multiple dimensions) and the y would be the composite result [0, 1].
@@ -87,6 +93,10 @@ def fuzzyfy(features, cfg):
     # Is it x the observed value of hypotetical values?
 
     #CQ = bisector(Qs, ...
+
+    N = features[features.keys()[0]].size
+
+    rules = fuzzyfy(features, cfg)
 
     output_range = np.linspace(0, 1, 100)
     output = {}
