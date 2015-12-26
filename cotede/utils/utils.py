@@ -22,6 +22,12 @@ except:
 from scipy.interpolate import RectBivariateSpline, interp1d
 
 
+def cotede_dir():
+    path = expanduser(os.getenv('COTEDE_DIR', '~/.cotederc'))
+    if not os.path.isdir(path):
+        raise
+    return path
+
 def make_file_list(inputdir, inputpattern):
     """ Search inputdir recursively for inputpattern
     """
@@ -173,8 +179,9 @@ def load_cfg(cfg=None):
         #self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
         return cfg
     except:
-        # Otherwise, search at use's home dirIf can't find inside cotede, try to load from users directory
-        cfg = json.loads(expanduser('~/.cotederc/cfg/%s.json' % cfg))
+        # Otherwise, try to load from user's directory
+        cfg = json.load(open(
+            os.path.join(cotede_dir(), 'cfg/%s.json' % cfg)))
         #self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
         return cfg
