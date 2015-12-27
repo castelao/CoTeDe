@@ -144,9 +144,11 @@ class ProfileQC(object):
         self.flags[v] = {}
 
         # Apply common flag for all points.
-        N = self.input[v].shape
-        for f in self.flags['common']:
-            self.flags[v][f] = self.flags['common'][f] * np.ones(N)
+        if 'common' in self.flags:
+            N = self.input[v].shape
+            for f in self.flags['common']:
+                self.flags[v][f] = self.flags['common'][f] * \
+                        np.ones(N, dtype='i1')
 
         if self.saveauxiliary:
             if v not in self.auxiliary.keys():
