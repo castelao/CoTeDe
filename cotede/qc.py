@@ -417,6 +417,8 @@ class ProfileQC(object):
                     v,
                     cfg['fuzzylogic'])
 
+        self.flags[v]['overall'] = combined_flag(self.flags[v])
+
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
@@ -474,7 +476,7 @@ class ProfileQCed(ProfileQC):
         if key not in self.flags.keys():
             return self.input[key]
         else:
-            f = combined_flag(self.flags[key])
-            return ma.masked_array(self.input[key].data, mask=(f!=1))
+            return ma.masked_array(self.input[key].data,
+                    mask=(self.flags[key]['overall']!=1))
 
         raise KeyError('%s not found' % key)
