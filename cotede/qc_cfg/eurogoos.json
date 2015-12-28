@@ -23,9 +23,7 @@
         },
     "woa_normbias": {
         "sigma_threshold": 6,
-        "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
-        "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
+        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
         }
     },
 "PSAL": {
@@ -46,9 +44,7 @@
         },
     "woa_normbias": {
         "sigma_threshold": 6,
-        "file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
-        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
-        "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
+        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
         }
     }
 }
