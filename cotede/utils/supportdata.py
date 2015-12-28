@@ -13,7 +13,9 @@ import os
 import shutil
 from tempfile import NamedTemporaryFile
 
-def download_file(url, md5hash):
+from cotede.utils import cotede_dir
+
+def download_file(url, md5hash, d):
     """ Download data file from web
 
         IMPROVE it to automatically extract gz files
@@ -22,7 +24,6 @@ def download_file(url, md5hash):
 
     assert type(md5hash) is str
 
-    d = os.path.expanduser("~/.cotederc/data")
     if not os.path.exists(d):
         os.makedirs(d)
 
@@ -66,14 +67,17 @@ def download_file(url, md5hash):
 
 def download_supportdata():
     print("This can take several minutes, depending on the network bandwidth. Sorry, in the future I'll include a progress bar.")
-    download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf','309bef6916aee6e12563d3f8c1f27503')
-    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc','271f66e8dea4dfef7db99f5f411af330')
-    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc','1d2d1982338c688bdd18069d030ec05f')
+    d = os.path.join(cotede_dir(), 'data')
+    download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
+            '309bef6916aee6e12563d3f8c1f27503', d)
+    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc',
+            '271f66e8dea4dfef7db99f5f411af330', d)
+    download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc',
+            '1d2d1982338c688bdd18069d030ec05f', d)
 
 def download_testdata(filename):
 
-    #d = os.path.expanduser("~/.cotederc/testdata")
-    d = os.path.expanduser("~/.cotederc/data")
+    d = os.path.join(cotede_dir(), 'testdata')
     if not os.path.exists(d):
         os.makedirs(d)
 
@@ -98,8 +102,8 @@ def download_testdata(filename):
     assert filename in test_files.keys(), \
             "%s is not a valid test file" % filename
 
-    download_file(test_files[filename]["url"], test_files[filename]["md5"])
-    datafile = os.path.join(os.path.expanduser("~/.cotederc/data/"),
-            filename)
+    download_file(test_files[filename]["url"], test_files[filename]["md5"],
+            d)
+    datafile = os.path.join(d, filename)
 
     return datafile
