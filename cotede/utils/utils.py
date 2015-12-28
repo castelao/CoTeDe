@@ -53,6 +53,8 @@ def get_depth(lat, lon, cfg):
         try:
             etopo = netCDF4.Dataset(expanduser(cfg['file']))
         except:
+            # FIXME, It must have a time limit defined here, otherwise it can
+            #   get stuck trying to open the file.
             etopo = netCDF4.Dataset(expanduser(cfg['url']))
         x = etopo.variables['ETOPO05_X'][:]
         y = etopo.variables['ETOPO05_Y'][:]
