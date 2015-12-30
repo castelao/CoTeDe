@@ -48,6 +48,15 @@ Might be a good idea to install without update the dependencies, like::
     have Numpy installed, otherwise pip will sometimes try to "help" you
     by upgrading your Numpy installation, which may not always be desired.
 
+Custom setup
+============
+
+The directory .cotederc is the default home directory for CoTeDe support files, including the user custom QC setup. 
+To use another directory, one can set and environment variable COTEDE_DIR. 
+For example, if you use bash you could include the following lines in your .barsh_profile::
+
+export COTEDE_DIR='~/my/different/path'
+
 Optional
 ========
 
