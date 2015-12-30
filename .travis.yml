@@ -22,7 +22,7 @@ before_install:
   - conda update --yes conda
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pytest
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pandas pytest
 #  - pip install -U pip
   - "pip install tox"
   - "pip install -r test-requirements.txt"
