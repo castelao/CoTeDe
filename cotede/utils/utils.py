@@ -23,10 +23,7 @@ from scipy.interpolate import RectBivariateSpline, interp1d
 
 
 def cotede_dir():
-    path = expanduser(os.getenv('COTEDE_DIR', '~/.cotederc'))
-    if not os.path.isdir(path):
-        raise
-    return path
+    return expanduser(os.getenv('COTEDE_DIR', '~/.cotederc'))
 
 def make_file_list(inputdir, inputpattern):
     """ Search inputdir recursively for inputpattern
