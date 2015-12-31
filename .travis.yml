@@ -22,11 +22,11 @@ before_install:
   - conda update --yes conda
 
 install:
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pandas matplotlib pytest
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pandas matplotlib pytest pytest-xdist
   - "pip install -r test-requirements.txt"
   - "pip install coveralls"
   - python setup.py install
 
-script: py.test tests
+script: py.test -n 4 tests
 
 #after_success: coveralls
