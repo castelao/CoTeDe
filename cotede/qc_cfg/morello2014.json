@@ -14,30 +14,26 @@
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
     "gradient": 4,
-    "fuzzylogic": {
+    "morello2014": {
 	"output": {
-            "small": [0.0, 0.225, 0.45],
-            "medium": [0.275, 0.5, 0.725],
+            "low": [0.0, 0.225, 0.45],
             "high": [0.55, 0.775, 1.0]
 	    },
 	"features": {
             "spike": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 0.07, 0.2],
-                "medium": [0.07, 0.2, 2, 6],
-                "high": [2, 6, 1e30, 1e30]
+                "low": [0.07, 0.2],
+                "high": [2, 6]
                 },
             "woa_relbias": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 3, 4],
-                "medium": [3, 4, 5, 6],
-                "high": [5, 6, 1e30, 1e30]
+                "low": [3, 4],
+                "high": [5, 6]
                 },
             "gradient": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 0.5, 1.5],
-                "medium": [0.5, 1.5, 3, 4],
-                "high": [3, 4, 1e30, 1e30]
+                "low": [0.5, 1.5],
+                "high": [3, 4]
                 }
             }
         }
@@ -51,30 +47,26 @@
 	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
     "gradient": 4,
-    "fuzzylogic": {
+    "morello2014": {
 	"output": {
-            "small": [0.0, 0.225, 0.45],
-            "medium": [0.275, 0.5, 0.725],
+            "low": [0.0, 0.225, 0.45],
             "high": [0.55, 0.775, 1.0]
 	    },
 	"features": {
             "spike": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 0.05, 0.15],
-                "medium": [0.05, 0.15, 0.5, 0.9],
-                "high": [0.5, 0.9, 1e30, 1e30]
+                "low": [0.05, 0.15],
+                "high": [0.5, 0.9]
                 },
             "woa_relbias": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 3, 4],
-                "medium": [3, 4, 5, 6],
-                "high": [5, 6, 1e30, 1e30]
+                "low": [3, 4],
+                "high": [5, 6]
                 },
             "gradient": {
                 "weight": 1,
-                "small": [-1e30, -1e30, 1, 2],
-                "medium": [1, 2, 3, 4],
-                "high": [3, 4, 1e30, 1e30]
+                "low": [1, 2],
+                "high": [3, 4]
                 }
             }
         }

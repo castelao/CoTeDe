@@ -402,6 +402,8 @@ class ProfileQC(object):
             self.flags[v]['cum_rate_of_change'][
                     ma.getmaskarray(self.input[v])] = 9
 
+        # FIXME: the Anomaly Detection and Fuzzy require some features
+        #   to be estimated previously. Generalize this.
         if 'anomaly_detection' in  cfg:
             features = {}
             for f in cfg['anomaly_detection']['features']:
@@ -418,11 +420,37 @@ class ProfileQC(object):
             self.flags[v]['anomaly_detection'] = \
                     anomaly_detection(features, cfg['anomaly_detection'])
 
-        if 'fuzzylogic' in cfg:
-            self.flags[v]['fuzzylogic'] = fuzzylogic(
-                    self.auxiliary[v],
-                    v,
-                    cfg['fuzzylogic'])
+        if 'morello2014' in cfg:
+            for feature in cfg['morello2014']['features']:
+                assert feature in self.auxiliary[v]
+
+            self.flags[v]['morello2014'] = morello2014(
+                    features=self.auxiliary[v],
+                    cfg=cfg['morello2014'])
+
+        if 'fuzzy' in  cfg:
+            features = {}
+            for f in cfg['fuzzy']['features']:
+                if f == 'spike':
+                    features['spike'] = spike(self.input[v])
+                elif f == 'gradient':
+                    features['gradient'] = gradient(self.input[v])
+                elif f == 'tukey53H_norm':
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
+                            k=1.5)
+                #elif f == 'woa_normbias':
+                #    tmp, features['tukey53H_norm'] = \
+                #            woa_normbias(self.input, v, 
+                #                    {"sigma_threshold": 6,
+                #                        "vars":
+                #                        {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}})
+                else:
+                    logging.error("Sorry, I can't evaluate fuzzy with: %s" % f)
+
+            #self.flags[v]['fuzzy'] = fuzzy(
+            #        features=features,
+            #        cfg=cfg['fuzzy'])
+            print("I'm not ready for fuzzy.")
 
         self.flags[v]['overall'] = combined_flag(self.flags[v])
 
@@ -441,7 +469,7 @@ class ProfileQC(object):
 class fProfileQC(ProfileQC):
     """ Apply ProfileQC straight from a file.
     """
-    def __init__(self, inputfile, cfg=None, saveauxiliary=False, verbose=True,
+    def __init__(self, inputfile, cfg=None, saveauxiliary=True, verbose=True,
             logger=None):
         """
         """
