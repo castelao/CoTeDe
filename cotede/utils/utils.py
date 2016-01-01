@@ -143,8 +143,10 @@ def load_cfg(cfg=None):
         The possible inputs are:
             - None: Will use the CoTeDe's default configuration
 
-            - Preset config name [string]: A string with the name of
-                pre-set rules, like 'cotede', 'egoos' or 'gtspp'.
+            - Config name [string]: A string with the name of a json file
+                describing the QC procedure. It will first search in among
+                the build in pre-set (cotede, eurogoos, gtspp or argo),
+                otherwise it will search in ~/.cotederc/cfg
 
             - User configs [dict]: a dictionary composed by the variables
                 to be evaluated as keys, and inside it another dictionary
@@ -166,11 +168,9 @@ def load_cfg(cfg=None):
         #self.logger.debug("%s - User's QC cfg." % self.name)
         return cfg
 
-    # Need to safe_eval before allow to load rules from .cotederc
     if cfg is None:
         cfg = 'cotede'
 
-    #if cfg in pkg_resources.resource_listdir('cotede', 'qc_cfg'):
     try:
         # If cfg is available in qc_cfg, use it
         cfg = json.loads(pkg_resources.resource_string('cotede',
