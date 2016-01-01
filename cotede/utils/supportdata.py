@@ -7,11 +7,19 @@
 supportdata.download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf','309bef6916aee6e12563d3f8c1f27503')
 """
 
-import urllib2
-import hashlib
 import os
+import sys
 import shutil
+import hashlib
 from tempfile import NamedTemporaryFile
+
+if sys.version_info >= (3, 0):
+    from urllib.request import urlopen
+    from urllib.parse import urlparse
+else:
+    from urllib2 import urlopen
+    from urlparse import urlparse
+
 
 from cotede.utils import cotede_dir
 
@@ -29,7 +37,7 @@ def download_file(url, md5hash, d):
 
     hash = hashlib.md5()
 
-    fname = os.path.join(d, os.path.basename(url))
+    fname = os.path.join(d, os.path.basename(urlparse(url).path))
     if os.path.isfile(fname):
         h = hashlib.md5(open(fname, 'rb').read()).hexdigest()
         if h == md5hash:
@@ -39,7 +47,7 @@ def download_file(url, md5hash, d):
             assert False, "%s already exist but doesn't match the hash: %s" % \
                     (fname, md5hash)
 
-    remote = urllib2.urlopen(url)
+    remote = urlopen(url)
 
     with NamedTemporaryFile(delete=False) as f:
         try:
