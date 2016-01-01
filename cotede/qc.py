@@ -428,7 +428,7 @@ class ProfileQC(object):
 class fProfileQC(ProfileQC):
     """ Apply ProfileQC straight from a file.
     """
-    def __init__(self, inputfile, cfg=None, saveauxiliary=False, verbose=True,
+    def __init__(self, inputfile, cfg=None, saveauxiliary=True, verbose=True,
             logger=None):
         """
         """
