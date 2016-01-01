@@ -11,7 +11,8 @@ from datetime import timedelta
 
 import numpy as np
 from numpy import ma
-from WOA import woa_profile, woa_track_from_file
+
+from WOA import WOA
 
 
 def woa_normbias(data, v, cfg):
@@ -26,21 +27,44 @@ def woa_normbias(data, v, cfg):
             else:
                 d = [data.attributes['datetime']]*len(data['LATITUDE']),
 
-        woa = woa_track_from_file(
-                d,
-                data['LATITUDE'],
-                data['LONGITUDE'],
-                cfg['file'],
-                varnames=cfg['vars'])
+        #woa = woa_track_from_file(
+        #        d,
+        #        data['LATITUDE'],
+        #        data['LONGITUDE'],
+        #        cfg['file'],
+        #        varnames=cfg['vars'])
+        db = WOA()
+        if v not in db.keys():
+            vtype = v[:-1]
+        else:
+            vtype = v
+
+        woa = db[vtype].get_track(var=['mn', 'sd'],
+                doy=d,
+                depth=[0],
+                lat=data['LATITUDE'],
+                lon=data['LONGITUDE'])
+
     elif ('LATITUDE' in data.attributes.keys()) and \
             ('LONGITUDE' in data.attributes.keys()) and \
             ('PRES' in data.keys()):
-                woa = woa_profile(v,
-                        data.attributes['datetime'],
-                        data.attributes['LATITUDE'],
-                        data.attributes['LONGITUDE'],
-                        data['PRES'],
-                        cfg)
+                #woa = woa_profile(v,
+                #        data.attributes['datetime'],
+                #        data.attributes['LATITUDE'],
+                #        data.attributes['LONGITUDE'],
+                #        data['PRES'],
+                #        cfg)
+                db = WOA()
+                if v not in db.keys():
+                    vtype = v[:-1]
+                else:
+                    vtype = v
+
+                woa = db[vtype].get_profile(var=['mn', 'sd'],
+                        doy=data.attributes['datetime'],
+                        depth=data['PRES'],
+                        lat=data.attributes['LATITUDE'],
+                        lon=data.attributes['LONGITUDE'])
 
     if woa is None:
         # self.logger.warn("%s - WOA is not available at this site" %
@@ -49,8 +73,8 @@ def woa_normbias(data, v, cfg):
         woa_normbias = ma.masked_all(data[v].shape)
         return flag, woa_normbias
 
-    woa_bias = ma.absolute(data[v] - woa['woa_an'])
-    woa_normbias = woa_bias/woa['woa_sd']
+    woa_bias = ma.absolute(data[v] - woa['mn'])
+    woa_normbias = woa_bias/woa['sd']
 
 
     flag = np.zeros(data[v].shape, dtype='i1')
