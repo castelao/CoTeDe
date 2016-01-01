@@ -389,6 +389,8 @@ class ProfileQC(object):
             self.flags[v]['RoC'][np.nonzero(x > cfg['RoC'])] = 4
             self.flags[v]['RoC'][ma.getmaskarray(self.input[v])] = 9
 
+        # FIXME: the Anomaly Detection and Fuzzy require some features
+        #   to be estimated previously. Generalize this.
         if 'anomaly_detection' in  cfg:
             features = {}
             for f in cfg['anomaly_detection']['features']:
