@@ -49,21 +49,26 @@ def fuzzyfy(features, cfg):
 
     tmp = membership['low'][features_list[0]]
     for f in features_list[1:]:
-        tmp = np.vstack((tmp, membership['low'][f]))
+        tmp = ma.vstack((tmp, membership['low'][f]))
 
     # FIXME: If there is only one feature, it will return 1 value
     #          instead of an array with N values.
-    rules['low'] = np.mean(tmp, axis=0)
+    rules['low'] = ma.mean(tmp, axis=0)
 
-    # Medium: u_medium = mean(S_l(spike), S_l(clim)...)
-    #u_medium = np.mean([weights['spike']['medium'],
-    #    weights['woa_relbias']['medium']], axis=0)
+    # IMPROVE IT: Morello2014 doesn't even use the medium uncertainty,
+    #   so no reason to estimate it. In the generalize this once the
+    #   membership combining rules are defined in the cfg, so I can
+    #   decide to use mean or max.
+    if 'medium' in membership:
+        # Medium: u_medium = mean(S_l(spike), S_l(clim)...)
+        #u_medium = np.mean([weights['spike']['medium'],
+        #    weights['woa_relbias']['medium']], axis=0)
 
-    tmp = membership['medium'][features_list[0]]
-    for f in features_list[1:]:
-        tmp = np.vstack((tmp, membership['medium'][f]))
+        tmp = membership['medium'][features_list[0]]
+        for f in features_list[1:]:
+            tmp = ma.vstack((tmp, membership['medium'][f]))
 
-    rules['medium'] = np.mean(tmp, axis=0)
+        rules['medium'] = ma.mean(tmp, axis=0)
 
     # High: u_high = max(S_l(spike), S_l(clim)...)
     #u_high = np.max([weights['spike']['high'],
@@ -71,9 +76,9 @@ def fuzzyfy(features, cfg):
 
     tmp = membership['high'][features_list[0]]
     for f in features_list[1:]:
-        tmp = np.vstack((tmp, membership['high'][f]))
+        tmp = ma.vstack((tmp, membership['high'][f]))
 
-    rules['high'] = np.max(tmp, axis=0)
+    rules['high'] = ma.max(tmp, axis=0)
 
     return rules
 
