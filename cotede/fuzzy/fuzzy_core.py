@@ -2,7 +2,11 @@
 
 """
 
-    Based on Timms 2011, Morello 2011, Morello 2014
+    This was initially inspired in the sequel: Timms 2011, Morello 2011,
+      Morello 2014. I reproduced their work and also implemented an
+      alternative approach using a more traditional defuzzification
+      procedure.
+
 """
 
 import numpy as np
