@@ -38,8 +38,22 @@ def fuzzyfy(features, cfg):
             assert m in cfg['features'][t], \
                     "Missing %s in %s" % (m, cfg['features'][t])
 
-            membership[m][t] = skfuzzy.trapmf(np.asanyarray(features[t]),
-                    cfg['features'][t][m])
+            # I don't like this, but trapmf requires a vector of parameters
+            #   while smf & zmf requires two scalars as input.
+            membership[m][t] = ma.masked_all_like(features[t])
+            ind = ~ma.getmaskarray(features[t])
+            if m == 'low':
+                membership[m][t][ind] = skfuzzy.zmf(
+                        np.asanyarray(features[t])[ind],
+                        cfg['features'][t][m][0], cfg['features'][t][m][1])
+            elif m == 'high':
+                membership[m][t][ind] = skfuzzy.smf(
+                        np.asanyarray(features[t])[ind],
+                        cfg['features'][t][m][0], cfg['features'][t][m][1])
+            else:
+                membership[m][t][ind] = skfuzzy.trapmf(
+                        np.asanyarray(features[t])[ind],
+                        cfg['features'][t][m])
 
     # Rule Set
     rules = {}
