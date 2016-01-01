@@ -415,6 +415,30 @@ class ProfileQC(object):
                     features=self.auxiliary[v],
                     cfg=cfg['morello2014'])
 
+        if 'fuzzy' in  cfg:
+            features = {}
+            for f in cfg['fuzzy']['features']:
+                if f == 'spike':
+                    features['spike'] = spike(self.input[v])
+                elif f == 'gradient':
+                    features['gradient'] = gradient(self.input[v])
+                elif f == 'tukey53H_norm':
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
+                            k=1.5)
+                #elif f == 'woa_normbias':
+                #    tmp, features['tukey53H_norm'] = \
+                #            woa_normbias(self.input, v, 
+                #                    {"sigma_threshold": 6,
+                #                        "vars":
+                #                        {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}})
+                else:
+                    logging.error("Sorry, I can't evaluate fuzzy with: %s" % f)
+
+            #self.flags[v]['fuzzy'] = fuzzy(
+            #        features=features,
+            #        cfg=cfg['fuzzy'])
+            print("I'm not ready for fuzzy.")
+
     def build_auxiliary(self):
         if not hasattr(self, 'auxiliary'):
             self.auxiliary = {}
