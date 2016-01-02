@@ -224,18 +224,12 @@ class ProfileQC(object):
             self.flags[v]['gradient_depthconditional'] = flag
 
         if 'spike' in cfg:
-            threshold = cfg['spike']
-            s = spike(self.input[v])
+            y = Spike(self.input, v, cfg['spike'])
 
             if self.saveauxiliary:
-                self.auxiliary[v]['spike'] = s
+                self.auxiliary[v]['spike'] = y.features['spike']
 
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(s > threshold)] = 4
-            flag[np.nonzero(s <= threshold)] = 1
-            self.flags[v]['spike'] = flag
+            self.flags[v]['spike'] = y.flags['spike']
 
         if 'spike_depthconditional' in cfg:
             cfg_tmp = cfg['spike_depthconditional']

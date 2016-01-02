@@ -16,3 +16,4 @@ from cum_rate_of_change import cum_rate_of_change
 from morello2014 import morello2014
 
 from gradient import Gradient, gradient
+from spike import Spike, spike
