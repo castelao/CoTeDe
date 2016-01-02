@@ -42,14 +42,20 @@ class Spike(object):
             print("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
+        try:
+            flag_good = self.cfg['flag_good']
+            flag_bad = self.cfg['flag_bad']
+        except:
+            print("Deprecated cfg format. It should contain flag_good & flag_bad.")
+            flag_good = 1
+            flag_bad = 4
+
         assert (np.size(threshold) == 1) and \
                 (threshold is not None) and \
                 (np.isfinite(threshold))   
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        flag[np.nonzero(self.features['spike'] > threshold)] = \
-                self.cfg['flag_bad']
-        flag[np.nonzero(self.features['spike'] <= threshold)] = \
-                self.cfg['flag_good']
+        flag[np.nonzero(self.features['spike'] > threshold)] = flag_bad
+        flag[np.nonzero(self.features['spike'] <= threshold)] = flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
         self.flags['spike'] = flag

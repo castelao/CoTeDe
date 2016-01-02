@@ -188,6 +188,7 @@ class ProfileQC(object):
 
         if 'gradient' in cfg:
             y = Gradient(self.input, v, cfg['gradient'])
+            y.test()
 
             if self.saveauxiliary:
                 self.auxiliary[v]['gradient'] = y.features['gradient']
@@ -225,6 +226,7 @@ class ProfileQC(object):
 
         if 'spike' in cfg:
             y = Spike(self.input, v, cfg['spike'])
+            y.test()
 
             if self.saveauxiliary:
                 self.auxiliary[v]['spike'] = y.features['spike']
