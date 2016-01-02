@@ -14,3 +14,5 @@ from possible_speed import possible_speed
 from rate_of_change import rate_of_change
 from cum_rate_of_change import cum_rate_of_change
 from morello2014 import morello2014
+
+from gradient import Gradient, gradient

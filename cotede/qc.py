@@ -187,17 +187,12 @@ class ProfileQC(object):
                     self.input, cfg['profile_envelop'], v)
 
         if 'gradient' in cfg:
-            threshold = cfg['gradient']
-            g = gradient(self.input[v])
+            y = Gradient(self.input, v, cfg['gradient'])
 
             if self.saveauxiliary:
-                self.auxiliary[v]['gradient'] = g
+                self.auxiliary[v]['gradient'] = y.features['gradient']
 
-            flag = np.zeros(g.shape, dtype='i1')
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(g > threshold)] = 4
-            flag[np.nonzero(g <= threshold)] = 1
-            self.flags[v]['gradient'] = flag
+            self.flags[v]['gradient'] = y.flags['gradient']
 
         if 'gradient_depthconditional' in cfg:
             cfg_tmp = cfg['gradient_depthconditional']

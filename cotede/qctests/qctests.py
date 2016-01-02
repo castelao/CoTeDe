@@ -12,14 +12,6 @@ def step(x):
     return y
 
 
-def gradient(x):
-    y = ma.masked_all(x.shape, dtype=x.dtype)
-    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
-    # ATENTION, temporary solution
-    #y[0]=0; y[-1]=0
-    return y
-
-
 def spike(x):
     y = ma.masked_all(x.shape, dtype=x.dtype)
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0) - \
