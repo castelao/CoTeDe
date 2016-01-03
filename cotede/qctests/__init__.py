@@ -2,7 +2,6 @@
 
 from qctests import *
 from global_range import global_range
-from tukey53H import tukey53H, tukey53H_norm
 from descentPrate import descentPrate
 from location_at_sea import location_at_sea
 from density_inversion import density_inversion
@@ -17,3 +16,4 @@ from morello2014 import morello2014
 
 from gradient import Gradient, gradient
 from spike import Spike, spike
+from tukey53H import Tukey53H, tukey53H_norm

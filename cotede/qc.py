@@ -278,27 +278,14 @@ class ProfileQC(object):
             logging.warn("Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
-            """
-
-                I slightly modified the Goring & Nikora 2002. It is
-                  expected that CTD profiles has a typical depth
-                  structure, with a range between surface and bottom.
-            """
-            s = tukey53H_norm(self.input[v],
-                    k = cfg['tukey53H_norm']['k'],
-                    l = cfg['tukey53H_norm']['l'])
+            y = Tukey53H(self.input, v, cfg['tukey53H_norm'])
+            y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['tukey53H_norm'] = s
+                self.auxiliary[v]['tukey53H_norm'] = \
+                        y.features['tukey53H_norm']
 
-            threshold = cfg['tukey53H_norm']['k']
-
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(s > threshold)] = 4
-            flag[np.nonzero(s <= threshold)] = 1
-            self.flags[v]['tukey53H_norm'] = flag
+            self.flags[v]['tukey53H_norm'] = y.flags['tukey53H_norm']
 
         #if 'spike_depthsmooth' in cfg:
         #    from maud.window_func import _weight_hann as wfunc
@@ -403,8 +390,7 @@ class ProfileQC(object):
                 elif f == 'gradient':
                     features['gradient'] = gradient(self.input[v])
                 elif f == 'tukey53H_norm':
-                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
-                            k=1.5)
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v])
                 else:
                     logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
