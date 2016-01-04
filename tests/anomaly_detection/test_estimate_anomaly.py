@@ -4,10 +4,12 @@
 """
 """
 
+import numpy as np
 from numpy import ma
 import pandas as pd
 
 from cotede.anomaly_detection import estimate_anomaly
+from cotede.anomaly_detection import fit_tests
 
 
 dummy_params = {
@@ -23,6 +25,18 @@ dummy_params = {
             }
     }
 
+dummy_features = {
+        "spike": ma.masked_values([-999, -0.4, 0.1, 1.2, np.nan, 0.2], -999),
+        }
+
+
+def test_fit_tests():
+    f1 = fit_tests(dummy_features, q=.25)
+    f2 = fit_tests(pd.DataFrame(dummy_features), q=.25)
+    assert f1 == f2
+    assert np.allclose(f1['spike']['qlimit'], -0.0249999999999999)
+    assert np.allclose(f1['spike']['param'], (24.42374861845073,
+        0.049435717819356101, 0.099999997902377152, 3.3543862066137581e-15))
 
 def test_estimate_anomaly_pandas():
     features = pd.DataFrame(

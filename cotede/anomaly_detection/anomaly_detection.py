@@ -40,7 +40,7 @@ from cotede.misc import combined_flag
 from cotede.humanqc import HumanQC
 
 
-def fit_tests(features, ind=True, q=0.90, verbose=False):
+def fit_tests(features, q=0.90, verbose=False):
     """
 
         Input:
@@ -48,30 +48,34 @@ def fit_tests(features, ind=True, q=0.90, verbose=False):
               QC tests. For example, the gradient test values, not the
               flags, but the floats itself, like
               {'gradient': ma.array([.23, .12, .08]), 'spike': ...}
-          ind: The features values positions to be considered in the fit.
-              It's usefull to eliminate out of range data, or to
-              restrict to a subset of the data, like in the calibration
-              procedure.
+              It also works with a pandas.DataFrame()
+
           q: The lowest percentile to be considered. For example, .90
               means that only the top 10% data (i.e. percentiles higher
               than .90) are considered in the fitting.
     """
+    assert (q >= 0) & (q < 1), "q must be in [0, 1)"
+
     output = {}
-    for test in features:
-        samp = features[test][ind & np.isfinite(features[test])]
-        ind_top = samp > samp.quantile(q)
-        if ind_top.any():
-            param = exponweib.fit(samp[ind_top])
-            output[test] = {'param': param,
-                    'qlimit': samp.quantile(q)}
+    for f in features:
+        # Sample only valid values
+        samp = ma.compressed(features[f][np.isfinite(features[f])])
+        # Identify the percentile q
+        qlimit = np.percentile(samp, 1e2*q)
+        # Restricts to the top q values
+        samp = samp[samp > qlimit]
+        if samp.any():
+            param = exponweib.fit(samp)
+            output[f] = {'param': param,
+                    'qlimit': qlimit}
 
         if verbose is True:
             import pylab
-            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
+            x = np.linspace(samp.min(), samp.max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x, pdf_fitted, 'b-')
-            pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
-            pylab.title(test)
+            pylab.hist(ma.array(samp), 100, normed=1, alpha=.3)
+            pylab.title(f)
             pylab.show()
 
     return output
