@@ -99,10 +99,12 @@ def estimate_anomaly(features, params, method='produtorium'):
     """
     assert hasattr(params, 'keys')
     assert hasattr(features, 'keys')
-    for k in params.keys():
-        assert k in features.keys(), "features doesn't have: %s" % k
 
-    prob = ma.masked_all(len(features[features.keys()[0]]))
+    features_names = features.keys()
+    for k in params.keys():
+        assert k in features_names, "features doesn't have: %s" % k
+
+    prob = ma.masked_all(np.shape(features[features_names[0]]), dtype='f8')
 
     for t in params.keys():
         param = params[t]['param']
@@ -121,7 +123,7 @@ def estimate_anomaly(features, params, method='produtorium'):
         elif method == 'min':
             prob[ind] = min(prob[ind], p[ind])
         else:
-            return
+            assert "Invalid method: %s" % method
 
         # Update prob if new value is valid and prob is masked
         # Operate twice the first feature if moved above.

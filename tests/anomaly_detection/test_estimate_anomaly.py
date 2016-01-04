@@ -38,6 +38,19 @@ def test_fit_tests():
     assert np.allclose(f1['spike']['param'], (24.42374861845073,
         0.049435717819356101, 0.099999997902377152, 3.3543862066137581e-15))
 
+
+def test_estimate_anomaly():
+    f1 = estimate_anomaly(dummy_features,
+            {'spike': dummy_params['spike']})
+    f2 = estimate_anomaly(pd.DataFrame(dummy_features),
+            {'spike': dummy_params['spike']})
+
+    assert ma.allclose(f1, f2)
+    assert ma.allclose(f1,
+            ma.masked_values([-999, 0.0, -5.797359001920061,
+                -34.538776394910684, -999, -9.626760611162082], -999))
+
+
 def test_estimate_anomaly_pandas():
     features = pd.DataFrame(
             {'spike': [0, 1, -.5],
