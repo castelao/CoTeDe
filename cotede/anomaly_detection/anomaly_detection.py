@@ -114,10 +114,6 @@ def estimate_anomaly(features, params, method='produtorium'):
         tmp[tmp == 0] = 1e-15
         p = ma.log(tmp)
 
-        # Update prob if new value is valid and prob is masked
-        ind = prob.mask & valid
-        prob[ind] = p[ind]
-
         # If both are valid, operate as choosed method.
         ind = ~prob.mask & valid
         if method == 'produtorium':
@@ -126,6 +122,11 @@ def estimate_anomaly(features, params, method='produtorium'):
             prob[ind] = min(prob[ind], p[ind])
         else:
             return
+
+        # Update prob if new value is valid and prob is masked
+        # Operate twice the first feature if moved above.
+        ind = prob.mask & valid
+        prob[ind] = p[ind]
 
     return prob
 
