@@ -249,7 +249,7 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     """
     assert flag.dtype != 'bool'
 
-    ind = ma.masked_all(len(flag), dtype='bool')
+    ind = ma.masked_all(np.shape(flag), dtype='bool')
     for f in good_flags:
         ind[flag == f] = True
     for f in bad_flags:
