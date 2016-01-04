@@ -207,7 +207,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
         pylab.hist(prob)
         pylab.show()
 
-    binflags = flags2bin(flags)
+    binflags = i2b_flags(flags)
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
             binflags[indices['test']])
 
@@ -289,21 +289,27 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     return {'fit': ind_fit, 'test': ind_test, 'err': ind_err}
 
 
-def flags2bin(flags, good_flags=[1,2], bad_flags=[3,4]):
-    """
+def i2b_flags(flags, good_flags=[1,2], bad_flags=[3,4]):
+    """ Converts int flags (like IOC) into binary (T|F)
+
+        If given a dictionary of flags, it will evaluate each item
+          of the dictionary, and return:
+          - True if all available values are True
+          - False if any of the available values is False
+          - Masked is all values are masked
     """
 
     if hasattr(flags, 'keys'):
-        # The different flags must have same ammount of data.
-        N = len(flags[flags.keys()[0]])
+        output= []
         for f in flags:
-            assert len(flags[f]) == N
+            output.append(i2b_flags(~flags[f], good_flags, bad_flags))
 
-        flags = combined_flag(flags, reference_flags)
-    else:
-        N = len(flags)
+        return ma.array(output).all(axis=0)
 
-    output = ma.masked_all(N, dtype='bool')
+    flags = np.asanyarray(flags)
+    assert flags.dtype != 'bool', "Input flags should not be binary"
+    output = ma.masked_all(np.shape(flags), dtype='bool')
+
     for f in good_flags:
         output[flags == f] = True
     for f in bad_flags:
@@ -354,7 +360,7 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     #flags = db.flags[varname][ind].drop(['density_inversion'], axis=1)
     #flags = combined_flag(flags)
     #flags = combined_flag(db.flags[varname][ind])
-    #binflags = flags2bin(flags)
+    #binflags = i2b_flags(flags)
 
     result = calibrate4flags(db.flags[varname][ind],
             db.auxiliary[varname][ind], q=0.90, verbose=False)
@@ -369,10 +375,10 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     #params = fit_tests(features[indices['fit']], q=.9)
     #prob = estimate_anomaly(features, params)
 
-    #binflag = flags2binflag(db.flags[varname][ind], reference_flags)
+    #binflag = i2b_flagsflag(db.flags[varname][ind], reference_flags)
 
     #p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
-    #        flags2bin(flags[indices['test']]))
+    #        i2b_flags(flags[indices['test']]))
 
     #false_negative = prob[indices['err'] & binflags] < p_optimal
     #false_positive = prob[indices['err'] & ~binflags] < p_optimal
@@ -406,7 +412,7 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
     data = db.data
     features = db.auxiliary[varname]
     flags = combined_flag(db.flags[varname])
-    binflags = flags2bin(np.array(flags))
+    binflags = i2b_flags(np.array(flags))
 
     result = calibrate4flags(db.flags[varname],
             features, q=0.90, verbose=False)
@@ -465,7 +471,7 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
         #doubt[human_flag == 'doubt'] = True
 
         # Update binflags
-        binflags = flags2bin(flags)
+        binflags = i2b_flags(flags)
 
         result = calibrate4flags(flags, features, q=0.90, verbose=False)
 
