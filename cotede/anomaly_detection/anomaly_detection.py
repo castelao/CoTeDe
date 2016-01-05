@@ -299,10 +299,10 @@ def i2b_flags(flags, good_flags=[1,2], bad_flags=[3,4]):
           - Masked is all values are masked
     """
 
-    if hasattr(flags, 'keys'):
+    if (hasattr(flags, 'keys')) and (np.ndim(flags) > 1):
         output= []
         for f in flags:
-            output.append(i2b_flags(~flags[f], good_flags, bad_flags))
+            output.append(i2b_flags(flags[f], good_flags, bad_flags))
 
         return ma.array(output).all(axis=0)
 
