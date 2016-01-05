@@ -197,9 +197,11 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
 
     assert not hasattr(flags, 'keys')
     assert hasattr(features, 'keys')
-    assert len(features[features.keys()[0]]) == len(flags)
 
-    indices = split_data_groups(flags)
+    binflags = i2b_flags(flags)
+    assert len(features[features.keys()[0]]) == len(binflags)
+
+    indices = split_data_groups(binflags)
     params = fit_tests(features[indices['fit']], q=q)
     prob = estimate_anomaly(features, params)
 
