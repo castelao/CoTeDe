@@ -246,7 +246,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
     return output
 
 
-def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
+def split_data_groups(flag):
     """ Splits randomly the indices into fit, test and error groups
 
         Return a dictionary with 3 indices set:
@@ -254,20 +254,14 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
             - ind_test with 20% of the good and 50% of the bad
             - ind_eval with 20% of the good and 50% of the bad
     """
-    assert flag.dtype != 'bool'
+    assert flag.dtype == 'bool'
 
-    ind = ma.masked_all(np.shape(flag), dtype='bool')
-    for f in good_flags:
-        ind[flag == f] = True
-    for f in bad_flags:
-        ind[flag == f] = False
-
-    N = ind.size
+    N = flag.size
     ind_base = np.zeros(N) == 1
-    ind_valid = ~ma.getmaskarray(ind)
+    ind_valid = ~ma.getmaskarray(flag)
 
     # ==== Good data ==================
-    ind_good = np.nonzero((ind == True)  & ind_valid)[0]
+    ind_good = np.nonzero((flag == True)  & ind_valid)[0]
     N_good = ind_good.size
     perm = np.random.permutation(N_good)
     N_test = int(round(N_good*.2))
@@ -279,7 +273,7 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     ind_fit[ind_good[perm[2*N_test:]]] = True
 
     # ==== Bad data ===================
-    ind_bad = np.nonzero((ind == False) & ind_valid)[0]
+    ind_bad = np.nonzero((flag == False) & ind_valid)[0]
     N_bad = ind_bad.size
     perm = np.random.permutation(N_bad)
     N_test = int(round(N_bad*.5))

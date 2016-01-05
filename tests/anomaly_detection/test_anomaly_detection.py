@@ -44,8 +44,8 @@ def test_i2b_flags(n=100):
 
 
 def test_split_data_groups(n=100):
-    flag = ma.concatenate([np.random.randint(0,5,n),
-        ma.masked_all(2, dtype='int8')])
+    flag = ma.concatenate([np.random.random(n) > .5,
+        ma.masked_all(2, dtype='bool')])
 
     indices = split_data_groups(flag)
 
@@ -61,9 +61,9 @@ def test_split_data_groups(n=100):
         assert ~flag[indices[k]].mask.any()
 
     # Fit group is all True, but err & test must have both
-    assert sorted(np.unique(flag[indices['fit']])) == [1,2]
+    assert sorted(np.unique(flag[indices['fit']])) == [True]
     for k in ['err', 'test']:
-        assert sorted(np.unique(flag[indices[k]])) == [1,2,3,4]
+        assert sorted(np.unique(flag[indices[k]])) == [False, True]
 
 
 def test_rank_files():
