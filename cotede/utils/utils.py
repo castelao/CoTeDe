@@ -144,7 +144,7 @@ def load_cfg(cfg=None):
             - None: Will use the CoTeDe's default configuration
 
             - Config name [string]: A string with the name of a json file
-                describing the QC procedure. It will first search in among
+                describing the QC procedure. It will first search among
                 the build in pre-set (cotede, eurogoos, gtspp or argo),
                 otherwise it will search in ~/.cotederc/cfg
 
