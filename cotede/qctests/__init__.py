@@ -16,4 +16,5 @@ from morello2014 import morello2014
 
 from gradient import Gradient, gradient
 from spike import Spike, spike
+from bin_spike import Bin_Spike, bin_spike
 from tukey53H import Tukey53H, tukey53H_norm

@@ -32,7 +32,10 @@
         "deep_max": 3.0
         },
     "digit_roll_over": 10,
-    "bin_spike": 10,
+    "bin_spike": {
+        "l": 5,
+        "threshold": 10
+        },
     "rate_of_change": 4,
     "cum_rate_of_change": {
         "memory": 0.8,
@@ -78,6 +81,9 @@
         "deep_max": 0.5
         },
     "digit_roll_over": 5,
-    "bin_spike": 10
+    "bin_spike": {
+        "l": 5,
+        "threshold": 2
+        }
     }
 }

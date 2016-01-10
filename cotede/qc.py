@@ -318,10 +318,13 @@ class ProfileQC(object):
             self.flags[v]['digit_roll_over'] = flag
 
         if 'bin_spike' in cfg:
-            bin = bin_spike(self.input[v], cfg['bin_spike'])
+            y = Bin_Spike(self.input, v, cfg['bin_spike'])
+            # y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['bin_spike'] = bin
+                self.auxiliary[v]['bin_spike'] = y.features['bin_spike']
+
+            # self.flags[v]['bin_spike'] = y.flags['bin_spike']
 
         if 'density_inversion' in cfg:
             try:
