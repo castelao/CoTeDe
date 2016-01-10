@@ -4,6 +4,7 @@
 """
 
 import time
+# import logging
 import multiprocessing as mp
 
 import numpy as np
@@ -18,8 +19,11 @@ import cotede.qc
 
 def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
         verbose=True):
+#                verbose=True, logger=None):
     """ Quality control a list of CTD files
     """
+#    logger = logger or logging.getLogger(__name__)
+
     profiles = []
     for f in inputfiles:
         try:
@@ -27,16 +31,22 @@ def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
             profiles.append(p)
         except CNVError as e:
             print e.msg
+#            logger.warn(e.msg)
+
     return profiles
 
 
 def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
         verbose=True, timeout=60):
+    # verbose=True, timeout=60, logger=None):
     """ Quality control a list of CTD files in parallel
     """
+    # logger = logger or logging.getLogger(__name__)
     npes = 2 * mp.cpu_count()
     npes = min(npes, len(inputfiles))
+    # logger.debug("Running with %s npes" % npes)
     queuesize = 3*npes
+    # logger.debug("queue size: %s" % queuesize)
     qout = mp.Queue(queuesize)
     teste = []
 
@@ -45,11 +55,16 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
             try:
                 if verbose is True:
                     print("Loading: %s" % f)
+#                logger.debug("fProfileQC: %s" % f)
                 p = cotede.qc.fProfileQC(f, cfg, saveauxiliary, verbose)
+#                logger=logger)
                 attrs = [pn.attributes for pn in p.data]
+#                logger.debug("Sending profile %s to queue" % f)
                 qout.put([p, attrs], block=True)
+#                logger.debug("Sent to queue")
             except CNVError as e:
                 print e.msg
+#                logger.warn(e.msg)
 
         pool = []
         for f in inputfiles[:npes]:
@@ -81,9 +96,11 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
     profiles = []
     while worker.is_alive() or not qout.empty():
         if qout.empty():
+            # logger.debug("Queue is empty. I'll give a break.")
             # print("Queue is empty. I'll give a break.")
             time.sleep(2)
         else:
+            # logger.debug("There are results waiting in queue")
             # Dummy way to fix pickling on Queue
             # When the fProfile object is sent through the Queue, each
             #   data loses its .attributes.
@@ -94,6 +111,7 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
             print("Collected: %s" % out.attributes['filename'])
             profiles.append(out)
 
+    # logger.debug("Done. Worker finished and queue is empty")
     worker.terminate()
     return profiles
 
