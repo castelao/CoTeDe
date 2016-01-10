@@ -214,6 +214,8 @@ class ProfilesQCPandasCollection(object):
         for p in self.profiles:
             try:
                 # ---- Dealing with the data ---------------------------------
+                # FIXME: This expects a CNV object with as_DataFrame. I must
+                #   generalize this.
                 tmp = p.input.as_DataFrame()
                 profileid = p.attributes['md5']
                 tmp['profileid'] = profileid
