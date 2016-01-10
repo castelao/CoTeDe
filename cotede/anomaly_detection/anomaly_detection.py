@@ -391,80 +391,69 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     return result
 
 
-def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
+def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
     """
     """
+    q = 0.90
+    assert varname in data
+
     import pandas as pd
+    data['id'] = range(data.shape[0])
+    data.set_index('id', drop=True, inplace=True)
 
-    db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
+    if 'human_flag' not in data:
+        data['human_flag'] = ma.masked_all(data[flagname].shape,
+                dtype='object')
+    data['flag_calibrating'] = data[flagname].copy()
+    data.loc[data.human_flag == 'good', 'flag_calibrating'] = 1
+    data.loc[data.human_flag == 'bad', 'flag_calibrating'] = 4
 
-    assert varname in db.keys()
-
-    data = db.data
-    features = db.auxiliary[varname]
-    flags = combined_flag(db.flags[varname])
-    binflags = i2b_flags(np.array(flags))
-
-    result = calibrate4flags(db.flags[varname],
-            features, q=0.90, verbose=False)
-
-    #profileslist = aux['profileid'].iloc[mistake].iloc[
-    #        np.absolute(prob[mistake] - p_optimal).argsort()
-    #        ].unique()
+    result = calibrate4flags(data['flag_calibrating'], data[featuresnames], q=q)
 
     error_log = [{'err': result['n_err'],
         'err_ratio': result['err_ratio'],
         'p_optimal': result['p_optimal']}]
 
-    human_flag = ma.masked_all(len(flags), dtype='object')
-
     for i in range(niter):
+        for v in ['false_positive', 'false_negative', 'prob']:
+            data[v] = result[v]
         # Failures from AD to reproduce flags
-        mistake = (result['false_positive'] | result['false_negative'])
-        # Only the ones that weren't already flagged by a human
-        mistake = mistake & ma.getmaskarray(human_flag)
-        profileids = np.unique(data['profileid'].iloc[mistake])
+        data['mistake'] = data['human_flag'].isnull() & \
+                (data['false_positive'] | data['false_negative'])
+
+        data['derr'] = np.absolute(result['prob']-result['p_optimal'])
+        data.loc[data.mistake == False, 'derr'] = np.nan
+
+        grp = data[data.mistake].groupby('profileid')
+        profileids = grp['derr'].max().sort_values(ascending=False).index
+
         # In the future order by how badly AD mistaked
-        #profileids = data['profileid'].iloc[mistake].iloc[
-        #    np.absolute(prob[mistake] - p_optimal).argsort()
-        #    ].unique()
-        #derr = np.absolute(prob[np.nonzero(mistake)] - p_optimal)
-        #ind_toeval = np.nonzero(mistake & ~doubt)
-        #profileids = data['profileid'].iloc[ind_toeval].iloc[derr.argsort()
-        #    ].unique()
         if len(profileids) == 0:
             break
         # 5 random profiles with mistakes
-        for pid in np.random.permutation(profileids)[:5]:
+        #for pid in np.random.permutation(profileids)[:3]:
+        for pid in profileids[:10]:
             print("Profile: %s" % pid)
-            ind_p = data.profileid == pid
+            profile = data[data.profileid == pid]
             h = HumanQC().eval(
-                    data[varname][ind_p],
-                    data['PRES'][ind_p],
-                    baseflag=binflags[np.array(ind_p)],
-                    fails=mistake[np.array(ind_p)],
-                    humanflag=human_flag[np.array(ind_p)])
-
-            #ind_humanqc[np.nonzero(ind_p)[0][h == 'good']] = True
-            #flags.loc[np.nonzero(ind_p)[0][h == 'good'], 'human'] = 1
-            #ind_humanqc[np.nonzero(ind_p)[0][h == 'bad']] = False
-            #flags.loc[np.nonzero(ind_p)[0][h == 'bad'], 'human'] = 4
-            #flags.loc[np.nonzero(ind_p)[0][h == 'doubt'], 'human'] = 6
-            #doubt[np.nonzero(ind_p)[0][h == 'doubt']] = True
-            #ind_humanqc.mask[np.nonzero(ind_p)[0][h == 'doubt']] = True
+                    profile[varname],
+                    profile['PRES'],
+                    baseflag=profile['flag_calibrating'],
+                    #fails=np.array(profile['mistake']),
+                    fails=ma.array(profile.derr == profile.loc[
+                        profile.flag_global_range == 1, 'derr'].max()),
+                    humanflag=ma.masked_values(
+                        profile['human_flag'], None).astype('object'))
 
             # Update human_flag only at the new values
-            human_flag[np.nonzero(ind_p)[0][~h.mask]] = h[~h.mask]
+            profile.loc[:, 'human_flag'] = h
+            for i in profile.index[profile.human_flag.notnull()]:
+                data.loc[i, 'human_flag'] = profile.loc[i, 'human_flag']
 
-        flags[human_flag == 'good'] = 1
-        flags[human_flag == 'bad'] = 4
-        #flags[human_flag == 'doubt'] = 1
-        #doubt[human_flag == 'doubt'] = True
+        data.loc[data.human_flag == 'good', 'flag_calibrating'] = 1
+        data.loc[data.human_flag == 'bad', 'flag_calibrating'] = 4
 
-        # Update binflags
-        binflags = i2b_flags(flags)
-
-        result = calibrate4flags(flags, features, q=0.90, verbose=False)
+        result = calibrate4flags(data['flag_calibrating'], data[featuresnames], q=q)
 
 
         error_log.append({'err': result['n_err'],
@@ -475,11 +464,9 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
         print error_log[-2]
         print error_log[-1]
 
-    result['human_flag'] = human_flag
-    result['ind_humanqc'] = binflags
+    result['human_flag'] = data['human_flag']
     result['error_log'] = error_log
-    #return {'ind_humanqc': binflags, 'error_log': error_log,
-    #        'result': result}
+
     return result
 
 
