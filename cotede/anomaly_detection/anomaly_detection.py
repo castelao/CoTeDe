@@ -192,10 +192,6 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
                 estimate_p_optimal()
 
     """
-    if hasattr(flags, 'keys'):
-        flags = combined_flag(flags)
-
-    assert not hasattr(flags, 'keys')
     assert hasattr(features, 'keys')
 
     binflags = i2b_flags(flags)
@@ -209,7 +205,6 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
         pylab.hist(prob)
         pylab.show()
 
-    binflags = i2b_flags(flags)
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
             binflags[indices['test']])
 
