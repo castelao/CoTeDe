@@ -8,7 +8,7 @@
 "TEMP": {
     "pstep": null,
     "woa_normbias": {
-        "sigma_threshold": 6,
+        "sigma_threshold": 10,
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
         },
     "global_range": {
@@ -54,7 +54,7 @@
     },
 "PSAL": {
     "woa_normbias": {
-        "sigma_threshold": 6,
+        "sigma_threshold": 10,
         "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
         },
     "global_range": {
