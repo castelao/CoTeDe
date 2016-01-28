@@ -431,8 +431,8 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
         if len(profileids) == 0:
             break
         # 5 random profiles with mistakes
-        #for pid in np.random.permutation(profileids)[:3]:
-        for pid in profileids[:10]:
+        # for pid in profileids[:10]:
+        for pid in np.random.permutation(profileids[:10])[:5]:
             print("Profile: %s" % pid)
             profile = data[data.profileid == pid]
             h = HumanQC().eval(
