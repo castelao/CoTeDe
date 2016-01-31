@@ -14,6 +14,11 @@ def location_at_sea(data, cfg):
           Double check other branches, I thought I had already done
             this before.
     """
+    if 'flag_bad' in cfg:
+        flag_bad = cfg['flag_bad']
+    else:
+        flag_bad = 3
+
     assert hasattr(data, 'attributes'), "Missing attributes"
 
     # Temporary solution while migrating to OceanSites variables syntax
@@ -24,10 +29,10 @@ def location_at_sea(data, cfg):
             ('longitude' in data.attributes):
                 data.attributes['longitude'] = data.attributes['LONGITUDE']
 
-    assert ('LATITUDE' in data.attributes), \
-            "Missing latitude in attributes"
-    assert ('LONGITUDE' in data.attributes), \
-            "Missing longitude in attributes"
+    if ('LATITUDE' not in data.attributes) or \
+            ('LONGITUDE' not in data.attributes):
+                print("Missing geolocation (lat/lon)")
+                return cfg['flag_bad']
 
     depth = get_depth(data.attributes['LATITUDE'],
             data.attributes['LONGITUDE'],
@@ -35,12 +40,7 @@ def location_at_sea(data, cfg):
 
     if depth < 0:
         return 1
-
     elif depth >= 0:
-        try:
-            return cfg['flag_bad']
-        except:
-            # Default flag if fail
-            return 4
+        flag_bad
 
     return 0
