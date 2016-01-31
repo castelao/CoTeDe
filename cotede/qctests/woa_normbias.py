@@ -73,15 +73,15 @@ def woa_normbias(data, v, cfg):
         woa_normbias = ma.masked_all(data[v].shape)
         return flag, woa_normbias
 
-    woa_bias = ma.absolute(data[v] - woa['mn'])
+    woa_bias = data[v] - woa['mn']
     woa_normbias = woa_bias/woa['sd']
 
 
     flag = np.zeros(data[v].shape, dtype='i1')
 
-    ind = np.nonzero(woa_normbias <= cfg['sigma_threshold'])
+    ind = np.nonzero(np.absolute(woa_normbias) <= cfg['sigma_threshold'])
     flag[ind] = 1   # cfg['flag_good']
-    ind = np.nonzero(woa_normbias > cfg['sigma_threshold'])
+    ind = np.nonzero(np.absolute(woa_normbias) > cfg['sigma_threshold'])
     flag[ind] = 3   # cfg['flag_bad']
 
     # Flag as 9 any masked input value
