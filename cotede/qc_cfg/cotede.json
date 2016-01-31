@@ -22,7 +22,7 @@
         "deep_max": 2.0
         },
     "tukey53H_norm": {
-        "k": 1.5,
+        "threshold": 1.5,
         "l": 12
         },
     "gradient": 9.0,
@@ -71,7 +71,7 @@
         "deep_max": 0.3
         },
     "tukey53H_norm": {
-        "k": 1.5,
+        "threshold": 1.5,
         "l": 12
         },
     "gradient": 1.5,
