@@ -38,9 +38,7 @@ def location_at_sea(data, cfg):
             data.attributes['LONGITUDE'],
             cfg=cfg)
 
-    if depth < 0:
+    if depth <= 0:
         return 1
-    elif depth >= 0:
-        flag_bad
-
-    return 0
+    elif depth > 0:
+        return flag_bad

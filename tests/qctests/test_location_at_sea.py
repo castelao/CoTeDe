@@ -34,12 +34,12 @@ def test_attribute_inland():
     data.attributes['LATITUDE'] = -10
     data.attributes['LONGITUDE'] = -60
     flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
-    assert flag == 4
+    assert flag == 3
 
     data.attributes['LATITUDE'] = -10
     data.attributes['LONGITUDE'] = 300
     flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
-    assert flag == 4
+    assert flag == 3
 
 def notreadytest_greenwich():
     data = DummyData()
@@ -47,7 +47,7 @@ def notreadytest_greenwich():
     data.attributes['LATITUDE'] = 0
     data.attributes['LONGITUDE'] = 0
     flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
-    assert flag == 4
+    assert flag == 3
 
 def notready_test_data():
     data = DummyData()
