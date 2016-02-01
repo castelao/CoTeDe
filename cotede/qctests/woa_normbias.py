@@ -60,8 +60,8 @@ def woa_normbias(data, v, cfg):
                 else:
                     vtype = v
 
-                woa = db[vtype].get_profile(var=['mn', 'sd'],
-                        doy=data.attributes['datetime'],
+                woa = db[vtype].extract(var=['mn', 'sd', 'dd'],
+                        doy=int(data.attributes['datetime'].strftime('%j')),
                         depth=data['PRES'],
                         lat=data.attributes['LATITUDE'],
                         lon=data.attributes['LONGITUDE'])
