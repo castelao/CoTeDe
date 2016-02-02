@@ -16,6 +16,15 @@ from WOA import WOA
 
 
 def woa_normbias(data, v, cfg):
+    """
+
+        FIXME: Move this procedure into a class to conform with the new system
+          and include a limit in minimum ammount of samples to trust it. For
+          example, consider as masked all climatologic values estimated from
+          less than 5 samples.
+    """
+
+    woa = None
 
     if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
         if 'datetime' in data.keys():
@@ -70,8 +79,7 @@ def woa_normbias(data, v, cfg):
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
         flag = np.zeros(data[v].shape, dtype='i1')
-        woa_normbias = ma.masked_all(data[v].shape)
-        return flag, woa_normbias
+        return flag, {}
 
     woa_bias = data[v] - woa['mn']
     woa_normbias = woa_bias/woa['sd']
@@ -87,5 +95,6 @@ def woa_normbias(data, v, cfg):
     # Flag as 9 any masked input value
     flag[ma.getmaskarray(data[v])] = 9
 
+    features = {'woa_normbias': woa_normbias, 'woa_nsamples': woa['dd']}
 
-    return flag, woa_normbias
+    return flag, features

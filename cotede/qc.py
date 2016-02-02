@@ -342,19 +342,23 @@ class ProfileQC(object):
                 print("Fail on density_inversion")
 
         if 'woa_normbias' in cfg:
+            #y = WOA_NormBias(self.input, v, cfg['woa_normbias'],
+            #        self.attributes)
+            #y.test()
+
+            #if self.saveauxiliary:
+            #    for f in y.features:
+            #        self.auxiliary[v][f] = y.features[f]
+
+            #self.flags[v]['woa_normbias'] = y.flags['woa_normbias']
+
+            self.flags[v]['woa_normbias'], tmp = \
+                    woa_normbias(self.input, v, cfg['woa_normbias'])
+
             if self.saveauxiliary:
-                self.flags[v]['woa_normbias'], \
-                        self.auxiliary[v]['woa_relbias'] = \
-                        woa_normbias(self.input, v, cfg['woa_normbias'])
-                #for k in woa.keys():
-                #    self.auxiliary[v][k] = woa[k]
-                #self.auxiliary[v]['woa_bias'] = woa_bias
-                #self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
-            else:
-                self.flags[v]['woa_normbias'], \
-                        tmp = \
-                        woa_normbias(self.input, v, cfg['woa_normbias'])
-                del(tmp)
+                for f in tmp:
+                    self.auxiliary[v][f] = tmp[f]
+            del(tmp)
 
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])
