@@ -401,9 +401,6 @@ class ProfileQC(object):
                     anomaly_detection(features, cfg['anomaly_detection'])
 
         if 'morello2014' in cfg:
-            for feature in cfg['morello2014']['features']:
-                assert feature in self.auxiliary[v]
-
             self.flags[v]['morello2014'] = morello2014(
                     features=self.auxiliary[v],
                     cfg=cfg['morello2014'])
