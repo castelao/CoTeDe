@@ -24,10 +24,12 @@ def location_at_sea(data, cfg):
     # Temporary solution while migrating to OceanSites variables syntax
     if ('LATITUDE' not in data.attributes) and \
             ('latitude' in data.attributes):
-                data.attributes['latitude'] = data.attributes['LATITUDE']
+                print("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
+                data.attributes['LATITUDE'] = data.attributes['latitude']
     if ('LONGITUDE' not in data.attributes) and \
             ('longitude' in data.attributes):
-                data.attributes['longitude'] = data.attributes['LONGITUDE']
+                print("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
+                data.attributes['LONGITUDE'] = data.attributes['longitude']
 
     if ('LATITUDE' not in data.attributes) or \
             ('LONGITUDE' not in data.attributes):
