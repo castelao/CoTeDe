@@ -122,12 +122,9 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'location_at_sea' in self.cfg['main']:
-            try:
-                self.flags['common']['location_at_sea'] = location_at_sea(
+            self.flags['common']['location_at_sea'] = location_at_sea(
                     self.input,
                     self.cfg['main']['location_at_sea'])
-            except:
-                print("Fail location_at_sea test")
 
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
@@ -187,17 +184,13 @@ class ProfileQC(object):
                     self.input, cfg['profile_envelop'], v)
 
         if 'gradient' in cfg:
-            threshold = cfg['gradient']
-            g = gradient(self.input[v])
+            y = Gradient(self.input, v, cfg['gradient'])
+            y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['gradient'] = g
+                self.auxiliary[v]['gradient'] = y.features['gradient']
 
-            flag = np.zeros(g.shape, dtype='i1')
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(g > threshold)] = 4
-            flag[np.nonzero(g <= threshold)] = 1
-            self.flags[v]['gradient'] = flag
+            self.flags[v]['gradient'] = y.flags['gradient']
 
         if 'gradient_depthconditional' in cfg:
             cfg_tmp = cfg['gradient_depthconditional']
@@ -229,18 +222,13 @@ class ProfileQC(object):
             self.flags[v]['gradient_depthconditional'] = flag
 
         if 'spike' in cfg:
-            threshold = cfg['spike']
-            s = spike(self.input[v])
+            y = Spike(self.input, v, cfg['spike'])
+            y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['spike'] = s
+                self.auxiliary[v]['spike'] = y.features['spike']
 
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(s > threshold)] = 4
-            flag[np.nonzero(s <= threshold)] = 1
-            self.flags[v]['spike'] = flag
+            self.flags[v]['spike'] = y.flags['spike']
 
         if 'spike_depthconditional' in cfg:
             cfg_tmp = cfg['spike_depthconditional']
@@ -287,27 +275,14 @@ class ProfileQC(object):
             logging.warn("Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
-            """
-
-                I slightly modified the Goring & Nikora 2002. It is
-                  expected that CTD profiles has a typical depth
-                  structure, with a range between surface and bottom.
-            """
-            s = tukey53H_norm(self.input[v],
-                    k = cfg['tukey53H_norm']['k'],
-                    l = cfg['tukey53H_norm']['l'])
+            y = Tukey53H(self.input, v, cfg['tukey53H_norm'])
+            y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['tukey53H_norm'] = s
+                self.auxiliary[v]['tukey53H_norm'] = \
+                        y.features['tukey53H_norm']
 
-            threshold = cfg['tukey53H_norm']['k']
-
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            flag[np.nonzero(s > threshold)] = 4
-            flag[np.nonzero(s <= threshold)] = 1
-            self.flags[v]['tukey53H_norm'] = flag
+            self.flags[v]['tukey53H_norm'] = y.flags['tukey53H_norm']
 
         #if 'spike_depthsmooth' in cfg:
         #    from maud.window_func import _weight_hann as wfunc
@@ -340,10 +315,13 @@ class ProfileQC(object):
             self.flags[v]['digit_roll_over'] = flag
 
         if 'bin_spike' in cfg:
-            bin = bin_spike(self.input[v], cfg['bin_spike'])
+            y = Bin_Spike(self.input, v, cfg['bin_spike'])
+            # y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['bin_spike'] = bin
+                self.auxiliary[v]['bin_spike'] = y.features['bin_spike']
+
+            # self.flags[v]['bin_spike'] = y.flags['bin_spike']
 
         if 'density_inversion' in cfg:
             try:
@@ -361,19 +339,23 @@ class ProfileQC(object):
                 print("Fail on density_inversion")
 
         if 'woa_normbias' in cfg:
+            #y = WOA_NormBias(self.input, v, cfg['woa_normbias'],
+            #        self.attributes)
+            #y.test()
+
+            #if self.saveauxiliary:
+            #    for f in y.features:
+            #        self.auxiliary[v][f] = y.features[f]
+
+            #self.flags[v]['woa_normbias'] = y.flags['woa_normbias']
+
+            self.flags[v]['woa_normbias'], tmp = \
+                    woa_normbias(self.input, v, cfg['woa_normbias'])
+
             if self.saveauxiliary:
-                self.flags[v]['woa_normbias'], \
-                        self.auxiliary[v]['woa_relbias'] = \
-                        woa_normbias(self.input, v, cfg['woa_normbias'])
-                #for k in woa.keys():
-                #    self.auxiliary[v][k] = woa[k]
-                #self.auxiliary[v]['woa_bias'] = woa_bias
-                #self.auxiliary[v]['woa_relbias'] = woa_bias/woa['woa_sd']
-            else:
-                self.flags[v]['woa_normbias'], \
-                        tmp = \
-                        woa_normbias(self.input, v, cfg['woa_normbias'])
-                del(tmp)
+                for f in tmp:
+                    self.auxiliary[v][f] = tmp[f]
+            del(tmp)
 
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])
@@ -412,8 +394,7 @@ class ProfileQC(object):
                 elif f == 'gradient':
                     features['gradient'] = gradient(self.input[v])
                 elif f == 'tukey53H_norm':
-                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
-                            k=1.5)
+                    features['tukey53H_norm'] = tukey53H_norm(self.input[v])
                 else:
                     logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
@@ -421,9 +402,6 @@ class ProfileQC(object):
                     anomaly_detection(features, cfg['anomaly_detection'])
 
         if 'morello2014' in cfg:
-            for feature in cfg['morello2014']['features']:
-                assert feature in self.auxiliary[v]
-
             self.flags[v]['morello2014'] = morello2014(
                     features=self.auxiliary[v],
                     cfg=cfg['morello2014'])

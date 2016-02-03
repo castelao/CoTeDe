@@ -1,0 +1,42 @@
+{"main": {
+    "valid_datetime": null,
+    "valid_position": null,
+    "location_at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf"
+        }
+    },
+"TEMP": {
+    "global_range": {
+        "minval": -2.5,
+        "maxval": 40
+        },
+    "digit_roll_over": 10,
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 9.0,
+        "deep_max": 3.0
+        },
+    "spike_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 6.0,
+        "deep_max": 2.0
+        }
+    },
+"PSAL": {
+    "global_range": {
+        "minval": 2,
+        "maxval": 41
+        },
+    "digit_roll_over": 5,
+    "gradient_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 1.5,
+        "deep_max": 0.5
+        },
+    "spike_depthconditional": {
+        "pressure_threshold": 500,
+        "shallow_max": 0.9,
+        "deep_max": 0.3
+        }
+    }
+}

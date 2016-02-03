@@ -14,33 +14,33 @@ def location_at_sea(data, cfg):
           Double check other branches, I thought I had already done
             this before.
     """
+    if 'flag_bad' in cfg:
+        flag_bad = cfg['flag_bad']
+    else:
+        flag_bad = 3
+
     assert hasattr(data, 'attributes'), "Missing attributes"
 
     # Temporary solution while migrating to OceanSites variables syntax
     if ('LATITUDE' not in data.attributes) and \
             ('latitude' in data.attributes):
-                data.attributes['latitude'] = data.attributes['LATITUDE']
+                print("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
+                data.attributes['LATITUDE'] = data.attributes['latitude']
     if ('LONGITUDE' not in data.attributes) and \
             ('longitude' in data.attributes):
-                data.attributes['longitude'] = data.attributes['LONGITUDE']
+                print("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
+                data.attributes['LONGITUDE'] = data.attributes['longitude']
 
-    assert ('LATITUDE' in data.attributes), \
-            "Missing latitude in attributes"
-    assert ('LONGITUDE' in data.attributes), \
-            "Missing longitude in attributes"
+    if ('LATITUDE' not in data.attributes) or \
+            ('LONGITUDE' not in data.attributes):
+                print("Missing geolocation (lat/lon)")
+                return 0
 
     depth = get_depth(data.attributes['LATITUDE'],
             data.attributes['LONGITUDE'],
             cfg=cfg)
 
-    if depth < 0:
+    if depth <= 0:
         return 1
-
-    elif depth >= 0:
-        try:
-            return cfg['flag_bad']
-        except:
-            # Default flag if fail
-            return 4
-
-    return 0
+    elif depth > 0:
+        return flag_bad

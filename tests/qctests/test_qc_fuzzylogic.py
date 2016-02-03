@@ -21,6 +21,6 @@ def test():
     # While anomaly detection is limited to spike, gradient and tukey tests it
     #   will always return 0 for the first and last.
     assert sorted(np.unique(pqc.flags['TEMP']['morello2014'])) == [1, 2, 3, 4]
-    assert sorted(np.unique(pqc.flags['TEMP2']['morello2014'])) == [1, 2, 3, 4]
-    assert sorted(np.unique(pqc.flags['PSAL']['morello2014'])) == [1, 2, 3, 4]
-    assert sorted(np.unique(pqc.flags['PSAL2']['morello2014'])) == [1, 2, 3]
+    assert sorted(np.unique(pqc.flags['TEMP2']['morello2014'])) == [1]
+    assert sorted(np.unique(pqc.flags['PSAL']['morello2014'])) == [1, 2, 4]
+    assert sorted(np.unique(pqc.flags['PSAL2']['morello2014'])) == [1]

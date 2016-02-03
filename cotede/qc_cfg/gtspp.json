@@ -10,8 +10,12 @@
         "minval": -2.0,
         "maxval": 40
         },
-    "gradient": 10.0,
-    "spike": 2.0,
+    "gradient": {
+        "threshold": 10.0
+        },
+    "spike": {
+        "threshold": 2.0
+        },
     "woa_normbias": {
         "sigma_threshold": 3,
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
@@ -35,8 +39,12 @@
         "minval": 0,
         "maxval": 41
         },
-    "gradient": 5.0,
-    "spike": 0.3,
+    "gradient": {
+        "threshold": 5.0
+        },
+    "spike": {
+        "threshold": 0.3
+        },
     "woa_normbias": {
         "sigma_threshold": 3,
         "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
