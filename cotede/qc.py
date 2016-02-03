@@ -122,12 +122,9 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'location_at_sea' in self.cfg['main']:
-            try:
-                self.flags['common']['location_at_sea'] = location_at_sea(
+            self.flags['common']['location_at_sea'] = location_at_sea(
                     self.input,
                     self.cfg['main']['location_at_sea'])
-            except:
-                print("Fail location_at_sea test")
 
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
