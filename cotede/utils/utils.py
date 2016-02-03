@@ -46,8 +46,9 @@ def get_depth(lat, lon, cfg):
     If I ever need to get depth from multiple points, check the history
       of this file. One day it was like that.
     """
-    assert type(lat) in [int, float]
-    assert type(lon) in [int, float]
+    # This assert fails if it is a np.float64. Re-think this assert anyways.
+    #assert type(lat) in [int, float]
+    #assert type(lon) in [int, float]
 
     # if lat.shape != lon.shape:
     #            print "lat and lon must have the same size"
