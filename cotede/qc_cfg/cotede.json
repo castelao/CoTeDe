@@ -1,5 +1,6 @@
 {"main": {
     "valid_datetime": null,
+    "valid_geolocation": null,
     "location_at_sea": {
         "file": "~/.cotederc/data/etopo5.cdf",
         "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
@@ -15,24 +16,31 @@
         "minval": -2.5,
         "maxval": 45
         },
-    "spike": 6.0,
+    "spike": {
+	"threshold": 6.0
+        },
     "spike_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 6.0,
         "deep_max": 2.0
         },
     "tukey53H_norm": {
-        "k": 1.5,
+        "threshold": 1.5,
         "l": 12
         },
-    "gradient": 9.0,
+    "gradient": {
+	"threshold": 9.0
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 9.0,
         "deep_max": 3.0
         },
     "digit_roll_over": 10,
-    "bin_spike": 10,
+    "bin_spike": {
+        "l": 5,
+        "threshold": 10
+        },
     "rate_of_change": 4,
     "cum_rate_of_change": {
         "memory": 0.8,
@@ -61,23 +69,30 @@
         "minval": 0,
         "maxval": 60
         },
-    "spike": 0.9,
+    "spike": {
+        "threshold": 0.9
+        },
     "spike_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 0.9,
         "deep_max": 0.3
         },
     "tukey53H_norm": {
-        "k": 1.5,
+        "threshold": 1.5,
         "l": 12
         },
-    "gradient": 1.5,
+    "gradient": {
+        "threshold": 1.5
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 1.5,
         "deep_max": 0.5
         },
     "digit_roll_over": 5,
-    "bin_spike": 10
+    "bin_spike": {
+        "l": 5,
+        "threshold": 2
+        }
     }
 }

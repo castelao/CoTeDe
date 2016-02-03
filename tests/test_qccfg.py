@@ -19,8 +19,11 @@ def test_cfg_json():
             if f[-5:] == ".json"]
 
     for cfgfile in cfgfiles:
-        cfg = json.loads(pkg_resources.resource_string('cotede',
+        try:
+            cfg = json.loads(pkg_resources.resource_string('cotede',
                         "qc_cfg/%s" % cfgfile))
+        except:
+            assert False, "Failed to load %s" % cfgfile
 
         assert type(cfg) is dict
         for k in cfg.keys():
@@ -35,13 +38,11 @@ def test_cfg_existentprocedure():
             if f[-5:] == ".json"]
     QCTESTS = dir(cotede.qctests)
     for cfgfile in cfgfiles:
-        print(cfgfile)
         cfg = json.loads(pkg_resources.resource_string('cotede',
                         "qc_cfg/%s" % cfgfile))
         assert type(cfg) is dict
         for v in cfg.keys():
             for c in cfg[v]:
-                print("yoooh %s.%s.%s" % (cfgfile[:-5], v, c))
                 assert c in QCTESTS, \
                         "Test %s.%s.%s is not available at cotede.qctests" % \
                         (cfgfile[:-5], v, c)

@@ -16,6 +16,17 @@ from WOA import WOA
 
 
 def woa_normbias(data, v, cfg):
+    """
+
+        FIXME: Move this procedure into a class to conform with the new system
+          and include a limit in minimum ammount of samples to trust it. For
+          example, consider as masked all climatologic values estimated from
+          less than 5 samples.
+    """
+
+    # 3 is the possible minimum to estimate the std, but I shold use higher.
+    min_samples = 3
+    woa = None
 
     if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
         if 'datetime' in data.keys():
@@ -60,8 +71,8 @@ def woa_normbias(data, v, cfg):
                 else:
                     vtype = v
 
-                woa = db[vtype].get_profile(var=['mn', 'sd'],
-                        doy=data.attributes['datetime'],
+                woa = db[vtype].extract(var=['mn', 'sd', 'dd'],
+                        doy=int(data.attributes['datetime'].strftime('%j')),
                         depth=data['PRES'],
                         lat=data.attributes['LATITUDE'],
                         lon=data.attributes['LONGITUDE'])
@@ -70,22 +81,25 @@ def woa_normbias(data, v, cfg):
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
         flag = np.zeros(data[v].shape, dtype='i1')
-        woa_normbias = ma.masked_all(data[v].shape)
-        return flag, woa_normbias
+        return flag, {}
 
-    woa_bias = ma.absolute(data[v] - woa['mn'])
+    woa_bias = data[v] - woa['mn']
     woa_normbias = woa_bias/woa['sd']
 
 
     flag = np.zeros(data[v].shape, dtype='i1')
 
-    ind = np.nonzero(woa_normbias <= cfg['sigma_threshold'])
+    ind = np.nonzero((woa['dd'] >= min_samples) &
+            (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
     flag[ind] = 1   # cfg['flag_good']
-    ind = np.nonzero(woa_normbias > cfg['sigma_threshold'])
+    ind = np.nonzero((woa['dd'] >= min_samples) &
+            (np.absolute(woa_normbias) > cfg['sigma_threshold']))
     flag[ind] = 3   # cfg['flag_bad']
 
     # Flag as 9 any masked input value
     flag[ma.getmaskarray(data[v])] = 9
 
+    features = {'woa_normbias': woa_normbias, 'woa_std': woa['sd'],
+            'woa_nsamples': woa['dd']}
 
-    return flag, woa_normbias
+    return flag, features

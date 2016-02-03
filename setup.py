@@ -19,7 +19,7 @@ install_requires = [
     'numpy>=1.1',
     'seabird>=0.6.3',
     'scipy',
-    'pyWOA'
+    'pyWOA>=0.0.9'
     ]
 
 version = '0.15.5'
