@@ -6,6 +6,8 @@
 import numpy as np
 from numpy import ma
 
+FLAG_GOOD = 1
+FLAG_BAD = 4
 
 def tukey53H(x):
     """Spike test Tukey 53H from Goring & Nikora 2002
@@ -84,11 +86,12 @@ class Tukey53H(object):
 
         try:
             flag_good = self.cfg['flag_good']
+        except:
+            flag_good = FLAG_GOOD
+        try:
             flag_bad = self.cfg['flag_bad']
         except:
-            print("Deprecated cfg format. It should contain flag_good & flag_bad.")
-            flag_good = 1
-            flag_bad = 4
+            flag_bad = FLAG_BAD
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
         flag[np.nonzero(self.features['tukey53H_norm'] > threshold)] = \
