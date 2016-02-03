@@ -15,7 +15,9 @@
         "minval": -2.5,
         "maxval": 45
         },
-    "spike": 6.0,
+    "spike": {
+	"threshold": 6.0
+        },
     "spike_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 6.0,
@@ -25,7 +27,9 @@
         "threshold": 1.5,
         "l": 12
         },
-    "gradient": 9.0,
+    "gradient": {
+	"threshold": 9.0
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 9.0,
@@ -64,7 +68,9 @@
         "minval": 0,
         "maxval": 60
         },
-    "spike": 0.9,
+    "spike": {
+        "threshold": 0.9
+        },
     "spike_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 0.9,
@@ -74,7 +80,9 @@
         "threshold": 1.5,
         "l": 12
         },
-    "gradient": 1.5,
+    "gradient": {
+        "threshold": 1.5
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 1.5,
