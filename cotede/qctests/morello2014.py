@@ -24,7 +24,7 @@ def morello2014(features, cfg):
 
     if not np.all([f in features for f in cfg['features']]):
         print("Not all features (%s) required by morello2014 are available" %
-                cfg['features'])
+                cfg['features'].keys())
         try:
             return np.zeros(features[features.keys()[0]].shape, dtype='i1')
         except:
