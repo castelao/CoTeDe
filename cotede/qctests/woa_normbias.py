@@ -95,6 +95,7 @@ def woa_normbias(data, v, cfg):
     # Flag as 9 any masked input value
     flag[ma.getmaskarray(data[v])] = 9
 
-    features = {'woa_normbias': woa_normbias, 'woa_nsamples': woa['dd']}
+    features = {'woa_normbias': woa_normbias, 'woa_std': woa['sd'],
+            'woa_nsamples': woa['dd']}
 
     return flag, features
