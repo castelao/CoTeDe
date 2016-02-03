@@ -24,6 +24,8 @@ def woa_normbias(data, v, cfg):
           less than 5 samples.
     """
 
+    # 3 is the possible minimum to estimate the std, but I shold use higher.
+    min_samples = 1
     woa = None
 
     if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
@@ -87,9 +89,11 @@ def woa_normbias(data, v, cfg):
 
     flag = np.zeros(data[v].shape, dtype='i1')
 
-    ind = np.nonzero(np.absolute(woa_normbias) <= cfg['sigma_threshold'])
+    ind = np.nonzero((woa['dd'] >= min_samples) &
+            (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
     flag[ind] = 1   # cfg['flag_good']
-    ind = np.nonzero(np.absolute(woa_normbias) > cfg['sigma_threshold'])
+    ind = np.nonzero((woa['dd'] >= min_samples) &
+            (np.absolute(woa_normbias) > cfg['sigma_threshold']))
     flag[ind] = 3   # cfg['flag_bad']
 
     # Flag as 9 any masked input value
