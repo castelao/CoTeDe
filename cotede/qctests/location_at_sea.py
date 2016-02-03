@@ -34,7 +34,7 @@ def location_at_sea(data, cfg):
     if ('LATITUDE' not in data.attributes) or \
             ('LONGITUDE' not in data.attributes):
                 print("Missing geolocation (lat/lon)")
-                return cfg['flag_bad']
+                return 0
 
     depth = get_depth(data.attributes['LATITUDE'],
             data.attributes['LONGITUDE'],
