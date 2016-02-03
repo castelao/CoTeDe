@@ -25,7 +25,7 @@ def woa_normbias(data, v, cfg):
     """
 
     # 3 is the possible minimum to estimate the std, but I shold use higher.
-    min_samples = 1
+    min_samples = 3
     woa = None
 
     if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
