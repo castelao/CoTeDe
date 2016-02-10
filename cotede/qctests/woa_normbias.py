@@ -100,6 +100,6 @@ def woa_normbias(data, v, cfg):
     flag[ma.getmaskarray(data[v])] = 9
 
     features = {'woa_normbias': woa_normbias, 'woa_std': woa['sd'],
-            'woa_nsamples': woa['dd']}
+            'woa_nsamples': woa['dd'], 'woa_mean': woa['mn']}
 
     return flag, features
