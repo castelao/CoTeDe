@@ -406,9 +406,9 @@ class ProfileQC(object):
                     features=self.auxiliary[v],
                     cfg=cfg['morello2014'])
 
-        if 'fuzzy' in  cfg:
+        if 'fuzzylogic' in  cfg:
             features = {}
-            for f in cfg['fuzzy']['features']:
+            for f in cfg['fuzzylogic']['features']:
                 if f == 'spike':
                     features['spike'] = spike(self.input[v])
                 elif f == 'gradient':
@@ -416,19 +416,16 @@ class ProfileQC(object):
                 elif f == 'tukey53H_norm':
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v],
                             k=1.5)
-                #elif f == 'woa_normbias':
-                #    tmp, features['tukey53H_norm'] = \
-                #            woa_normbias(self.input, v, 
-                #                    {"sigma_threshold": 6,
-                #                        "vars":
-                #                        {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}})
+                elif (f == 'woa_normbias') & \
+                        ('woa_normbias' in cfg):
+                            features['woa_normbias'] = \
+                                    np.abs(self.auxiliary[v]['woa_normbias'])
                 else:
-                    logging.error("Sorry, I can't evaluate fuzzy with: %s" % f)
+                    logging.error("Sorry, I can't evaluate fuzzylogic with: %s" % f)
 
-            #self.flags[v]['fuzzy'] = fuzzy(
-            #        features=features,
-            #        cfg=cfg['fuzzy'])
-            print("I'm not ready for fuzzy.")
+            self.flags[v]['fuzzylogic'] = fuzzylogic(
+                    features=features,
+                    cfg=cfg['fuzzylogic'])
 
         self.flags[v]['overall'] = combined_flag(self.flags[v])
 
