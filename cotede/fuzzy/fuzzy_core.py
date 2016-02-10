@@ -97,7 +97,7 @@ def fuzzyfy(features, cfg):
     return rules
 
 
-def fuzz(features, cfg):
+def defuzzyfy4flags(features, cfg):
     """
 
         Temporary solution. Under-development.
