@@ -240,21 +240,21 @@ class ProfileQC(object):
             threshold = cfg_tmp['shallow_max']
             flag[np.nonzero( \
                     (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (g > threshold))] \
+                    (s > threshold))] \
                     = 4
             flag[np.nonzero( \
                     (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold))] \
+                    (s <= threshold))] \
                     = 1
             # ---- Deep zone --------------------
             threshold = cfg_tmp['deep_max']
             flag[np.nonzero( \
                     (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (g > threshold))] \
+                    (s > threshold))] \
                     = 4
             flag[np.nonzero( \
                     (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold))] \
+                    (s <= threshold))] \
                     = 1
 
             self.flags[v]['spike_depthconditional'] = flag
