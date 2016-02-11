@@ -21,7 +21,7 @@ def test():
     assert 'fuzzylogic' in pqc.flags['TEMP']
     # While anomaly detection is limited to spike, gradient and tukey tests it
     #   will always return 0 for the first and last.
-    #assert sorted(np.unique(pqc.flags['TEMP']['fuzzy'])) == [1, 2, 3, 4]
-    #assert sorted(np.unique(pqc.flags['TEMP2']['fuzzy'])) == [1]
+    assert sorted(np.unique(pqc.flags['TEMP']['fuzzylogic'])) == [1, 2, 4]
+    assert sorted(np.unique(pqc.flags['TEMP2']['fuzzylogic'])) == [1]
     #assert sorted(np.unique(pqc.flags['PSAL']['fuzzy'])) == [1, 2, 4]
     #assert sorted(np.unique(pqc.flags['PSAL2']['fuzzy'])) == [1]
