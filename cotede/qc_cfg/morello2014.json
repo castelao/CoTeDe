@@ -49,8 +49,8 @@
     "gradient": 4,
     "morello2014": {
 	"output": {
-            "low": [0.0, 0.225, 0.45],
-            "high": [0.55, 0.775, 1.0]
+            "low": null,
+            "high": null
 	    },
 	"features": {
             "spike": {
