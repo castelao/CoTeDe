@@ -9,10 +9,10 @@ from profile_envelop import profile_envelop
 from woa_normbias import woa_normbias
 from anomaly_detection import anomaly_detection
 from possible_speed import possible_speed
-#from fuzzylogic import fuzzylogic
 from rate_of_change import rate_of_change
 from cum_rate_of_change import cum_rate_of_change
 from morello2014 import morello2014
+from fuzzylogic import fuzzylogic
 
 from gradient import Gradient, gradient
 from spike import Spike, spike

@@ -97,7 +97,7 @@ def fuzzyfy(features, cfg):
     return rules
 
 
-def fuzz(features, cfg):
+def fuzzy_uncertainty(features, cfg):
     """
 
         Temporary solution. Under-development.
@@ -117,29 +117,29 @@ def fuzz(features, cfg):
 
     # CQ = bisector(Qs, ...
 
-    N = features[features.keys()[0]].size
-
     rules = fuzzyfy(features, cfg)
 
-    output_range = np.linspace(0, 1, 100)
+    N_out = 100
+    output_range = np.linspace(0, 1, N_out)
     output = {}
     output['low'] = skfuzzy.trimf(output_range, cfg['output']['low'])
-    output['medium'] = skfuzzy.trimf(output_range, cfg['output']['medium'])
-    output['high'] = skfuzzy.trimf(output_range, cfg['output']['high'])
+    if 'medium' in cfg['output']:
+        output['medium'] = skfuzzy.trimf(output_range, cfg['output']['medium'])
+    output['high'] = skfuzzy.smf(output_range, cfg['output']['high'][0],
+            cfg['output']['high'][1])
 
+    # FIXME: As it is now, it will have no zero flag value. Think about cases
+    #   where some values in a profile would not be estimated, hence flag=0
+    #   I think skfuzzy does not accept masked arrays?!?! That would be the
+    #   limiting factor.
 
+    N = rules[rules.keys()[0]].size
     # This would be the classic fuzzy approach.
     uncertainty = np.empty(N)
     for i in range(N):
-        aggregated = np.fmax(np.fmin(rules['high'][i], output['high']),
-            np.fmax(np.fmin(rules['medium'][i], output['medium']),
-                np.fmin(rules['low'][i], output['low'])))
+        aggregated = np.zeros(N_out)
+        for m in rules:
+            aggregated = np.fmax(aggregated, np.fmin(rules[m][i], output[m]))
         uncertainty[i] = skfuzzy.defuzz(output_range, aggregated, 'bisector')
 
-    return uncertainty    
-
-    flags = np.zeros(N, dtype='i1')
-    flags[uncertainty <= 0.5] = 1
-    flags[uncertainty > 0.5] = 4
-
-    return flags
+    return uncertainty

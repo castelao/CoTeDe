@@ -17,11 +17,10 @@ def test():
           flags are due the WOA climatology test.
     """
     datafile = download_testdata("dPIRX010.cnv")
-    pqc = fProfileQC(datafile, cfg='fuzzylogic')
-    assert 'fuzzylogic' in pqc.flags['TEMP']
+    pqc = fProfileQC(datafile, cfg='morello2014')
     # While anomaly detection is limited to spike, gradient and tukey tests it
     #   will always return 0 for the first and last.
-    assert sorted(np.unique(pqc.flags['TEMP']['fuzzylogic'])) == [1, 2, 4]
-    assert sorted(np.unique(pqc.flags['TEMP2']['fuzzylogic'])) == [1]
-    #assert sorted(np.unique(pqc.flags['PSAL']['fuzzy'])) == [1, 2, 4]
-    #assert sorted(np.unique(pqc.flags['PSAL2']['fuzzy'])) == [1]
+    assert sorted(np.unique(pqc.flags['TEMP']['morello2014'])) == [1, 2, 3, 4]
+    assert sorted(np.unique(pqc.flags['TEMP2']['morello2014'])) == [1]
+    assert sorted(np.unique(pqc.flags['PSAL']['morello2014'])) == [1, 2, 4]
+    assert sorted(np.unique(pqc.flags['PSAL2']['morello2014'])) == [1]
