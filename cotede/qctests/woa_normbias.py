@@ -50,6 +50,8 @@ def woa_normbias(data, v, cfg):
         else:
             vtype = v
 
+        print("Sorry, I'm temporary not ready to handle tracks.")
+        return np.zeros(data[v].shape, dtype='i1')
         woa = db[vtype].get_track(var=['mn', 'sd'],
                 doy=d,
                 depth=[0],
