@@ -36,9 +36,12 @@ def location_at_sea(data, cfg):
                 print("Missing geolocation (lat/lon)")
                 return 0
 
-    depth = get_depth(data.attributes['LATITUDE'],
-            data.attributes['LONGITUDE'],
-            cfg=cfg)
+    try:
+        depth = get_depth(data.attributes['LATITUDE'],
+                data.attributes['LONGITUDE'],
+                cfg=cfg)
+    except:
+        return 0
 
     if depth <= 0:
         return 1

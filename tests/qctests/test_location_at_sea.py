@@ -61,3 +61,26 @@ def notready_test_data():
     data.data['LONGITUDE'] = 330
     flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
     assert flag == 1
+
+def test_badlocation():
+    data = DummyData()
+
+    data.attributes['LATITUDE'] = 91
+    data.attributes['LONGITUDE'] = -30
+    flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
+    assert flag == 0
+
+    data.attributes['LATITUDE'] = 10
+    data.attributes['LONGITUDE'] = 361
+    flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
+    assert flag == 0
+
+    data.data['LATITUDE'] = 91
+    data.data['LONGITUDE'] = -30
+    flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
+    assert flag == 0
+
+    data.data['LATITUDE'] = 10
+    data.data['LONGITUDE'] = 361
+    flag = location_at_sea(data, {"file": "~/.cotederc/data/etopo5.cdf"})
+    assert flag == 0
