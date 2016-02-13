@@ -6,14 +6,18 @@
         }
     },
 "TEMP": {
-    "spike": 6.0,
+    "spike": {
+        "threshold": 6.0
+        },
     "woa_normbias": {
         "sigma_threshold": 6,
         "file": "~/.cotederc/data/temperature_seasonal_5deg.nc",
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"},
         "url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc"
         },
-    "gradient": 4,
+    "gradient": {
+	    "threshold": 4.0
+	    },
     "morello2014": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
@@ -39,14 +43,18 @@
         }
     },
 "PSAL": {
-    "spike": 0.9,
+    "spike": {
+	    "threshold": 0.9
+            },
     "woa_normbias": {
         "sigma_threshold": 6,
 	"file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
 	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
 	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
         },
-    "gradient": 4,
+    "gradient": {
+	    "threshold": 4.0
+            },
     "morello2014": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
