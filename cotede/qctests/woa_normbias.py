@@ -79,17 +79,15 @@ def woa_normbias(data, v, cfg):
                         lat=data.attributes['LATITUDE'],
                         lon=data.attributes['LONGITUDE'])
 
+    flag = np.zeros(data[v].shape, dtype='i1')
+
     if woa is None:
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
-        flag = np.zeros(data[v].shape, dtype='i1')
         return flag, {}
 
     woa_bias = data[v] - woa['mn']
     woa_normbias = woa_bias/woa['sd']
-
-
-    flag = np.zeros(data[v].shape, dtype='i1')
 
     ind = np.nonzero((woa['dd'] >= min_samples) &
             (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
