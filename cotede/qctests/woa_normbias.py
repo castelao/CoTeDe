@@ -80,26 +80,28 @@ def woa_normbias(data, v, cfg):
                         lon=data.attributes['LONGITUDE'])
 
     flag = np.zeros(data[v].shape, dtype='i1')
+    features = {}
 
-    if woa is None:
+    #if ma.any([ma.all(ma.getmaskarray(woa[c])) for c in woa]):
+    try:
+        woa_bias = data[v] - woa['mn']
+        woa_normbias = woa_bias/woa['sd']
+
+        ind = np.nonzero((woa['dd'] >= min_samples) &
+                (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
+        flag[ind] = 1   # cfg['flag_good']
+        ind = np.nonzero((woa['dd'] >= min_samples) &
+                (np.absolute(woa_normbias) > cfg['sigma_threshold']))
+        flag[ind] = 3   # cfg['flag_bad']
+
+        # Flag as 9 any masked input value
+        flag[ma.getmaskarray(data[v])] = 9
+
+        features = {'woa_bias': woa_bias, 'woa_normbias': woa_normbias,
+                'woa_std': woa['sd'], 'woa_nsamples': woa['dd'],
+                'woa_mean': woa['mn']}
+
+    finally:
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
-        return flag, {}
-
-    woa_bias = data[v] - woa['mn']
-    woa_normbias = woa_bias/woa['sd']
-
-    ind = np.nonzero((woa['dd'] >= min_samples) &
-            (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
-    flag[ind] = 1   # cfg['flag_good']
-    ind = np.nonzero((woa['dd'] >= min_samples) &
-            (np.absolute(woa_normbias) > cfg['sigma_threshold']))
-    flag[ind] = 3   # cfg['flag_bad']
-
-    # Flag as 9 any masked input value
-    flag[ma.getmaskarray(data[v])] = 9
-
-    features = {'woa_normbias': woa_normbias, 'woa_std': woa['sd'],
-            'woa_nsamples': woa['dd'], 'woa_mean': woa['mn']}
-
-    return flag, features
+        return flag, features
