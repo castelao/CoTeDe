@@ -61,12 +61,6 @@ def woa_normbias(data, v, cfg):
     elif ('LATITUDE' in data.attributes.keys()) and \
             ('LONGITUDE' in data.attributes.keys()) and \
             ('PRES' in data.keys()):
-                #woa = woa_profile(v,
-                #        data.attributes['datetime'],
-                #        data.attributes['LATITUDE'],
-                #        data.attributes['LONGITUDE'],
-                #        data['PRES'],
-                #        cfg)
                 db = WOA()
                 if v not in db.keys():
                     vtype = v[:-1]
