@@ -51,12 +51,11 @@ def woa_normbias(data, v, cfg):
             vtype = v
 
         print("Sorry, I'm temporary not ready to handle tracks.")
-        return np.zeros(data[v].shape, dtype='i1')
-        woa = db[vtype].get_track(var=['mn', 'sd'],
-                doy=d,
-                depth=[0],
-                lat=data['LATITUDE'],
-                lon=data['LONGITUDE'])
+        #woa = db[vtype].get_track(var=['mn', 'sd'],
+        #        doy=d,
+        #        depth=[0],
+        #        lat=data['LATITUDE'],
+        #        lon=data['LONGITUDE'])
 
     elif ('LATITUDE' in data.attributes.keys()) and \
             ('LONGITUDE' in data.attributes.keys()) and \
