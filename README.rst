@@ -16,26 +16,32 @@ CoTe De l'eau
         :target: https://pypi.python.org/pypi/cotede
 
 
+`CoTeDe<http://cotede.castelao.net>`_ is an Open Source Python package to quality control (QC) hydrographic data such as temperature and salinity. 
+It was designed to attend individual scientists as well as operational systems with large databases, reading the inputs from different formats and types of sensors, and processing those in parallel for high performance. 
+To achieve that, CoTeDe is highly customizable, allowing the user to compose the desired set of tests, as well as the specific parameters of each test. 
+Otherwise there are preset QC procedures conforming with GTSPP, EuroGOOS and ARGO recommendations. 
+It is also implemented innovating approaches to QC like the Fuzzy Logic (Timms 2011, Morello 2014) and Anomaly Detection (Castelão 2015). 
 
-This package is intended to quality control temperature and salinity profiles by applying a sequence of tests. 
-For CTD profiles and TSG time series it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
+At this point it is operational for profiles (CTD, XBT and Argo) and tracks (TSG). 
+For CTD profiles and TSG time series it uses `PySeabird package <http://seabird.castelao.net>`_ to interpret directly the SeaBird's .cnv output file, and for argo it uses `PyARGO package <https://github.com/castelao/pyARGO>`_ to interpret the netCDF files.
 
 This is the result from several generations of quality control systems,
-which started in 2006, while I was applying the quality control
-of termosalinographs at AOML-NOAA, USA. Later I was advising the
-quality control of the brazilian hydrography of PIRATA.
+which started in 2006, when I developed from scratch an automatic quality 
+control system for realtime evaluation of thermosalinographs at AOML-NOAA, USA. 
+Later I was advising the quality control of the brazilian hydrography of PIRATA.
+
+My vision is that we can do better than we do today with more flexible classification techniques, which includes machine learning, to minimize the burden on manual expert QC improving the consistency, performance and reliability of the QC procedure for oceanographic data, especially for realtime operations.
 
 Why use CoTeDe
 --------------
 
 CoTeDe can apply different quality control procedures:
-  - The default GTSPP or EGOOS procedure;
+  - The default GTSPP, EGOOS and Argo procedures;
   - A custom set of tests, including user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
-
-Process multiple files in parallel, ideal for large datasets.
-
-Export output, original data plus flags, into netCDF files following OCEANSites data structure.
+  - Two different fuzzy logic approaches: as proposed by Timms 2011 & Morello 2014, and using usual defuzification by the bisector.
+  - Process multiple files in parallel, ideal for large datasets.
+  - Export output, original data plus flags, into netCDF files following OCEANSites data structure.
 
 Quick howto
 -----------
@@ -60,19 +66,9 @@ To evaluate a full set of profiles at once, like all profiles from a cruise, use
 
         dataset.flags['temperature'].keys()
 
-Check the notebooks galery for more examples and functionalities: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
+Check the notebooks gallery for more examples and functionalities: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
 
 Documentation
 -------------
 
 http://cotede.readthedocs.org
-
-Why the name CoTeDe?
---------------------
-
-Since NOAA I wanted to combine the multiple tests, but I didn't really knew how  to do that. 
-In 2011 I learned the anomaly detection technique, but I only formalize the procedure in 2013, when I spent few months in Toulouse. 
-The full name of this package is CoTe De l'eau, which I understand as something near to "rating the water". 
-The short name is cotede, to make easier for the users to remember, since it is the quality control of COnductivity TEmperature and DEpth (cotede). 
-The french name is a kind of tribute to the great time that I spent in France with Bia and the croissants that were converted in code lines.
-
