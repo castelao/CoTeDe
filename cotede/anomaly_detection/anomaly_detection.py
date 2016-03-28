@@ -113,7 +113,7 @@ def estimate_anomaly(features, params, method='produtorium'):
         tmp = exponweib.sf(np.asanyarray(features[t]),
                 *param[:-2], loc=param[-2], scale=param[-1])
         # Arbitrary solution. No value can have a probability of 0.
-        tmp[tmp == 0] = 1e-15
+        tmp[tmp == 0] = 1e-20
         p = ma.log(tmp)
 
         # If both are valid, operate as choosed method.
