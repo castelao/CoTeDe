@@ -457,6 +457,7 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
 
         data.loc[data.human_flag == 'good', 'flag_calibrating'] = 1
         data.loc[data.human_flag == 'bad', 'flag_calibrating'] = 4
+        data.loc[data.human_flag == 'doubt', 'flag_calibrating'] = 0
 
         result = calibrate4flags(data['flag_calibrating'], data[featuresnames], q=q)
 
