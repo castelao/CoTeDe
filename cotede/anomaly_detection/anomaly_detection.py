@@ -423,7 +423,9 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
         data['mistake'] = data['human_flag'].isnull() & \
                 (data['false_positive'] | data['false_negative'])
 
-        data['derr'] = np.absolute(result['prob']-result['p_optimal'])
+        # AD's severity error is given by how far away was the estimated
+        #   probability from the prob. threshold.
+        data['derr'] = (data.prob - result['p_optimal']).abs()
         data.loc[data.mistake == False, 'derr'] = np.nan
 
         grp = data[data.mistake].groupby('profileid')
@@ -442,8 +444,9 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
                     profile['PRES'],
                     baseflag=profile['flag_calibrating'],
                     #fails=np.array(profile['mistake']),
-                    fails=ma.array(profile.derr == profile.loc[
-                        profile.flag_global_range == 1, 'derr'].max()),
+                    #fails=ma.array(profile.derr == profile.loc[
+                    #    profile.flag_global_range == 1, 'derr'].max()),
+                    fails=np.array(profile.derr == profile.derr.max()),
                     humanflag=ma.masked_values(
                         profile['human_flag'], None).astype('object'))
 
