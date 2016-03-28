@@ -398,8 +398,10 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
     assert varname in data
 
     import pandas as pd
-    data['id'] = range(data.shape[0])
-    data.set_index('id', drop=True, inplace=True)
+    #data['id'] = range(data.shape[0])
+    #data.set_index('id', drop=True, inplace=True)
+    # Guarantee that the indices are unique.
+    assert data.index.unique().shape[0] == data.shape[0]
 
     if 'human_flag' not in data:
         data['human_flag'] = ma.masked_all(data[flagname].shape,
