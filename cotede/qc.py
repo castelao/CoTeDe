@@ -395,6 +395,14 @@ class ProfileQC(object):
                     features['gradient'] = gradient(self.input[v])
                 elif f == 'tukey53H_norm':
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v])
+                elif f == 'rate_of_change':
+                    RoC = ma.masked_all_like(self.input[v])
+                    RoC[1:] = ma.absolute(ma.diff(self.input[v]))
+                    features['rate_of_change'] = RoC
+                elif (f == 'woa_normbias') & \
+                        ('woa_normbias' in cfg):
+                            features['woa_normbias'] = \
+                                    np.abs(self.auxiliary[v]['woa_normbias'])
                 else:
                     logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
@@ -416,6 +424,10 @@ class ProfileQC(object):
                 elif f == 'tukey53H_norm':
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v],
                             k=1.5)
+                elif f == 'rate_of_change':
+                    RoC = ma.masked_all_like(data[v])
+                    RoC[1:] = ma.absolute(ma.diff(data[v]))
+                    features['rate_of_change'] = RoC
                 elif (f == 'woa_normbias') & \
                         ('woa_normbias' in cfg):
                             features['woa_normbias'] = \
