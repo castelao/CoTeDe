@@ -15,12 +15,8 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
-install_requires = [
-    'numpy>=1.1',
-    'seabird>=0.6.3',
-    'scipy',
-    'pyWOA>=0.0.9'
-    ]
+with open('requirements.txt') as requirements_file:
+        requirements = requirements_file.read()
 
 version = '0.15.5'
 
@@ -42,7 +38,7 @@ setup(
     package_dir = {'cotede':
                    'cotede'},
     license='3-clause BSD',
-    install_requires=install_requires,
+    install_requires=requirements,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 2',
