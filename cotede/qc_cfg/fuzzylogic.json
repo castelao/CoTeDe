@@ -1,0 +1,80 @@
+{"main": {
+    "valid_datetime": null,
+    "location_at_sea": {
+        "file": "~/.cotederc/data/etopo5.cdf",
+        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+        }
+    },
+"TEMP": {
+    "spike": 6.0,
+    "woa_normbias": {
+        "sigma_threshold": 6,
+        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
+        },
+    "gradient": 9.0,
+    "fuzzylogic": {
+	"output": {
+            "low": [0.0, 0.225, 0.45],
+            "medium": [0.275, 0.5, 0.725],
+            "high": [0.55, 0.775]
+	    },
+	"features": {
+            "spike": {
+                "weight": 1,
+                "low": [0.07, 0.2],
+                "medium": [0.07, 0.2, 2, 6],
+                "high": [2, 6]
+                },
+            "woa_normbias": {
+                "weight": 1,
+                "low": [3, 4],
+                "medium": [3, 4, 5, 6],
+                "high": [5, 6]
+                },
+            "gradient": {
+                "weight": 1,
+                "low": [0.5, 1.5],
+                "medium": [0.5, 1.5, 3, 4],
+                "high": [3, 4]
+                }
+            }
+        }
+    },
+"PSAL": {
+    "spike": 0.9,
+    "woa_normbias": {
+        "sigma_threshold": 6,
+	"file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
+	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
+	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
+        },
+    "gradient": 4,
+    "morello2014": {
+	"output": {
+            "low": [0.0, 0.225, 0.45],
+            "medium": [0.275, 0.5, 0.725],
+            "high": [0.55, 0.775, 1.0]
+	    },
+	"features": {
+            "spike": {
+                "weight": 1,
+                "low": [0.05, 0.15],
+                "medium": [0.05, 0.15, 0.5, 0.9],
+                "high": [0.5, 0.9]
+                },
+            "woa_normbias": {
+                "weight": 1,
+                "low": [3, 4],
+                "medium": [3, 4, 5, 6],
+                "high": [5, 6]
+                },
+            "gradient": {
+                "weight": 1,
+                "low": [1, 2],
+                "medium": [1, 2, 3, 4],
+                "high": [3, 4]
+                }
+            }
+        }
+    }
+}
