@@ -3,6 +3,11 @@
 History
 =======
 
+0.16 - Mar, 2016
+----------------
+
+* Using external package OceansDB to handle climatologies and bathymetry.
+
 0.15 - Dec, 2015
 ----------------
 
