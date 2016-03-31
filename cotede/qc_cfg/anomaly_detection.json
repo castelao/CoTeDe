@@ -1,17 +1,36 @@
 {"TEMP": {
-	"anomaly_detection": {
-		"threshold": -35.1,
-		"features": {
-			"spike": {
-				"model": "exponweib",
-				"qlimit": 0.000900,
-				"param": [0.517448, 0.801291 , 0.000300, 0.012925]
+    "global_range": {
+        "minval": -2.5,
+        "maxval": 40
+        },
+    "anomaly_detection": {
+        "threshold": -18.0,
+            "features": {
+                "gradient": {
+                    "model": "exponweib",
+		    "qlimit": 0.013500,
+		    "param": [1.431385, 0.605537, 0.013500, 0.015567]
+		    },
+                "spike": {
+                    "model": "exponweib",
+		    "qlimit": 0.000400,
+		    "param": [1.078231, 0.512053, 0.000400, 0.002574]
+		    },
+		"tukey53H_norm": {
+                    "model": "exponweib",
+                        "qlimit": 0.001614,
+			"param": [4.497367, 0.351177, 0.001612, 0.000236]
 			},
-			"tukey53H_norm": {
-				"model": "exponweib",
-				"qlimit": 0.001090,
-			       	"param": [0.650092, 0.728563, 0.001090, 0.005681]
-			}
+                "rate_of_change": {
+                    "model": "exponweib",
+		    "qlimit": 0.041700,
+		    "param": [2.668970, 0.469459, 0.041696, 0.017221]
+		    },
+                "woa_normbias": {
+                    "model": "exponweib",
+		    "qlimit": 1.615422,
+		    "param": [0.899871, 0.987157, 1.615428, 0.662358]
+		    }
 		}
 	}
     },
