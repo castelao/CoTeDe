@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from cotede.utils import get_depth
+import oceansdb
 
-def location_at_sea(data, cfg):
+def location_at_sea(data, cfg=None):
     """ Evaluate if location is at sea.
 
         Interpolate the depth from ETOPO for the data position.
@@ -14,9 +14,9 @@ def location_at_sea(data, cfg):
           Double check other branches, I thought I had already done
             this before.
     """
-    if 'flag_bad' in cfg:
+    try:
         flag_bad = cfg['flag_bad']
-    else:
+    except:
         flag_bad = 3
 
     assert hasattr(data, 'attributes'), "Missing attributes"
@@ -36,11 +36,13 @@ def location_at_sea(data, cfg):
                 print("Missing geolocation (lat/lon)")
                 return 0
 
-    depth = get_depth(data.attributes['LATITUDE'],
-            data.attributes['LONGITUDE'],
-            cfg=cfg)
+    ETOPO = oceansdb.ETOPO()
+    etopo = ETOPO.extract(
+            var='elevation',
+            lat=data.attributes['LATITUDE'],
+            lon=data.attributes['LONGITUDE'])
 
-    if depth <= 0:
+    if etopo['elevation'] <= 0:
         return 1
-    elif depth > 0:
+    elif etopo['elevation'] > 0:
         return flag_bad
