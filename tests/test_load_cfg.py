@@ -51,7 +51,10 @@ def test_default():
 def test_factory_cfgs():
     for cfg in CFG:
         print("Loading %s" % cfg)
-        cfg_out = load_cfg(cfg)
+        try:
+            cfg_out = load_cfg(cfg)
+        except:
+            assert False, "Couldn't load: %s" % cfg
         assert type(cfg_out) is dict
         assert len(cfg_out) > 0
 
