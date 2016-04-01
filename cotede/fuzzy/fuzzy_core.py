@@ -132,11 +132,12 @@ def fuzzy_uncertainty(features, cfg):
 
     N = rules[rules.keys()[0]].size
     # This would be the classic fuzzy approach.
-    uncertainty = np.empty(N)
+    uncertainty = ma.masked_all(N)
     for i in range(N):
         aggregated = np.zeros(N_out)
         for m in rules:
             aggregated = np.fmax(aggregated, np.fmin(rules[m][i], output[m]))
-        uncertainty[i] = skfuzzy.defuzz(output_range, aggregated, 'bisector')
+        if aggregated is not ma.masked:
+            uncertainty[i] = defuzz(output_range, aggregated, 'bisector')
 
     return uncertainty
