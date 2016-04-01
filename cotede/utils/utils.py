@@ -4,23 +4,6 @@ import re
 import pkg_resources
 import json
 
-import numpy as np
-from numpy import ma
-
-try:
-    import netCDF4
-except:
-    print("netCDF4 is not available")
-
-try:
-    from pydap.client import open_url
-    import pydap.lib
-    pydap.lib.CACHE = '.cache'
-except:
-    print("PyDAP is not available")
-
-from scipy.interpolate import RectBivariateSpline, interp1d
-
 
 def cotede_dir():
     return expanduser(os.getenv('COTEDE_DIR', '~/.cotederc'))
@@ -35,57 +18,6 @@ def make_file_list(inputdir, inputpattern):
                 inputfiles.append(os.path.join(dirpath, filename))
     inputfiles.sort()
     return inputfiles
-
-
-def get_depth(lat, lon, cfg):
-    """
-
-    ATTENTION, conceptual error on the data near by Greenwich.
-    url='http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf'
-
-    If I ever need to get depth from multiple points, check the history
-      of this file. One day it was like that.
-    """
-    # This assert fails if it is a np.float64. Re-think this assert anyways.
-    #assert type(lat) in [int, float]
-    #assert type(lon) in [int, float]
-
-    # if lat.shape != lon.shape:
-    #            print "lat and lon must have the same size"
-
-    try:
-        try:
-            etopo = netCDF4.Dataset(expanduser(cfg['file']))
-        except:
-            # FIXME, It must have a time limit defined here, otherwise it can
-            #   get stuck trying to open the file.
-            etopo = netCDF4.Dataset(expanduser(cfg['url']))
-        x = etopo.variables['ETOPO05_X'][:]
-        y = etopo.variables['ETOPO05_Y'][:]
-    except:
-        etopo = open_url(cfg['url']).ROSE
-        x = etopo.ETOPO05_X[:]
-        y = etopo.ETOPO05_Y[:]
-
-    if lon < 0:
-        lon += 360
-
-    iini = (abs(lon - x)).argmin() - 2
-    ifin = (abs(lon - x)).argmin() + 2
-    jini = (abs(lat - y)).argmin() - 2
-    jfin = (abs(lat - y)).argmin() + 2
-
-    assert (iini >= 0) or (iini <= len(x)) or \
-        (jini >= 0) or (jini <= len(y)), \
-        "Sorry not ready to handle too close to boundaries"
-
-    try:
-        z = etopo.variables['ROSE'][jini:jfin, iini:ifin]
-    except:
-        z = etopo.ROSE[jini:jfin, iini:ifin]
-
-    interpolator = RectBivariateSpline(x[iini:ifin], y[jini:jfin], z.T)
-    return interpolator(lon, lat)[0][0]
 
 
 # ============================================================================

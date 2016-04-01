@@ -15,14 +15,10 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
-install_requires = [
-    'numpy>=1.1',
-    'seabird>=0.6.3',
-    'scipy',
-    'pyWOA>=0.1.0'
-    ]
+with open('requirements.txt') as requirements_file:
+        requirements = requirements_file.read()
 
-version = '0.15.5'
+version = '0.17.0'
 
 setup(
     name='cotede',
@@ -43,13 +39,13 @@ setup(
     package_dir = {'cotede':
                    'cotede'},
     license='3-clause BSD',
-    install_requires=install_requires,
+    install_requires=requirements,
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'License :: OSI Approved :: BSD License',
         ],
     keywords='CTD TSG SeaBird ARGO Quality Control oceanography hydrography',

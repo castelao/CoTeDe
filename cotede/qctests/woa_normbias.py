@@ -12,7 +12,7 @@ from datetime import timedelta
 import numpy as np
 from numpy import ma
 
-from pyWOA import WOA
+from oceansdb import WOA
 
 
 def woa_normbias(data, v, cfg):

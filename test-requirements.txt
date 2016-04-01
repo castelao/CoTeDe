@@ -6,5 +6,4 @@ netCDF4
 pyARGO
 gsw
 matplotlib
-scikit-fuzzy
-pyWOA
+oceansdb

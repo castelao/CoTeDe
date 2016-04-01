@@ -3,6 +3,16 @@
 History
 =======
 
+0.17 - Mar, 2016
+----------------
+
+* Implementing fuzzy procedures inside CoTeDe, thus removing dependency on scikit-fuzzy. scikit-fuzzy is broken, hence compromising tests and development of CoTeDe.
+
+0.16 - Mar, 2016
+----------------
+
+* Using external package OceansDB to handle climatologies and bathymetry.
+
 0.15 - Dec, 2015
 ----------------
 

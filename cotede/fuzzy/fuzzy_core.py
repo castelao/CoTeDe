@@ -12,7 +12,8 @@
 import numpy as np
 from numpy import ma
 
-import skfuzzy
+from .membership_functions import smf, zmf, trapmf, trimf
+from .defuzz import defuzz
 
 def fuzzyfy(features, cfg):
     """
@@ -38,20 +39,17 @@ def fuzzyfy(features, cfg):
             assert m in cfg['features'][t], \
                     "Missing %s in %s" % (m, cfg['features'][t])
 
-            # I don't like this, but trapmf requires a vector of parameters
-            #   while smf & zmf requires two scalars as input.
             membership[m][t] = ma.masked_all_like(features[t])
             ind = ~ma.getmaskarray(features[t])
             if m == 'low':
-                membership[m][t][ind] = skfuzzy.zmf(
-                        np.asanyarray(features[t])[ind],
-                        cfg['features'][t][m][0], cfg['features'][t][m][1])
+                membership[m][t][ind] = zmf(
+                        np.asanyarray(features[t])[ind], cfg['features'][t][m])
             elif m == 'high':
-                membership[m][t][ind] = skfuzzy.smf(
+                membership[m][t][ind] = smf(
                         np.asanyarray(features[t])[ind],
-                        cfg['features'][t][m][0], cfg['features'][t][m][1])
+                        cfg['features'][t][m])
             else:
-                membership[m][t][ind] = skfuzzy.trapmf(
+                membership[m][t][ind] = trapmf(
                         np.asanyarray(features[t])[ind],
                         cfg['features'][t][m])
 
@@ -122,11 +120,10 @@ def fuzzy_uncertainty(features, cfg):
     N_out = 100
     output_range = np.linspace(0, 1, N_out)
     output = {}
-    output['low'] = skfuzzy.trimf(output_range, cfg['output']['low'])
+    output['low'] = trimf(output_range, cfg['output']['low'])
     if 'medium' in cfg['output']:
-        output['medium'] = skfuzzy.trimf(output_range, cfg['output']['medium'])
-    output['high'] = skfuzzy.smf(output_range, cfg['output']['high'][0],
-            cfg['output']['high'][1])
+        output['medium'] = trimf(output_range, cfg['output']['medium'])
+    output['high'] = smf(output_range, cfg['output']['high'])
 
     # FIXME: As it is now, it will have no zero flag value. Think about cases
     #   where some values in a profile would not be estimated, hence flag=0
@@ -135,11 +132,12 @@ def fuzzy_uncertainty(features, cfg):
 
     N = rules[rules.keys()[0]].size
     # This would be the classic fuzzy approach.
-    uncertainty = np.empty(N)
+    uncertainty = ma.masked_all(N)
     for i in range(N):
         aggregated = np.zeros(N_out)
         for m in rules:
             aggregated = np.fmax(aggregated, np.fmin(rules[m][i], output[m]))
-        uncertainty[i] = skfuzzy.defuzz(output_range, aggregated, 'bisector')
+        if aggregated is not ma.masked:
+            uncertainty[i] = defuzz(output_range, aggregated, 'bisector')
 
     return uncertainty
