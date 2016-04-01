@@ -3,6 +3,7 @@
 
 import shutil
 import tempfile
+import os.path
 
 from cotede.utils.supportdata import download_testdata
 #from cotede.utils import ProfilesQCCollection
@@ -25,7 +26,6 @@ def check_profiles(profiles):
 def test_ProfilesQCPandasCollection():
     try:
         tmpdir = tempfile.mkdtemp()
-        print tmpdir
         for f in INPUTFILES:
             shutil.copy(f, tmpdir)
 
@@ -38,3 +38,5 @@ def test_ProfilesQCPandasCollection():
 
     finally:
         shutil.rmtree(tmpdir)
+
+    assert not os.path.exists(tmpdir), "tmpdir wasn't deleted: %s" % tmpdir
