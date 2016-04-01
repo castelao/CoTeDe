@@ -4,13 +4,28 @@
 """ Test load qc configurations (utils.load_cfg)
 """
 
+import os.path
 import pkg_resources
 
-from cotede.utils import load_cfg
+from cotede.utils import load_cfg, cotede_dir
 
 
 CFG = [f[:-5] for f in pkg_resources.resource_listdir('cotede', 'qc_cfg')
         if f[-5:] == '.json']
+
+
+def test_no_local_duplicate_cfg():
+    """ Avoid local cfg of default procedures
+
+        Guarantee that there is no local copy of a default cfg json file,
+          otherwise the default cfg could be breaking, and the tests safely
+          escaping into a local, non-distributed, cfg.
+    """
+
+    for cfg in CFG:
+        local_cfg = os.path.join(cotede_dir(), "cfg", "%s.json" % cfg)
+        assert not os.path.exists(local_cfg), \
+                "Redundant local cfg file: %s" % cfg
 
 
 def test_inout():
