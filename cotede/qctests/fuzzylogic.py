@@ -21,7 +21,7 @@ def fuzzylogic(features, cfg):
     #   when it is missing some of the features? Sounds like the best guess
     #   possible.
     if not np.all([f in features for f in cfg['features']]):
-        print("Not all features (%s) required by morello2014 are available" %
+        print("Not all features (%s) required to fuzzyfy are available" %
                 cfg['features'].keys())
         try:
             return np.zeros(features[features.keys()[0]].shape, dtype='i1')
