@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    Quality Control based on anomaly detection
+    Quality Control based on fuzzy logic.
 """
 
 
