@@ -17,5 +17,5 @@ def test():
     assert 'fuzzylogic' in pqc.flags['TEMP']
     assert sorted(np.unique(pqc.flags['TEMP']['fuzzylogic'])) == [1, 2, 4]
     assert sorted(np.unique(pqc.flags['TEMP2']['fuzzylogic'])) == [1]
-    #assert sorted(np.unique(pqc.flags['PSAL']['fuzzy'])) == [1, 2, 4]
-    #assert sorted(np.unique(pqc.flags['PSAL2']['fuzzy'])) == [1]
+    assert sorted(np.unique(pqc.flags['PSAL']['fuzzylogic'])) == [1, 2, 4]
+    assert sorted(np.unique(pqc.flags['PSAL2']['fuzzylogic'])) == [1]
