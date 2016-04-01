@@ -2,9 +2,6 @@
 
 """
 
-#http://www.ngdc.noaa.gov/mgg/global/relief/ETOPO1/data/bedrock/grid_registered/netcdf/ETOPO1_Bed_g_gmt4.grd.gz
-
-supportdata.download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf','309bef6916aee6e12563d3f8c1f27503')
 """
 
 import os
@@ -76,8 +73,6 @@ def download_file(url, md5hash, d):
 def download_supportdata():
     print("This can take several minutes, depending on the network bandwidth. Sorry, in the future I'll include a progress bar.")
     d = os.path.join(cotede_dir(), 'data')
-    download_file('http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf',
-            '309bef6916aee6e12563d3f8c1f27503', d)
     download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/temperature_seasonal_5deg.nc',
             '271f66e8dea4dfef7db99f5f411af330', d)
     download_file('http://data.nodc.noaa.gov/thredds/fileServer/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc',
