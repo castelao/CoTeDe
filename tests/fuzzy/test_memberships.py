@@ -3,6 +3,7 @@
 
 import numpy as np
 from numpy.testing import assert_allclose
+from cotede.fuzzy.membership_functions import smf, zmf, trimf, trapmf
 
 
 """

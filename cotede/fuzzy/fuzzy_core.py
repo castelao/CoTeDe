@@ -13,6 +13,7 @@ import numpy as np
 from numpy import ma
 
 from .membership_functions import smf, zmf, trapmf, trimf
+from .defuzz import defuzz
 
 def fuzzyfy(features, cfg):
     """
