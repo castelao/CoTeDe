@@ -21,7 +21,7 @@ This package is intended to quality control temperature and salinity profiles by
 For CTD profiles and TSG time series it uses the `PySeabird package <http://seabird.castelao.net>`_, so it can interpret directly the SeaBird's .cnv output file.
 
 This is the result from several generations of quality control systems,
-which started in 2006, while I was applying the quality control
+which started in 2006, while I was developing the quality control
 of termosalinographs at AOML-NOAA, USA. Later I was advising the
 quality control of the brazilian hydrography of PIRATA.
 
@@ -29,9 +29,11 @@ Why use CoTeDe
 --------------
 
 CoTeDe can apply different quality control procedures:
-  - The default GTSPP or EGOOS procedure;
+  - The default GTSPP, EGOOS or Argo procedures;
   - A custom set of tests, including user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
+  - Fuzzy Logic approach proposed by Morello et.al. 2014;
+  - A complete fuzzy logic procedure, with traditional deffuzification, proposed by Castelão 2016;
 
 Process multiple files in parallel, ideal for large datasets.
 
