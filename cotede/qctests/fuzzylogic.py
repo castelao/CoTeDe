@@ -33,10 +33,12 @@ def fuzzylogic(features, cfg):
 
     # FIXME: As it is now, it will have no zero flag value. Think about cases
     #   where some values in a profile would not be estimated, hence flag=0
+    # I needed to use np.nonzeros because now uncertainty is a masked array,
+    #   to accept when a feature is masked.
     flags = np.zeros(features[cfg['features'].keys()[0]].shape, dtype='i1')
-    flags[uncertainty <= 0.29] = 1
-    flags[(uncertainty > 0.29)  & (uncertainty <= 0.34)] = 2
-    flags[(uncertainty > 0.34)  & (uncertainty <= 0.72)] = 3
-    flags[uncertainty > 0.72] = 4
+    flags[np.nonzero(uncertainty <= 0.29)] = 1
+    flags[np.nonzero((uncertainty > 0.29)  & (uncertainty <= 0.34))] = 2
+    flags[np.nonzero((uncertainty > 0.34)  & (uncertainty <= 0.72))] = 3
+    flags[np.nonzero(uncertainty > 0.72)] = 4
 
     return flags
