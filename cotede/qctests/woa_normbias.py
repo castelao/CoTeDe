@@ -66,7 +66,8 @@ def woa_normbias(data, v, cfg):
                 else:
                     vtype = v
 
-                woa = db[vtype].extract(var=['mn', 'sd', 'dd'],
+                woa = db[vtype].extract(
+                        var=['mn', 'sd', 'dd'],
                         doy=int(data.attributes['datetime'].strftime('%j')),
                         depth=data['PRES'],
                         lat=data.attributes['LATITUDE'],
@@ -75,7 +76,6 @@ def woa_normbias(data, v, cfg):
     flag = np.zeros(data[v].shape, dtype='i1')
     features = {}
 
-    #if ma.any([ma.all(ma.getmaskarray(woa[c])) for c in woa]):
     try:
         woa_bias = data[v] - woa['mn']
         woa_normbias = woa_bias/woa['sd']

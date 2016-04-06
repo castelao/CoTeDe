@@ -16,10 +16,6 @@
     "spike": {
         "threshold": 2.0
         },
-    "woa_normbias": {
-        "sigma_threshold": 3,
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
-        },
     "profile_envelop": [
         ["> 0", "<= 25", -2, 37],
         ["> 25", "<= 50", -2, 36],
@@ -44,10 +40,6 @@
         },
     "spike": {
         "threshold": 0.3
-        },
-    "woa_normbias": {
-        "sigma_threshold": 3,
-        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
         },
     "profile_envelop": [
         ["> 0", "<= 25", 0, 41],

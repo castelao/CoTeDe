@@ -1,8 +1,7 @@
 {"main": {
     "valid_datetime": null,
     "location_at_sea": {
-        "file": "~/.cotederc/data/etopo5.cdf",
-        "url": "http://opendap.ccst.inpe.br/Climatologies/ETOPO/etopo5.cdf"
+        "bad_flag": 3
         }
     },
 "TEMP": {
@@ -44,16 +43,14 @@
     "spike": 0.9,
     "woa_normbias": {
         "sigma_threshold": 6,
-	"file": "~/.cotederc/data/salinity_seasonal_5deg.nc",
-	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"},
-	"url": "http://data.nodc.noaa.gov/thredds/dodsC/woa/WOA09/NetCDFdata/salinity_seasonal_5deg.nc"
+	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
         },
     "gradient": 4,
-    "morello2014": {
+    "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
             "medium": [0.275, 0.5, 0.725],
-            "high": [0.55, 0.775, 1.0]
+            "high": [0.55, 0.775]
 	    },
 	"features": {
             "spike": {

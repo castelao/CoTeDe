@@ -37,10 +37,13 @@ def location_at_sea(data, cfg=None):
                 return 0
 
     ETOPO = oceansdb.ETOPO()
-    etopo = ETOPO.extract(
-            var='elevation',
-            lat=data.attributes['LATITUDE'],
-            lon=data.attributes['LONGITUDE'])
+    try:
+        etopo = ETOPO.extract(
+                var='elevation',
+                lat=data.attributes['LATITUDE'],
+                lon=data.attributes['LONGITUDE'])
+    except:
+        return 0
 
     if etopo['elevation'] <= 0:
         return 1

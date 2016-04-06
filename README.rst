@@ -36,12 +36,14 @@ Why use CoTeDe
 --------------
 
 CoTeDe can apply different quality control procedures:
-  - The default GTSPP, EGOOS and Argo procedures;
+  - The default GTSPP, EGOOS or Argo procedures;
   - A custom set of tests, including user defined thresholds;
   - A novel approach based on Anomaly Detection, described by `Castelao 2015 <http://arxiv.org/abs/1503.02714>`_;
   - Two different fuzzy logic approaches: as proposed by Timms 2011 & Morello 2014, and using usual defuzification by the bisector.
-  - Process multiple files in parallel, ideal for large datasets.
-  - Export output, original data plus flags, into netCDF files following OCEANSites data structure.
+
+Process multiple files in parallel, ideal for large datasets.
+
+Export output, original data plus flags, into netCDF files following OCEANSites data structure.
 
 Quick howto
 -----------

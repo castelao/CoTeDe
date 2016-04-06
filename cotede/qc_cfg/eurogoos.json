@@ -2,7 +2,7 @@
     "valid_datetime": null,
     "valid_position": null,
     "location_at_sea": {
-        "file": "~/.cotederc/data/etopo5.cdf"
+        "bad_flag": 3
         }
     },
 "TEMP": {
