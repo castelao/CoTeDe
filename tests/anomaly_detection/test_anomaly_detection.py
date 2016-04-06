@@ -55,6 +55,9 @@ def test_split_data_groups(n=100):
         assert ~flag[indices[k]].mask.any()
 
     # Fit group is all True, but err & test must have both
+    # FIXME: This is a weak test. Since the data is randomly distributed
+    #   it's possible to have just 1 | 2, as well as just 3 | 4, instead
+    #   of both together.
     assert sorted(np.unique(flag[indices['fit']])) == [1,2]
     for k in ['err', 'test']:
         assert sorted(np.unique(flag[indices[k]])) == [1,2,3,4]
