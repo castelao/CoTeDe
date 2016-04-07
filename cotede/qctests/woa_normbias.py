@@ -72,7 +72,7 @@ def woa_normbias(data, v, cfg):
                         lat=data.attributes['LATITUDE'],
                         lon=data.attributes['LONGITUDE'])
 
-    if woa is None:
+    if (woa is None) or ma.getmaskarray(woa['mn']).all():
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
         flag = np.zeros(data[v].shape, dtype='i1')

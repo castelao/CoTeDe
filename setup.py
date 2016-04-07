@@ -18,7 +18,7 @@ with open('HISTORY.rst') as history_file:
 with open('requirements.txt') as requirements_file:
         requirements = requirements_file.read()
 
-version = '0.17.0'
+version = '0.17.2'
 
 setup(
     name='cotede',
