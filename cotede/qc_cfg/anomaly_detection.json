@@ -3,6 +3,9 @@
         "minval": -2.5,
         "maxval": 40
         },
+    "woa_normbias": {
+        "threshold": 10
+        },
     "anomaly_detection": {
         "threshold": -18.0,
             "features": {
