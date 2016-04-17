@@ -67,3 +67,21 @@ def test_badlocation():
         data.attributes['LATITUDE'] = lat
         data.attributes['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
+
+
+def test_nonelocation():
+    data = DummyData()
+
+    coords = [[None, 1, 0], [1, None, 0]]
+    for lat, lon, flag in coords:
+        data.attributes['LATITUDE'] = lat
+        data.attributes['LONGITUDE'] = lon
+        assert location_at_sea(data) == flag
+
+    del(data.attributes['LATITUDE'])
+    data.attributes['LONGITUDE'] = 1
+    assert location_at_sea(data) == 0
+
+    del(data.attributes['LONGITUDE'])
+    data.attributes['LATITUDE'] = 1
+    assert location_at_sea(data) == 0
