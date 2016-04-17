@@ -7,8 +7,7 @@
 "TEMP": {
     "spike": 6.0,
     "woa_normbias": {
-        "sigma_threshold": 6,
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
+        "threshold": 6
         },
     "gradient": 9.0,
     "fuzzylogic": {
@@ -42,8 +41,7 @@
 "PSAL": {
     "spike": 0.9,
     "woa_normbias": {
-        "sigma_threshold": 6,
-	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
+        "threshold": 6
         },
     "gradient": 4,
     "fuzzylogic": {

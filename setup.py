@@ -33,6 +33,7 @@ setup(
         'cotede.qctests',
         'cotede.utils',
         'cotede.humanqc',
+        'cotede.anomaly_detection',
         'cotede.fuzzy',
     ],
     package_dir = {'cotede':
