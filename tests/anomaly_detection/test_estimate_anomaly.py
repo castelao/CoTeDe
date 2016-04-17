@@ -48,7 +48,7 @@ def test_estimate_anomaly():
     assert ma.allclose(f1, f2)
     assert ma.allclose(f1,
             ma.masked_values([-999, 0.0, -5.797359001920061,
-                -46.051701859880914, -999, -9.626760611162082], -999))
+                -57.564627324851145, -999, -9.626760611162082], -999))
 
 
 def test_estimate_anomaly_pandas():
