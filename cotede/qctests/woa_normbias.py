@@ -119,6 +119,11 @@ class WOA_NormBias(object):
         self.varname = varname
         self.cfg = cfg
 
+        # Default is to do not use standard error to estimate the bias,
+        #   because that is the traditional approach.
+        if 'use_standard_error' not in self.cfg:
+            self.cfg['use_standard_error'] = False
+
         self.set_features()
 
     def keys(self):
@@ -161,6 +166,20 @@ class WOA_NormBias(object):
 
         self.features['woa_bias'] = self.data[self.varname] - \
                 self.features['woa_mean']
+
+        # if use_standard_error = True, the comparison with the climatology
+        #   considers the standard error, i.e. the bias will be only the
+        #   ammount above the standard error range.
+        if self.cfg['use_standard_error'] is True:
+            standard_error = self.features['woa_std'] / \
+                    self.features['woa_nsamples'] ** 0.5
+            idx = np.absolute(self.features['woa_bias']) <= \
+                    standard_error
+            self.features['woa_bias'][idx] = 0
+            idx = np.absolute(self.features['woa_bias']) > standard_error
+            self.features['woa_bias'][idx] -= \
+                    np.sign(self.features['woa_bias']) * standard_error
+
         self.features['woa_normbias'] = self.features['woa_bias'] / \
                 self.features['woa_std']
 
