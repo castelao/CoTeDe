@@ -187,7 +187,7 @@ class WOA_NormBias(object):
 
         # 3 is the possible minimum to estimate the std, but I shold use higher.
         try:
-            min_samples = cfg['min_samples']
+            min_samples = self.cfg['min_samples']
         except:
             min_samples = 3
 
