@@ -19,11 +19,12 @@ class HumanQC(object):
         pass
 
     def eval(self, x, z, baseflag=None, fails=None,
-            humanflag=None, refname=None):
+            humanflag=None, refname=None, clim=None):
         """
         """
         self.x = np.asanyarray(x)
         self.z = np.asanyarray(z)
+        self.clim = clim
 
         assert x.shape == z.shape, "Data and z coordinate must have same shape"
 
@@ -55,6 +56,17 @@ class HumanQC(object):
         """
         """
         self.fig, self.ax = plt.subplots()
+        try:
+            self.ax.fill_betweenx(self.clim['z'],
+                    self.clim['mn'] - 6*self.clim['std'],
+                    self.clim['mn'] + 6*self.clim['std'],
+                    color='r', alpha=0.2)
+            self.ax.fill_betweenx(self.clim['z'],
+                    self.clim['mn'] - 3*self.clim['std'],
+                    self.clim['mn'] + 3*self.clim['std'],
+                    color='g', alpha=0.2)
+        except:
+            print("Wasn't able to plot climatology")
         self.line, = self.ax.plot(self.x, self.z, 'b.',
                 picker=10) # 5 points tolerance
         # Plot the bad ones
