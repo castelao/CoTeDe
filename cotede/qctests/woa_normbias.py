@@ -208,11 +208,12 @@ class WOA_NormBias(object):
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
 
+        normbias_abs = np.absolute(self.features['woa_normbias'])
         ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
-                (np.absolute(self.features['woa_normbias']) <= threshold))
+                (normbias_abs <= threshold))
         flag[ind] = flag_good
         ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
-                (np.absolute(self.features['woa_normbias']) > threshold))
+                (normbias_abs > threshold))
         flag[ind] = flag_bad
 
         # Flag as 9 any masked input value
