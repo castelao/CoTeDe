@@ -76,7 +76,7 @@ def woa_normbias(data, v, cfg):
         # self.logger.warn("%s - WOA is not available at this site" %
         # self.name)
         flag = np.zeros(data[v].shape, dtype='i1')
-        return flag, {}
+        return flag, {'woa_normbias': np.zeros(data[v].shape)}
 
     woa_bias = data[v] - woa['mn']
     woa_normbias = woa_bias/woa['sd']
