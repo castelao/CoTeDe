@@ -5,12 +5,16 @@
         }
     },
 "TEMP": {
-    "spike": 6.0,
+    "spike": {
+    	"threshold": 6.0
+    	},
     "woa_normbias": {
         "sigma_threshold": 6,
         "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
         },
-    "gradient": 9.0,
+    "gradient": {
+    	"threshold": 9.0
+    	},
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
@@ -40,12 +44,16 @@
         }
     },
 "PSAL": {
-    "spike": 0.9,
+    "spike": {
+    	"threshold": 0.9
+    	},
     "woa_normbias": {
         "sigma_threshold": 6,
 	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
         },
-    "gradient": 4,
+    "gradient": {
+    	"threshold": 4
+    	},
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
