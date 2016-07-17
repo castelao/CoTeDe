@@ -42,10 +42,11 @@ def location_at_sea(data, cfg=None):
                 var='elevation',
                 lat=data.attributes['LATITUDE'],
                 lon=data.attributes['LONGITUDE'])
+
+        if etopo['elevation'] <= 0:
+            return 1
+        elif etopo['elevation'] > 0:
+            return flag_bad
+
     except:
         return 0
-
-    if etopo['elevation'] <= 0:
-        return 1
-    elif etopo['elevation'] > 0:
-        return flag_bad
