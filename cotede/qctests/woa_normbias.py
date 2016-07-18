@@ -178,7 +178,8 @@ class WOA_NormBias(object):
             self.features['woa_bias'][idx] = 0
             idx = np.absolute(self.features['woa_bias']) > standard_error
             self.features['woa_bias'][idx] -= \
-                    np.sign(self.features['woa_bias']) * standard_error
+                    np.sign(self.features['woa_bias'][idx]) * \
+                    standard_error[idx]
 
         self.features['woa_normbias'] = self.features['woa_bias'] / \
                 self.features['woa_std']
