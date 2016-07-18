@@ -7,15 +7,15 @@
       to avoid error like have t_mn in one and t_an in the other.
 
     An idea to improve the climatology test. Gridpoints estimated from few
-      measurements should be less trustable. Here I'm using a threshold, like
-      minimum of 3 samples to be considered. Deep ocean is in general quite
+      measurements should be less trustable. Here I'm using a threshold of at
+      least 3 samples to be considered. Deep ocean is in general quite
       stable, so few measurements should be sufficient. One possibility is to
       estimate the standard error, which depends on the ammount of samples and
-      estimated standar deviation. This would be the 'uncertainty on the
+      estimated standard deviation. This would be the 'uncertainty on the
       estimated average climatology. Any measurement in that range would be
-      considered exactly like the climatology. Above that difference, it would
-      be normalized by the std. So stable areas would be less tolerant to
-      variability, even with few samples.
+      considered statistically identical to the climatology. Above that
+      difference, it would be normalized by the standard deviation. Therefore,
+      stable areas would be less tolerant to variability, even with few samples.
 """
 
 from datetime import timedelta
