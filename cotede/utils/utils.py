@@ -64,7 +64,7 @@ def savePQCCollection_pandas(db, filename):
     except:
         shutil.rmtree(tmpdir)
         raise
-        print "Problems saving the data"
+        print("Problems saving the data")
         shutil.rmtree("%s.tar.bz2" % filename)
     finally:
         shutil.rmtree(tmpdir)

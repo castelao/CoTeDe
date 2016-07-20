@@ -161,7 +161,7 @@ class HumanQC(object):
             self.fig.canvas.draw()
 
         elif (event.key == 'q') :
-            print "Quiting."
+            print("Quiting.")
             pylab.close()
 
     def onpick(self, event):
@@ -189,6 +189,6 @@ class HumanQC(object):
 
     def handle_close(self, event):
         print('Closed Figure!')
-        print "Good list: %s" % np.nonzero(self.humanflag=='good')[0]
-        print "Bad list: %s" % np.nonzero(self.humanflag=='bad')[0]
-        print "Doubt list: %s" % np.nonzero(self.humanflag=='doubt')[0]
+        print("Good list: %s" % np.nonzero(self.humanflag=='good')[0])
+        print("Bad list: %s" % np.nonzero(self.humanflag=='bad')[0])
+        print("Doubt list: %s" % np.nonzero(self.humanflag=='doubt')[0])

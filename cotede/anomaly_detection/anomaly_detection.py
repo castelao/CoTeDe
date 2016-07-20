@@ -467,8 +467,8 @@ def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
             'p_optimal': result['p_optimal'],
             'tot_misfit': result['tot_misfit']})
 
-        print error_log[-2]
-        print error_log[-1]
+        print(error_log[-2])
+        print(error_log[-1])
 
     result['human_flag'] = data['human_flag']
     result['error_log'] = error_log
