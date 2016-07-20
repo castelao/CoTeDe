@@ -70,6 +70,17 @@ def savePQCCollection_pandas(db, filename):
         shutil.rmtree(tmpdir)
 
 
+def loadPQCCollection_pandas(filename):
+    import os
+    import tempfile
+    import tarfile
+    import shutil
+    tmpdir = tempfile.mkdtemp()
+    tar = tarfile.open(filename, "r:*")
+    tar.extractall(path=tmpdir)
+    shutil.rmtree(tmpdir)
+
+
 def load_cfg(cfg=None):
     """ Load the QC configurations
 
