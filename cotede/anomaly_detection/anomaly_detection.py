@@ -40,7 +40,7 @@ from cotede.misc import combined_flag
 from cotede.humanqc import HumanQC
 
 
-def fit_tests(features, ind=True, q=0.90, verbose=False):
+def fit_tests(features, q=0.90, verbose=False):
     """
 
         Input:
@@ -48,30 +48,34 @@ def fit_tests(features, ind=True, q=0.90, verbose=False):
               QC tests. For example, the gradient test values, not the
               flags, but the floats itself, like
               {'gradient': ma.array([.23, .12, .08]), 'spike': ...}
-          ind: The features values positions to be considered in the fit.
-              It's usefull to eliminate out of range data, or to
-              restrict to a subset of the data, like in the calibration
-              procedure.
+              It also works with a pandas.DataFrame()
+
           q: The lowest percentile to be considered. For example, .90
               means that only the top 10% data (i.e. percentiles higher
               than .90) are considered in the fitting.
     """
+    assert (q >= 0) & (q < 1), "q must be in [0, 1)"
+
     output = {}
-    for test in features:
-        samp = features[test][ind & np.isfinite(features[test])]
-        ind_top = samp > samp.quantile(q)
-        if ind_top.any():
-            param = exponweib.fit(samp[ind_top])
-            output[test] = {'param': param,
-                    'qlimit': samp.quantile(q)}
+    for f in features:
+        # Sample only valid values
+        samp = ma.compressed(features[f][np.isfinite(features[f])])
+        # Identify the percentile q
+        qlimit = np.percentile(samp, 1e2*q)
+        # Restricts to the top q values
+        samp = samp[samp > qlimit]
+        if samp.any():
+            param = exponweib.fit(samp)
+            output[f] = {'param': param,
+                    'qlimit': qlimit}
 
         if verbose is True:
             import pylab
-            x = np.linspace(samp[ind_top].min(), samp[ind_top].max(), 100)
+            x = np.linspace(samp.min(), samp.max(), 100)
             pdf_fitted = exponweib.pdf(x, *param[:-2], loc=param[-2], scale=param[-1])
             pylab.plot(x, pdf_fitted, 'b-')
-            pylab.hist(ma.array(samp[ind_top]), 100, normed=1, alpha=.3)
-            pylab.title(test)
+            pylab.hist(ma.array(samp), 100, normed=1, alpha=.3)
+            pylab.title(f)
             pylab.show()
 
     return output
@@ -95,10 +99,12 @@ def estimate_anomaly(features, params, method='produtorium'):
     """
     assert hasattr(params, 'keys')
     assert hasattr(features, 'keys')
-    for k in params.keys():
-        assert k in features.keys(), "features doesn't have: %s" % k
 
-    prob = ma.masked_all(len(features[features.keys()[0]]))
+    features_names = features.keys()
+    for k in params.keys():
+        assert k in features_names, "features doesn't have: %s" % k
+
+    prob = ma.masked_all(np.shape(features[features_names[0]]), dtype='f8')
 
     for t in params.keys():
         param = params[t]['param']
@@ -107,12 +113,8 @@ def estimate_anomaly(features, params, method='produtorium'):
         tmp = exponweib.sf(np.asanyarray(features[t]),
                 *param[:-2], loc=param[-2], scale=param[-1])
         # Arbitrary solution. No value can have a probability of 0.
-        tmp[tmp == 0] = 1e-15
+        tmp[tmp == 0] = 1e-25
         p = ma.log(tmp)
-
-        # Update prob if new value is valid and prob is masked
-        ind = prob.mask & valid
-        prob[ind] = p[ind]
 
         # If both are valid, operate as choosed method.
         ind = ~prob.mask & valid
@@ -121,7 +123,12 @@ def estimate_anomaly(features, params, method='produtorium'):
         elif method == 'min':
             prob[ind] = min(prob[ind], p[ind])
         else:
-            return
+            assert "Invalid method: %s" % method
+
+        # Update prob if new value is valid and prob is masked
+        # Operate twice the first feature if moved above.
+        ind = prob.mask & valid
+        prob[ind] = p[ind]
 
     return prob
 
@@ -185,14 +192,12 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
                 estimate_p_optimal()
 
     """
-    if hasattr(flags, 'keys'):
-        flags = combined_flag(flags)
-
-    assert not hasattr(flags, 'keys')
     assert hasattr(features, 'keys')
-    assert len(features[features.keys()[0]]) == len(flags)
 
-    indices = split_data_groups(flags)
+    binflags = i2b_flags(flags)
+    assert len(features[features.keys()[0]]) == len(binflags)
+
+    indices = split_data_groups(binflags)
     params = fit_tests(features[indices['fit']], q=q)
     prob = estimate_anomaly(features, params)
 
@@ -200,7 +205,6 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
         pylab.hist(prob)
         pylab.show()
 
-    binflags = flags2bin(flags)
     p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
             binflags[indices['test']])
 
@@ -239,7 +243,7 @@ def calibrate4flags(flags, features, q=0.90, verbose=False):
     return output
 
 
-def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
+def split_data_groups(flag):
     """ Splits randomly the indices into fit, test and error groups
 
         Return a dictionary with 3 indices set:
@@ -247,20 +251,14 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
             - ind_test with 20% of the good and 50% of the bad
             - ind_eval with 20% of the good and 50% of the bad
     """
-    assert flag.dtype != 'bool'
+    assert flag.dtype == 'bool'
 
-    ind = ma.masked_all(len(flag), dtype='bool')
-    for f in good_flags:
-        ind[flag == f] = True
-    for f in bad_flags:
-        ind[flag == f] = False
-
-    N = ind.size
+    N = flag.size
     ind_base = np.zeros(N) == 1
-    ind_valid = ~ma.getmaskarray(ind)
+    ind_valid = ~ma.getmaskarray(flag)
 
     # ==== Good data ==================
-    ind_good = np.nonzero((ind == True)  & ind_valid)[0]
+    ind_good = np.nonzero((flag == True)  & ind_valid)[0]
     N_good = ind_good.size
     perm = np.random.permutation(N_good)
     N_test = int(round(N_good*.2))
@@ -272,7 +270,7 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     ind_fit[ind_good[perm[2*N_test:]]] = True
 
     # ==== Bad data ===================
-    ind_bad = np.nonzero((ind == False) & ind_valid)[0]
+    ind_bad = np.nonzero((flag == False) & ind_valid)[0]
     N_bad = ind_bad.size
     perm = np.random.permutation(N_bad)
     N_test = int(round(N_bad*.5))
@@ -282,21 +280,27 @@ def split_data_groups(flag, good_flags=[1,2], bad_flags=[3,4]):
     return {'fit': ind_fit, 'test': ind_test, 'err': ind_err}
 
 
-def flags2bin(flags, good_flags=[1,2], bad_flags=[3,4]):
-    """
+def i2b_flags(flags, good_flags=[1,2], bad_flags=[3,4]):
+    """ Converts int flags (like IOC) into binary (T|F)
+
+        If given a dictionary of flags, it will evaluate each item
+          of the dictionary, and return:
+          - True if all available values are True
+          - False if any of the available values is False
+          - Masked is all values are masked
     """
 
-    if hasattr(flags, 'keys'):
-        # The different flags must have same ammount of data.
-        N = len(flags[flags.keys()[0]])
+    if (hasattr(flags, 'keys')) and (np.ndim(flags) > 1):
+        output= []
         for f in flags:
-            assert len(flags[f]) == N
+            output.append(i2b_flags(flags[f], good_flags, bad_flags))
 
-        flags = combined_flag(flags, reference_flags)
-    else:
-        N = len(flags)
+        return ma.array(output).all(axis=0)
 
-    output = ma.masked_all(N, dtype='bool')
+    flags = np.asanyarray(flags)
+    assert flags.dtype != 'bool', "Input flags should not be binary"
+    output = ma.masked_all(np.shape(flags), dtype='bool')
+
     for f in good_flags:
         output[flags == f] = True
     for f in bad_flags:
@@ -347,7 +351,7 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     #flags = db.flags[varname][ind].drop(['density_inversion'], axis=1)
     #flags = combined_flag(flags)
     #flags = combined_flag(db.flags[varname][ind])
-    #binflags = flags2bin(flags)
+    #binflags = i2b_flags(flags)
 
     result = calibrate4flags(db.flags[varname][ind],
             db.auxiliary[varname][ind], q=0.90, verbose=False)
@@ -362,10 +366,10 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     #params = fit_tests(features[indices['fit']], q=.9)
     #prob = estimate_anomaly(features, params)
 
-    #binflag = flags2binflag(db.flags[varname][ind], reference_flags)
+    #binflag = i2b_flagsflag(db.flags[varname][ind], reference_flags)
 
     #p_optimal, test_err = estimate_p_optimal(prob[indices['test']],
-    #        flags2bin(flags[indices['test']]))
+    #        i2b_flags(flags[indices['test']]))
 
     #false_negative = prob[indices['err'] & binflags] < p_optimal
     #false_positive = prob[indices['err'] & ~binflags] < p_optimal
@@ -387,80 +391,75 @@ def calibrate_anomaly_detection(datadir, varname, cfg=None):
     return result
 
 
-def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
+def human_calibrate_mistakes(data, varname, flagname, featuresnames, niter=5):
     """
     """
+    q = 0.90
+    assert varname in data
+
     import pandas as pd
+    #data['id'] = range(data.shape[0])
+    #data.set_index('id', drop=True, inplace=True)
+    # Guarantee that the indices are unique.
+    assert data.index.unique().shape[0] == data.shape[0]
 
-    db = ProfilesQCPandasCollection(datadir, cfg=cfg, saveauxiliary=True)
+    if 'human_flag' not in data:
+        data['human_flag'] = ma.masked_all(data[flagname].shape,
+                dtype='object')
+    data['flag_calibrating'] = data[flagname].copy()
+    data.loc[data.human_flag == 'good', 'flag_calibrating'] = 1
+    data.loc[data.human_flag == 'bad', 'flag_calibrating'] = 4
 
-    assert varname in db.keys()
-
-    data = db.data
-    features = db.auxiliary[varname]
-    flags = combined_flag(db.flags[varname])
-    binflags = flags2bin(np.array(flags))
-
-    result = calibrate4flags(db.flags[varname],
-            features, q=0.90, verbose=False)
-
-    #profileslist = aux['profileid'].iloc[mistake].iloc[
-    #        np.absolute(prob[mistake] - p_optimal).argsort()
-    #        ].unique()
+    result = calibrate4flags(data['flag_calibrating'], data[featuresnames], q=q)
 
     error_log = [{'err': result['n_err'],
         'err_ratio': result['err_ratio'],
         'p_optimal': result['p_optimal']}]
 
-    human_flag = ma.masked_all(len(flags), dtype='object')
-
     for i in range(niter):
+        for v in ['false_positive', 'false_negative', 'prob']:
+            data[v] = result[v]
         # Failures from AD to reproduce flags
-        mistake = (result['false_positive'] | result['false_negative'])
-        # Only the ones that weren't already flagged by a human
-        mistake = mistake & ma.getmaskarray(human_flag)
-        profileids = np.unique(data['profileid'].iloc[mistake])
+        data['mistake'] = data['human_flag'].isnull() & \
+                (data['false_positive'] | data['false_negative'])
+
+        # AD's severity error is given by how far away was the estimated
+        #   probability from the prob. threshold.
+        data['derr'] = (data.prob - result['p_optimal']).abs()
+        data.loc[data.mistake == False, 'derr'] = np.nan
+
+        grp = data[data.mistake].groupby('profileid')
+        profileids = grp['derr'].max().sort_values(ascending=False).index
+
         # In the future order by how badly AD mistaked
-        #profileids = data['profileid'].iloc[mistake].iloc[
-        #    np.absolute(prob[mistake] - p_optimal).argsort()
-        #    ].unique()
-        #derr = np.absolute(prob[np.nonzero(mistake)] - p_optimal)
-        #ind_toeval = np.nonzero(mistake & ~doubt)
-        #profileids = data['profileid'].iloc[ind_toeval].iloc[derr.argsort()
-        #    ].unique()
         if len(profileids) == 0:
             break
         # 5 random profiles with mistakes
-        for pid in np.random.permutation(profileids)[:5]:
+        # for pid in profileids[:10]:
+        for pid in np.random.permutation(profileids[:10])[:5]:
             print("Profile: %s" % pid)
-            ind_p = data.profileid == pid
+            profile = data[data.profileid == pid]
             h = HumanQC().eval(
-                    data[varname][ind_p],
-                    data['PRES'][ind_p],
-                    baseflag=binflags[np.array(ind_p)],
-                    fails=mistake[np.array(ind_p)],
-                    humanflag=human_flag[np.array(ind_p)])
-
-            #ind_humanqc[np.nonzero(ind_p)[0][h == 'good']] = True
-            #flags.loc[np.nonzero(ind_p)[0][h == 'good'], 'human'] = 1
-            #ind_humanqc[np.nonzero(ind_p)[0][h == 'bad']] = False
-            #flags.loc[np.nonzero(ind_p)[0][h == 'bad'], 'human'] = 4
-            #flags.loc[np.nonzero(ind_p)[0][h == 'doubt'], 'human'] = 6
-            #doubt[np.nonzero(ind_p)[0][h == 'doubt']] = True
-            #ind_humanqc.mask[np.nonzero(ind_p)[0][h == 'doubt']] = True
+                    profile[varname],
+                    profile['PRES'],
+                    baseflag=profile['flag_calibrating'],
+                    #fails=np.array(profile['mistake']),
+                    #fails=ma.array(profile.derr == profile.loc[
+                    #    profile.flag_global_range == 1, 'derr'].max()),
+                    fails=np.array(profile.derr == profile.derr.max()),
+                    humanflag=ma.masked_values(
+                        profile['human_flag'], None).astype('object'))
 
             # Update human_flag only at the new values
-            human_flag[np.nonzero(ind_p)[0][~h.mask]] = h[~h.mask]
+            profile.loc[:, 'human_flag'] = h
+            for i in profile.index[profile.human_flag.notnull()]:
+                data.loc[i, 'human_flag'] = profile.loc[i, 'human_flag']
 
-        flags[human_flag == 'good'] = 1
-        flags[human_flag == 'bad'] = 4
-        #flags[human_flag == 'doubt'] = 1
-        #doubt[human_flag == 'doubt'] = True
+        data.loc[data.human_flag == 'good', 'flag_calibrating'] = 1
+        data.loc[data.human_flag == 'bad', 'flag_calibrating'] = 4
+        data.loc[data.human_flag == 'doubt', 'flag_calibrating'] = 0
 
-        # Update binflags
-        binflags = flags2bin(flags)
-
-        result = calibrate4flags(flags, features, q=0.90, verbose=False)
+        result = calibrate4flags(data['flag_calibrating'], data[featuresnames], q=q)
 
 
         error_log.append({'err': result['n_err'],
@@ -468,14 +467,12 @@ def human_calibrate_mistakes(datadir, varname, cfg=None, niter=5):
             'p_optimal': result['p_optimal'],
             'tot_misfit': result['tot_misfit']})
 
-        print error_log[-2]
-        print error_log[-1]
+        print(error_log[-2])
+        print(error_log[-1])
 
-    result['human_flag'] = human_flag
-    result['ind_humanqc'] = binflags
+    result['human_flag'] = data['human_flag']
     result['error_log'] = error_log
-    #return {'ind_humanqc': binflags, 'error_log': error_log,
-    #        'result': result}
+
     return result
 
 

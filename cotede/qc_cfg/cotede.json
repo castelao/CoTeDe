@@ -8,8 +8,7 @@
 "TEMP": {
     "pstep": null,
     "woa_normbias": {
-        "sigma_threshold": 6,
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
+        "threshold": 10
         },
     "global_range": {
         "minval": -2.5,
@@ -57,12 +56,41 @@
         ["> 1100", "<= 3000", -1.5, 18],
         ["> 3000", "<= 5500", -1.5, 7],
         ["> 5500", "<= 12000", -1.5, 4]
-        ]
+        ],
+    "anomaly_detection": {
+        "threshold": -20.0,
+        "features": {
+            "gradient": {
+                "model": "exponweib",
+                "qlimit": 0.013500,
+                "param": [1.431385, 0.605537, 0.013500, 0.015567]
+                },
+            "spike": {
+                "model": "exponweib",
+                "qlimit": 0.000400,
+                "param": [1.078231, 0.512053, 0.000400, 0.002574]
+                },
+            "tukey53H_norm": {
+                "model": "exponweib",
+                "qlimit": 0.001614,
+                "param": [4.497367, 0.351177, 0.001612, 0.000236]
+                },
+            "rate_of_change": {
+                "model": "exponweib",
+                "qlimit": 0.041700,
+                "param": [2.668970, 0.469459, 0.041696, 0.017221]
+                },
+            "woa_normbias": {
+                "model": "exponweib",
+                "qlimit": 1.615422,
+                "param": [0.899871, 0.987157, 1.615428, 0.662358]
+                }
+            }
+        }
     },
 "PSAL": {
     "woa_normbias": {
-        "sigma_threshold": 6,
-        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
+        "threshold": 10
         },
     "global_range": {
         "minval": 0,

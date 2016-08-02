@@ -339,23 +339,15 @@ class ProfileQC(object):
                 print("Fail on density_inversion")
 
         if 'woa_normbias' in cfg:
-            #y = WOA_NormBias(self.input, v, cfg['woa_normbias'],
+            y = WOA_NormBias(self.input, v, cfg['woa_normbias'])
             #        self.attributes)
-            #y.test()
-
-            #if self.saveauxiliary:
-            #    for f in y.features:
-            #        self.auxiliary[v][f] = y.features[f]
-
-            #self.flags[v]['woa_normbias'] = y.flags['woa_normbias']
-
-            self.flags[v]['woa_normbias'], tmp = \
-                    woa_normbias(self.input, v, cfg['woa_normbias'])
+            y.test()
 
             if self.saveauxiliary:
-                for f in tmp:
-                    self.auxiliary[v][f] = tmp[f]
-            del(tmp)
+                for f in y.features:
+                    self.auxiliary[v][f] = y.features[f]
+
+            self.flags[v]['woa_normbias'] = y.flags['woa_normbias']
 
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])
@@ -395,6 +387,14 @@ class ProfileQC(object):
                     features['gradient'] = gradient(self.input[v])
                 elif f == 'tukey53H_norm':
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v])
+                elif f == 'rate_of_change':
+                    RoC = ma.masked_all_like(self.input[v])
+                    RoC[1:] = ma.absolute(ma.diff(self.input[v]))
+                    features['rate_of_change'] = RoC
+                elif (f == 'woa_normbias'):
+                    y = WOA_NormBias(self.input, v, {})
+                    features['woa_normbias'] = \
+                            np.abs(y.features['woa_normbias'])
                 else:
                     logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
@@ -416,10 +416,14 @@ class ProfileQC(object):
                 elif f == 'tukey53H_norm':
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v],
                             k=1.5)
-                elif (f == 'woa_normbias') & \
-                        ('woa_normbias' in cfg):
-                            features['woa_normbias'] = \
-                                    np.abs(self.auxiliary[v]['woa_normbias'])
+                elif f == 'rate_of_change':
+                    RoC = ma.masked_all_like(data[v])
+                    RoC[1:] = ma.absolute(ma.diff(data[v]))
+                    features['rate_of_change'] = RoC
+                elif (f == 'woa_normbias'):
+                    y = WOA_NormBias(self.input, v, {})
+                    features['woa_normbias'] = \
+                            np.abs(y.features['woa_normbias'])
                 else:
                     logging.error("Sorry, I can't evaluate fuzzylogic with: %s" % f)
 
