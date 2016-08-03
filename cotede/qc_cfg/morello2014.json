@@ -5,12 +5,15 @@
         }
     },
 "TEMP": {
-    "spike": 6.0,
-    "woa_normbias": {
-        "sigma_threshold": 6,
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
+    "spike": {
+        "threshold": 6.0
         },
-    "gradient": 4,
+    "woa_normbias": {
+        "threshold": 6
+        },
+    "gradient": {
+	    "threshold": 4.0
+	    },
     "morello2014": {
 	"output": {
             "low": null,
@@ -36,12 +39,15 @@
         }
     },
 "PSAL": {
-    "spike": 0.9,
+    "spike": {
+	    "threshold": 0.9
+            },
     "woa_normbias": {
-        "sigma_threshold": 6,
-	"vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
+        "threshold": 6
         },
-    "gradient": 4,
+    "gradient": {
+	    "threshold": 4.0
+            },
     "morello2014": {
 	"output": {
             "low": null,

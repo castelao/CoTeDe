@@ -18,7 +18,7 @@ with open('HISTORY.rst') as history_file:
 with open('requirements.txt') as requirements_file:
         requirements = requirements_file.read()
 
-version = '0.17.2'
+version = '0.18.0'
 
 setup(
     name='cotede',
@@ -33,6 +33,7 @@ setup(
         'cotede.qctests',
         'cotede.utils',
         'cotede.humanqc',
+        'cotede.anomaly_detection',
         'cotede.fuzzy',
     ],
     package_dir = {'cotede':
@@ -43,8 +44,8 @@ setup(
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
+        #'Programming Language :: Python :: 3',
+        #'Programming Language :: Python :: 3.5',
         'License :: OSI Approved :: BSD License',
         ],
     keywords='CTD TSG SeaBird ARGO Quality Control oceanography hydrography',

@@ -19,11 +19,12 @@ class HumanQC(object):
         pass
 
     def eval(self, x, z, baseflag=None, fails=None,
-            humanflag=None, refname=None):
+            humanflag=None, refname=None, clim=None):
         """
         """
         self.x = np.asanyarray(x)
         self.z = np.asanyarray(z)
+        self.clim = clim
 
         assert x.shape == z.shape, "Data and z coordinate must have same shape"
 
@@ -55,6 +56,17 @@ class HumanQC(object):
         """
         """
         self.fig, self.ax = plt.subplots()
+        try:
+            self.ax.fill_betweenx(self.clim['z'],
+                    self.clim['mn'] - 6*self.clim['std'],
+                    self.clim['mn'] + 6*self.clim['std'],
+                    color='r', alpha=0.2)
+            self.ax.fill_betweenx(self.clim['z'],
+                    self.clim['mn'] - 3*self.clim['std'],
+                    self.clim['mn'] + 3*self.clim['std'],
+                    color='g', alpha=0.2)
+        except:
+            print("Wasn't able to plot climatology")
         self.line, = self.ax.plot(self.x, self.z, 'b.',
                 picker=10) # 5 points tolerance
         # Plot the bad ones
@@ -149,7 +161,7 @@ class HumanQC(object):
             self.fig.canvas.draw()
 
         elif (event.key == 'q') :
-            print "Quiting."
+            print("Quiting.")
             pylab.close()
 
     def onpick(self, event):
@@ -177,6 +189,6 @@ class HumanQC(object):
 
     def handle_close(self, event):
         print('Closed Figure!')
-        print "Good list: %s" % np.nonzero(self.humanflag=='good')[0]
-        print "Bad list: %s" % np.nonzero(self.humanflag=='bad')[0]
-        print "Doubt list: %s" % np.nonzero(self.humanflag=='doubt')[0]
+        print("Good list: %s" % np.nonzero(self.humanflag=='good')[0])
+        print("Bad list: %s" % np.nonzero(self.humanflag=='bad')[0])
+        print("Doubt list: %s" % np.nonzero(self.humanflag=='doubt')[0])

@@ -16,4 +16,4 @@ def test():
     pqc = fProfileQC(datafile, cfg='anomaly_detection')
     # While anomaly detection is limited to spike, gradient and tukey tests it
     #   will always return 0 for the first and last.
-    assert sorted(np.unique(pqc.flags['TEMP']['anomaly_detection'])) == [0,1,4]
+    assert sorted(np.unique(pqc.flags['TEMP']['anomaly_detection'])) == [1,4]

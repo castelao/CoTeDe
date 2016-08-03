@@ -14,7 +14,7 @@ from cotede.utils import ProfilesQCPandasCollection
 from cotede.utils.supportdata import download_testdata
 from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
-from cotede.anomaly_detection import flags2bin
+from cotede.anomaly_detection import i2b_flags
 from cotede.anomaly_detection import estimate_p_optimal
 from cotede.anomaly_detection import calibrate_anomaly_detection
 from cotede.anomaly_detection import calibrate4flags
@@ -24,11 +24,11 @@ datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
 INPUTFILES = [download_testdata(f) for f in datalist]
 
 
-def test_flags2bin(n=100):
+def test_i2b_flags(n=100):
     flag = ma.concatenate([np.random.randint(0,5,n),
         ma.masked_all(2, dtype='int8')])
 
-    binflags = flags2bin(flag)
+    binflags = i2b_flags(flag)
 
     assert type(binflags) == ma.MaskedArray
     assert binflags.dtype == 'bool'
@@ -36,10 +36,16 @@ def test_flags2bin(n=100):
     assert binflags.mask[flag.mask].all(), \
             "All masked flags records should be also masked at binflags"
 
+    # FIXME: Improve this. Include cases with dict as input.
+    #   Check the output in case of dict input and differente combinations
+    #     of True/False, masked or not.
+    assert (i2b_flags([1, 2, 3, 4]) ==
+            ma.array([True, True, False, False])).all()
+
 
 def test_split_data_groups(n=100):
-    flag = ma.concatenate([np.random.randint(0,5,n),
-        ma.masked_all(2, dtype='int8')])
+    flag = ma.concatenate([np.random.random(n) > .5,
+        ma.masked_all(2, dtype='bool')])
 
     indices = split_data_groups(flag)
 
@@ -55,9 +61,9 @@ def test_split_data_groups(n=100):
         assert ~flag[indices[k]].mask.any()
 
     # Fit group is all True, but err & test must have both
-    assert sorted(np.unique(flag[indices['fit']])) == [1,2]
+    assert sorted(np.unique(flag[indices['fit']])) == [True]
     for k in ['err', 'test']:
-        assert sorted(np.unique(flag[indices[k]])) == [1,2,3,4]
+        assert sorted(np.unique(flag[indices[k]])) == [False, True]
 
 
 def test_rank_files():

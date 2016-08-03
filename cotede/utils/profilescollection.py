@@ -30,7 +30,7 @@ def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
             p = cotede.qc.fProfileQC(f, cfg, saveauxiliary, verbose=verbose)
             profiles.append(p)
         except CNVError as e:
-            print e.msg
+            print(e.msg)
 #            logger.warn(e.msg)
 
     return profiles
@@ -63,7 +63,7 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
                 qout.put([p, attrs], block=True)
 #                logger.debug("Sent to queue")
             except CNVError as e:
-                print e.msg
+                print(e.msg)
 #                logger.warn(e.msg)
 
         pool = []
@@ -87,7 +87,7 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
             if p.is_alive():
                 print("timeout: %s" % p)
             p.terminate()
-        print "Done evaluating."
+        print("Done evaluating.")
 
     worker = mp.Process(target=run_qc,
             args=(inputfiles, cfg, saveauxiliary, verbose))

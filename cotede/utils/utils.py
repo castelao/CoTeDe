@@ -64,10 +64,21 @@ def savePQCCollection_pandas(db, filename):
     except:
         shutil.rmtree(tmpdir)
         raise
-        print "Problems saving the data"
+        print("Problems saving the data")
         shutil.rmtree("%s.tar.bz2" % filename)
     finally:
         shutil.rmtree(tmpdir)
+
+
+def loadPQCCollection_pandas(filename):
+    import os
+    import tempfile
+    import tarfile
+    import shutil
+    tmpdir = tempfile.mkdtemp()
+    tar = tarfile.open(filename, "r:*")
+    tar.extractall(path=tmpdir)
+    shutil.rmtree(tmpdir)
 
 
 def load_cfg(cfg=None):

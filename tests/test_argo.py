@@ -14,10 +14,6 @@ def test_argo():
     profile = argo.profile_from_nc(datafile)[0]
     pqc = ProfileQC(profile, cfg='argo')
 
-    print pqc.keys()
-    print dir(pqc.input)
-    print pqc.flags
-
     assert hasattr(pqc, 'flags')
     for v in ['TEMP', 'PSAL']:
         assert v in pqc.keys()

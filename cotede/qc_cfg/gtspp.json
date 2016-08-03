@@ -17,8 +17,7 @@
         "threshold": 2.0
         },
     "woa_normbias": {
-        "sigma_threshold": 3,
-        "vars": {"woa_an": "t_mn", "woa_sd": "t_sd", "woa_n": "t_dd"}
+        "threshold": 3
         },
     "profile_envelop": [
         ["> 0", "<= 25", -2, 37],
@@ -46,8 +45,7 @@
         "threshold": 0.3
         },
     "woa_normbias": {
-        "sigma_threshold": 3,
-        "vars": {"woa_an": "s_mn", "woa_sd": "s_sd", "woa_n": "s_dd"}
+        "threshold": 3
         },
     "profile_envelop": [
         ["> 0", "<= 25", 0, 41],

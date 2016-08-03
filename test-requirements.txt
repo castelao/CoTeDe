@@ -6,4 +6,3 @@ netCDF4
 pyARGO
 gsw
 matplotlib
-oceansdb
