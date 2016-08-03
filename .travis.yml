@@ -16,10 +16,10 @@ before_install:
 install:
   - conda install --yes python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pandas matplotlib pytest
   - pip install -r test-requirements.txt
-  - python -c "import oceansdb; oceansdb.utils.dbsource('WOA13', 'TEMP')"
-  - python -c "import oceansdb; oceansdb.utils.dbsource('ETOPO', 'DEPTH')"
   - pip install codecov pytest-cov
   - python setup.py install
+  - python -c "import oceansdb; oceansdb.utils.dbsource('WOA13', 'TEMP')"
+  - python -c "import oceansdb; oceansdb.utils.dbsource('ETOPO', 'DEPTH')"
 
 script:
   - py.test --cov --cov-report=term-missing -vv
