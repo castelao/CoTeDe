@@ -1,0 +1,7 @@
+name: cotede
+
+dependencies:
+- python=2.7
+- numpy=1.11.1
+- netcdf4=1.2.4
+- scipy=0.18.0
