@@ -18,7 +18,7 @@ def anomaly_detection(features, cfg):
 
     prob = estimate_anomaly(features, params = cfg['features'])
     #flag = np.zeros(self.input[v].shape, dtype='i1')
-    flag = np.zeros(features[features.keys()[0]].shape, dtype='i1')
+    flag = np.zeros(prob.shape, dtype='i1')
 
     flag[np.nonzero(prob >= cfg['threshold'])] = 1
     flag[np.nonzero(prob < cfg['threshold'])] = 4

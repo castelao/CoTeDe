@@ -100,7 +100,7 @@ def estimate_anomaly(features, params, method='produtorium'):
     assert hasattr(params, 'keys')
     assert hasattr(features, 'keys')
 
-    features_names = features.keys()
+    features_names = list(features.keys())
     for k in params.keys():
         assert k in features_names, "features doesn't have: %s" % k
 

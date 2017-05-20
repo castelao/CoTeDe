@@ -22,7 +22,7 @@ def combined_flag(flags, criteria=None):
     assert hasattr(flags, 'keys')
 
     if criteria is None:
-        criteria = flags.keys()
+        criteria = list(flags.keys())
 
     output = np.asanyarray(flags[criteria[0]])
     for c in criteria[1:]:

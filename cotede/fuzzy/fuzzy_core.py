@@ -24,7 +24,7 @@ def fuzzyfy(features, cfg):
                masked?
     """
 
-    features_list = cfg['features'].keys()
+    features_list = list(cfg['features'].keys())
 
     N = features[features_list[0]].size
 
@@ -130,7 +130,7 @@ def fuzzy_uncertainty(features, cfg):
     #   I think skfuzzy does not accept masked arrays?!?! That would be the
     #   limiting factor.
 
-    N = rules[rules.keys()[0]].size
+    N = rules[list(rules.keys())[0]].size
     # This would be the classic fuzzy approach.
     uncertainty = ma.masked_all(N)
     for i in range(N):
