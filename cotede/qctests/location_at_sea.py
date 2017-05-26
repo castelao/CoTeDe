@@ -36,16 +36,16 @@ def location_at_sea(data, cfg=None):
                 print("Missing geolocation (lat/lon)")
                 return 0
 
-    ETOPO = oceansdb.ETOPO()
     try:
-        etopo = ETOPO.extract(
-                var='elevation',
+        ETOPO = oceansdb.ETOPO()
+        etopo = ETOPO['topography'].extract(
+                var='height',
                 lat=data.attributes['LATITUDE'],
                 lon=data.attributes['LONGITUDE'])
 
-        if etopo['elevation'] <= 0:
+        if etopo['height'] <= 0:
             return 1
-        elif etopo['elevation'] > 0:
+        elif etopo['height'] > 0:
             return flag_bad
 
     except:
