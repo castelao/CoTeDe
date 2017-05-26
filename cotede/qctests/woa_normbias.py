@@ -64,7 +64,7 @@ def woa_normbias(data, v, cfg):
             vtype = v
 
         print("Sorry, I'm temporary not ready to handle tracks.")
-        #woa = db[vtype].get_track(var=['mn', 'sd'],
+        #woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
         #        doy=d,
         #        depth=[0],
         #        lat=data['LATITUDE'],
@@ -80,7 +80,8 @@ def woa_normbias(data, v, cfg):
                     vtype = v
 
                 woa = db[vtype].extract(
-                        var=['mn', 'sd', 'dd'],
+                        var=['mean', 'standard_deviation',
+                            'number_of_observations'],
                         doy=int(data.attributes['datetime'].strftime('%j')),
                         depth=data['PRES'],
                         lat=data.attributes['LATITUDE'],
@@ -90,13 +91,13 @@ def woa_normbias(data, v, cfg):
     features = {}
 
     try:
-        woa_bias = data[v] - woa['mn']
-        woa_normbias = woa_bias/woa['sd']
+        woa_bias = data[v] - woa['mean']
+        woa_normbias = woa_bias/woa['standard_deviation']
 
-        ind = np.nonzero((woa['dd'] >= min_samples) &
+        ind = np.nonzero((woa['number_of_observations'] >= min_samples) &
                 (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
         flag[ind] = 1   # cfg['flag_good']
-        ind = np.nonzero((woa['dd'] >= min_samples) &
+        ind = np.nonzero((woa['number_of_observations'] >= min_samples) &
                 (np.absolute(woa_normbias) > cfg['sigma_threshold']))
         flag[ind] = 3   # cfg['flag_bad']
 
@@ -104,8 +105,9 @@ def woa_normbias(data, v, cfg):
         flag[ma.getmaskarray(data[v])] = 9
 
         features = {'woa_bias': woa_bias, 'woa_normbias': woa_normbias,
-                'woa_std': woa['sd'], 'woa_nsamples': woa['dd'],
-                'woa_mean': woa['mn']}
+                'woa_std': woa['standard_deviation'],
+                'woa_nsamples': woa['number_of_observations'],
+                'woa_mean': woa['mean']}
 
     finally:
         # self.logger.warn("%s - WOA is not available at this site" %
@@ -144,25 +146,29 @@ class WOA_NormBias(object):
         if ('PRES' in self.data.keys()):
             pres = self.data['PRES']
 
-        doy = int(self.data.attributes['datetime'].strftime('%j'))
+        try:
+            doy = int(self.data.attributes['date'].strftime('%j'))
+        except:
+            doy = int(self.data.attributes['datetime'].strftime('%j'))
 
         db = WOA()
-        if self.varname not in db.keys():
+        if self.varname[-1] == '2':
             vtype = self.varname[:-1]
         else:
             vtype = self.varname
 
         woa = db[vtype].extract(
-                var=['mn', 'sd', 'dd'],
+                var=['mean', 'standard_deviation',
+                    'number_of_observations'],
                 doy=doy,
                 depth=pres,
                 lat=lat,
                 lon=lon)
 
         self.features = {
-                'woa_mean': woa['mn'],
-                'woa_std': woa['sd'],
-                'woa_nsamples': woa['dd']}
+                'woa_mean': woa['mean'],
+                'woa_std': woa['standard_deviation'],
+                'woa_nsamples': woa['number_of_observations']}
 
         self.features['woa_bias'] = self.data[self.varname] - \
                 self.features['woa_mean']
