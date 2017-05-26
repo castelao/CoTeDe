@@ -57,4 +57,7 @@ setup(
     zip_safe=False,
     platforms=['any'],
     scripts=["bin/ctdqc"],
+    extras_require = {
+        'GSW':  ["gsw>=3.0.6"]
+    }
 )
