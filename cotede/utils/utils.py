@@ -6,7 +6,8 @@ import json
 
 
 def cotede_dir():
-    return expanduser(os.getenv('COTEDE_DIR', '~/.cotederc'))
+    return expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
+
 
 def make_file_list(inputdir, inputpattern):
     """ Search inputdir recursively for inputpattern
