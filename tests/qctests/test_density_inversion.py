@@ -10,6 +10,12 @@ from cotede.qctests import density_inversion
 
 
 def test():
+    try:
+        import gsw
+    except:
+        print('GSW package not available. Can\'t run density_inversion test.')
+        return
+
     dummy_data = {
         'PRES': ma.masked_array([0.0, 100, 5000]),
         'TEMP': ma.masked_array([25.18, 19.73, 2.13]),
