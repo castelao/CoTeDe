@@ -62,7 +62,7 @@ def notready_test_data():
 def test_badlocation():
     data = DummyData()
 
-    coords = [[91, -30, 0], [-91, -30, 0], [10, -361, 0], [10, 1000, 0]]
+    coords = [[91, -30, 3], [-91, -30, 3], [10, -361, 3], [10, 1000, 3]]
     for lat, lon, flag in coords:
         data.attributes['LATITUDE'] = lat
         data.attributes['LONGITUDE'] = lon
