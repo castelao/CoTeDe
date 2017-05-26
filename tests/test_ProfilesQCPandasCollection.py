@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import os.path
 
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 #from cotede.utils import ProfilesQCCollection
 from cotede.utils import ProfilesQCPandasCollection
 

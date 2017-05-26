@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 
 from cotede.utils.profilescollection import process_profiles_serial
 from cotede.utils.profilescollection import process_profiles

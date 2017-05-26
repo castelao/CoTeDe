@@ -5,7 +5,7 @@ from datetime import datetime
 from argo import argo
 from cotede.qc import ProfileQC
 #import cotede.qc
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 
 
 def test_argo():

@@ -1,6 +1,6 @@
 
 import numpy as np
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 
 def func(datafile):
     from seabird import cnv

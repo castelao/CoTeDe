@@ -6,7 +6,7 @@ import numpy as np
 
 from seabird import cnv
 import cotede.qc
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 
 
 def test_cfg_json():

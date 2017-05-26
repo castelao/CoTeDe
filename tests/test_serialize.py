@@ -9,7 +9,7 @@ import pickle
 
 from seabird import cnv
 
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 from cotede.qc import ProfileQC, fProfileQC
 
 
