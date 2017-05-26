@@ -3,6 +3,7 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 
+import sys
 try:
     from setuptools import setup
 except ImportError:
@@ -16,7 +17,10 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 with open('requirements.txt') as requirements_file:
-        requirements = requirements_file.read()
+    requirements = requirements_file.read()
+    if sys.version_info[0] == 2:
+        requirements.replace('gsw>=3.0.6', 'gsw==3.0.6')
+
 
 version = '0.18.0'
 
