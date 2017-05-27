@@ -32,7 +32,9 @@ def location_at_sea(data, cfg=None):
                 data.attributes['LONGITUDE'] = data.attributes['longitude']
 
     if ('LATITUDE' not in data.attributes) or \
-            ('LONGITUDE' not in data.attributes):
+            (data.attributes['LATITUDE'] == None) or \
+            ('LONGITUDE' not in data.attributes) or \
+            (data.attributes['LONGITUDE'] == None):
                 print("Missing geolocation (lat/lon)")
                 return 0
 
