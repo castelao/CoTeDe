@@ -4,5 +4,4 @@ pytest-xdist
 pandas
 netCDF4
 pyARGO
-gsw
 matplotlib
