@@ -25,8 +25,8 @@ install:
   - pip install -r test-requirements.txt
   - pip install codecov pytest-cov
   - python setup.py install
-  - python -c "import oceansdb; oceansdb.utils.dbsource('WOA13', 'TEMP')"
-  - python -c "import oceansdb; oceansdb.utils.dbsource('ETOPO', 'DEPTH')"
+  - python -c "import oceansdb; oceansdb.utils.dbsource('WOA13', 'sea_water_temperature')"
+  - python -c "import oceansdb; oceansdb.utils.dbsource('ETOPO', 'topography')"
 
 script:
   - py.test --cov --cov-report=term-missing -vv
