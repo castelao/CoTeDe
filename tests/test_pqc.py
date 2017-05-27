@@ -30,7 +30,7 @@ def test_answer():
 
     assert hasattr(pqc, 'flags')
     assert type(pqc.flags) is dict
-    vs = pqc.flags.keys()
+    vs = list(pqc.flags.keys())
     vs.remove('common')
     for v in vs:
         for f in pqc.flags[v]:
