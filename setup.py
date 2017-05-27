@@ -58,6 +58,7 @@ setup(
     platforms=['any'],
     scripts=["bin/ctdqc"],
     extras_require = {
-        'GSW':  ["gsw>=3.0.6"]
+        'GSW': ["gsw>=3.0.6"],
+        'manualqc': ["matplotlib"]
     }
 )

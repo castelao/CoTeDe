@@ -6,8 +6,11 @@
 import numpy as np
 from numpy import ma
 
-import pylab
-import matplotlib.pyplot as plt
+try:
+    import pylab
+    import matplotlib.pyplot as plt
+except:
+    print('matplotlib is not available')
 
 
 class HumanQC(object):
