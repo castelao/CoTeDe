@@ -92,7 +92,7 @@ def woa_normbias(data, v, cfg):
 
     try:
         woa_bias = data[v] - woa['mean']
-        woa_normbias = woa_bias/woa['standard_deviation']
+        woa_normbias = woa_bias / woa['standard_deviation']
 
         ind = np.nonzero((woa['number_of_observations'] >= min_samples) &
                 (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
