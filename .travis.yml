@@ -20,7 +20,7 @@ before_install:
   - conda info -a
 
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy libnetcdf netcdf4 pandas matplotlib pytest
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy hdf4 libnetcdf netcdf4 pandas matplotlib pytest
   - source activate test-environment
   - pip install -r test-requirements.txt
   - pip install codecov pytest-cov
