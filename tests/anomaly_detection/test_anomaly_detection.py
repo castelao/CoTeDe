@@ -11,7 +11,7 @@ import numpy as np
 from numpy import ma
 
 from cotede.utils import ProfilesQCPandasCollection
-from cotede.utils.supportdata import download_testdata
+from cotede.utils import download_testdata
 from cotede.anomaly_detection import split_data_groups
 from cotede.anomaly_detection import rank_files
 from cotede.anomaly_detection import i2b_flags
