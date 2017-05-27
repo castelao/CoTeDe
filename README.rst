@@ -12,6 +12,9 @@ CoTe De l'eau
 .. image:: https://img.shields.io/travis/castelao/CoTeDe.svg
         :target: https://travis-ci.org/castelao/CoTeDe
 
+.. image:: https://codecov.io/gh/castelao/CoTeDe/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/castelao/CoTeDe
+
 .. image:: https://img.shields.io/pypi/v/cotede.svg
         :target: https://pypi.python.org/pypi/cotede
 
