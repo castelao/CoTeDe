@@ -55,7 +55,6 @@ setup(
     keywords='CTD TSG SeaBird ARGO Quality Control oceanography hydrography',
     include_package_data=True,
     zip_safe=False,
-    platforms=['any'],
     scripts=["bin/ctdqc"],
     extras_require = {
         'GSW': ["gsw>=3.0.6"],
