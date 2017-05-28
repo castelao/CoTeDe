@@ -85,6 +85,10 @@ class ProfileQC(object):
     def data(self):
         return self.input.data
 
+    @property
+    def features(self):
+        return self.auxiliary
+
     def keys(self):
         """ Return the available keys in self.data
         """
