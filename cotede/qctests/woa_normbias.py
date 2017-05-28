@@ -41,6 +41,12 @@ def woa_normbias(data, v, cfg):
     min_samples = 3
     woa = None
 
+    db = WOA()
+    if v not in db.keys():
+        vtype = v[:-1]
+    else:
+        vtype = v
+
     if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
         if 'datetime' in data.keys():
             d = data['datetime']
@@ -57,11 +63,6 @@ def woa_normbias(data, v, cfg):
         #        data['LONGITUDE'],
         #        cfg['file'],
         #        varnames=cfg['vars'])
-        db = WOA()
-        if v not in db.keys():
-            vtype = v[:-1]
-        else:
-            vtype = v
 
         print("Sorry, I'm temporary not ready to handle tracks.")
         #woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
@@ -73,11 +74,6 @@ def woa_normbias(data, v, cfg):
     elif ('LATITUDE' in data.attributes.keys()) and \
             ('LONGITUDE' in data.attributes.keys()) and \
             ('PRES' in data.keys()):
-                db = WOA()
-                if v not in db.keys():
-                    vtype = v[:-1]
-                else:
-                    vtype = v
 
                 woa = db[vtype].extract(
                         var=['mean', 'standard_deviation',
