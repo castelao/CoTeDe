@@ -1,5 +1,5 @@
 numpy>=1.11.1
-seabird>=0.6.3
+seabird>=0.10.2
 scipy>=0.18.0
 oceansdb>=0.7.3
 supportdata>=0.0.7
