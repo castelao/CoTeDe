@@ -75,7 +75,7 @@ class ProfileQC(object):
 
         for v in self.input.keys():
             for c in self.cfg.keys():
-                if re.match("%s\d?$" % c, v):
+                if re.match("(%s)2?$" % c, v):
                     logging.debug(" %s - evaluating: %s, as type: %s" %
                             (self.name, v, c))
                     self.evaluate(v, self.cfg[c])
