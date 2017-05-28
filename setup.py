@@ -22,11 +22,9 @@ with open('requirements.txt') as requirements_file:
         requirements.replace('gsw>=3.0.6', 'gsw==3.0.6')
 
 
-version = '0.18.0'
-
 setup(
     name='cotede',
-    version=version,
+    version='0.18.0',
     description='Quality Control of Temperature and Salinity profiles',
     long_description=readme + '\n\n' + history,
     author='Guilherme Castelão',
