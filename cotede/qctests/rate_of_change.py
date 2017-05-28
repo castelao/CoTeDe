@@ -16,11 +16,11 @@ from numpy import ma
 def rate_of_change(data, v, cfg):
 
     RoC = ma.masked_all_like(data[v])
-    RoC[1:] = ma.absolute(ma.diff(data[v]))
+    RoC[1:] = ma.diff(data[v])
 
     flag = np.zeros(data[v].shape, dtype='i1')
-    flag[np.nonzero(RoC <= cfg)] = 1
-    flag[np.nonzero(RoC > cfg)] = 4
+    flag[np.nonzero(ma.absolute(RoC) <= cfg)] = 1
+    flag[np.nonzero(ma.absolute(RoC) > cfg)] = 4
     flag[ma.getmaskarray(data[v])] = 9
 
     return flag, RoC
