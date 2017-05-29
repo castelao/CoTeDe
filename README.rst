@@ -2,8 +2,8 @@
 CoTe De l'eau
 =============
 
-.. image:: https://zenodo.org/badge/doi/10.5281/zenodo.18589.svg
-   :target: http://dx.doi.org/10.5281/zenodo.18589
+.. image:: https://zenodo.org/badge/10284681.svg
+   :target: https://zenodo.org/badge/latestdoi/10284681
 
 .. image:: https://readthedocs.org/projects/cotede/badge/?version=latest
    :target: https://readthedocs.org/projects/cotede/?badge=latest
