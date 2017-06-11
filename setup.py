@@ -24,7 +24,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='cotede',
-    version='0.19.1',
+    version='0.19.2',
     description='Quality Control of Temperature and Salinity profiles',
     long_description=readme + '\n\n' + history,
     author='Guilherme Castelão',
