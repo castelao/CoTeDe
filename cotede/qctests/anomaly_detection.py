@@ -23,4 +23,4 @@ def anomaly_detection(features, cfg):
     flag[np.nonzero(prob >= cfg['threshold'])] = 1
     flag[np.nonzero(prob < cfg['threshold'])] = 4
 
-    return flag
+    return prob, flag

@@ -402,8 +402,11 @@ class ProfileQC(object):
                 else:
                     logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
-            self.flags[v]['anomaly_detection'] = \
+            prob, self.flags[v]['anomaly_detection'] = \
                     anomaly_detection(features, cfg['anomaly_detection'])
+
+            if self.saveauxiliary:
+                self.auxiliary[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
             self.flags[v]['morello2014'] = morello2014(
