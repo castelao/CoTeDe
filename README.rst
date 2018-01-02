@@ -19,7 +19,7 @@ CoTe De l'eau
         :target: https://pypi.python.org/pypi/cotede
 
 
-`CoTeDe<http://cotede.castelao.net>`_ is an Open Source Python package to quality control (QC) hydrographic data such as temperature and salinity. 
+`CoTeDe <http://cotede.castelao.net>`_ is an Open Source Python package to quality control (QC) hydrographic data such as temperature and salinity.
 It was designed to attend individual scientists as well as operational systems with large databases, reading the inputs from different formats and types of sensors, and processing those in parallel for high performance. 
 To achieve that, CoTeDe is highly customizable, allowing the user to compose the desired set of tests, as well as the specific parameters of each test. 
 Otherwise there are preset QC procedures conforming with GTSPP, EuroGOOS and ARGO recommendations. 
