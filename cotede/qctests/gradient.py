@@ -19,9 +19,8 @@ def gradient(x):
         d/dx + d/dy + d/dz,
         but as defined by GTSPP, EuroGOOS and others.
     """
-    y = ma.masked_all_like(x)
+    y = ma.fix_invalid(np.ones_like(x) * np.nan)
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:])/2.0)
-
     return y
 
 

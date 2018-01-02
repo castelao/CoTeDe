@@ -27,7 +27,8 @@ def tukey53H(x):
     u3 = ma.masked_all(N)
     u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
 
-    Delta = ma.absolute(x-u3)
+    Delta = ma.fix_invalid(np.ones_like(x) * np.nan)
+    Delta[1:-1] = ma.absolute(x[1:-1]-u3[1:-1])
 
     return Delta
 

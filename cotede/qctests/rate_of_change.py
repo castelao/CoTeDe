@@ -15,7 +15,7 @@ from numpy import ma
 
 def rate_of_change(data, v, cfg):
 
-    RoC = ma.masked_all_like(data[v])
+    RoC = ma.fix_invalid(np.ones_like(data[v]) * np.nan)
     RoC[1:] = ma.diff(data[v])
 
     flag = np.zeros(data[v].shape, dtype='i1')

@@ -23,5 +23,5 @@ def descentPrate(data):
             "t and p have different sizes"
     dt = ma.diff(data['timeS'])
     dp = ma.diff(data['PRES'])
-    y = ma.append(ma.masked_all(1, dtype='i'), dp/dt)
+    y = ma.append(ma.fix_invalid(np.nan), dp/dt)
     return y
