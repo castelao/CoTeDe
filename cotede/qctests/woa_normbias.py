@@ -25,8 +25,6 @@ from numpy import ma
 
 from oceansdb import WOA
 
-FLAG_GOOD = 1
-FLAG_BAD = 3
 
 def woa_normbias(data, v, cfg):
     """
@@ -47,7 +45,10 @@ def woa_normbias(data, v, cfg):
     else:
         vtype = v
 
-    if ('LATITUDE' in data.keys()) and ('LONGITUDE' in data.keys()):
+    # Temporary solution while I'm not ready to handle tracks.
+    if ('LATITUDE' in data) and ('LONGITUDE' in data) \
+            and ('LATITUDE' not in data.attributes) \
+            and ('LONGITUDE' not in data.attributes):
         if 'datetime' in data.keys():
             d = data['datetime']
         elif ('datetime' in data.attributes):
@@ -123,6 +124,7 @@ class WOA_NormBias(object):
             self.cfg['use_standard_error'] = False
 
         self.set_features()
+        self.test()
 
     def keys(self):
         return self.features.keys() + \
@@ -130,17 +132,28 @@ class WOA_NormBias(object):
 
     def set_features(self):
 
+        if ('LATITUDE' in self.data.attributes.keys()) and \
+                ('LONGITUDE' in self.data.attributes.keys()):
+                    kwargs = {
+                            'lat': self.data.attributes['LATITUDE'],
+                            'lon': self.data.attributes['LONGITUDE']}
+
         if ('LATITUDE' in self.data.keys()) and \
                 ('LONGITUDE' in self.data.keys()):
-                    assert False, "I'm not ready for that"
+                    dLmax = max(
+                            data['LATITUDE'].max()-data['LATITUDE'].min(),
+                            data['LONGITUDE'].max()-data['LONGITUDE'].min())
+                    # Only use each measurement coordinate if it is spread.
+                    if dLmax >= 0.01:
+                        kwargs = {
+                            'lat': self.data['LATITUDE'],
+                            'lon': self.data['LONGITUDE'],
+                            'alongtrack_axis': ['lat', 'lon']}
 
-        elif ('LATITUDE' in self.data.attributes.keys()) and \
-                ('LONGITUDE' in self.data.attributes.keys()):
-                    lat = self.data.attributes['LATITUDE']
-                    lon = self.data.attributes['LONGITUDE']
-
-        if ('PRES' in self.data.keys()):
-            pres = self.data['PRES']
+        if ('DEPTH' in self.data.keys()):
+            depth = self.data['DEPTH']
+        elif ('PRES' in self.data.keys()):
+            depth = self.data['PRES']
 
         try:
             doy = int(self.data.attributes['date'].strftime('%j'))
@@ -153,18 +166,25 @@ class WOA_NormBias(object):
         else:
             vtype = self.varname
 
+        idx = ~ma.getmaskarray(depth) & np.array(depth > 0)
         woa = db[vtype].extract(
-                var=['mean', 'standard_deviation',
+                var=['mean', 'standard_deviation', 'standard_error',
                     'number_of_observations'],
                 doy=doy,
-                depth=pres,
-                lat=lat,
-                lon=lon)
+                depth=depth[idx],
+                **kwargs)
+
+        if idx.all() is not True:
+            for v in woa.keys():
+                tmp = ma.masked_all(depth.shape, dtype=woa[v].dtype)
+                tmp[idx] = woa[v]
+                woa[v] = tmp
 
         self.features = {
                 'woa_mean': woa['mean'],
                 'woa_std': woa['standard_deviation'],
-                'woa_nsamples': woa['number_of_observations']}
+                'woa_nsamples': woa['number_of_observations'],
+                'woa_se': woa['standard_error']}
 
         self.features['woa_bias'] = self.data[self.varname] - \
                 self.features['woa_mean']
@@ -199,11 +219,11 @@ class WOA_NormBias(object):
         try:
             flag_good = self.cfg['flag_good']
         except:
-            flag_good = FLAG_GOOD
+            flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
         except:
-            flag_bad = FLAG_BAD
+            flag_bad = 3
 
         threshold = self.cfg['threshold']
         assert (np.size(threshold) == 1) and \
