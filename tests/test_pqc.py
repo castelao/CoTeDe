@@ -50,5 +50,5 @@ def test_all_valid_no_9():
     """
     datafile = download_testdata("dPIRX010.cnv")
     pqc = cotede.qc.fProfileQC(datafile)
-    assert pqc['TEMP'].mask == False
+    assert pqc['TEMP'].mask.all() == False
     assert ~(combined_flag(pqc.flags['TEMP']) == 9).any()
