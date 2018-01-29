@@ -8,11 +8,11 @@ from .density_inversion import density_inversion
 from .profile_envelop import profile_envelop
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed
-from .rate_of_change import rate_of_change
 from .cum_rate_of_change import cum_rate_of_change
 from .morello2014 import morello2014
 from .fuzzylogic import fuzzylogic
 
+from .rate_of_change import RateOfChange, rate_of_change
 from .gradient import Gradient, gradient
 from .spike import Spike, spike
 from .bin_spike import Bin_Spike, bin_spike

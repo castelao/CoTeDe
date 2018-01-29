@@ -362,10 +362,13 @@ class ProfileQC(object):
         #                    np.diff(self.input['PRES'][ind])])
 
         if 'rate_of_change' in cfg:
-            self.flags[v]['rate_of_change'], RoC = \
-                    rate_of_change(self.input, v, cfg['rate_of_change'])
+            y = RateOfChange(self.input, v, cfg['rate_of_change'])
+
             if self.saveauxiliary:
-                self.auxiliary[v]['rate_of_change'] = RoC
+                for f in y.features.keys():
+                    self.auxiliary[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'cum_rate_of_change' in cfg:
             x = cum_rate_of_change(self.input, v,
