@@ -133,7 +133,7 @@ class ProfileQC(object):
         if self.saveauxiliary:
             self.auxiliary['common'] = {}
             # Need to improve this. descentPrate doesn't make sense
-            #   for ARGO. That's why the try.
+            #   for Argo. That's why the try.
             try:
                 self.auxiliary['common']['descentPrate'] = \
                         descentPrate(self.input)
@@ -162,7 +162,7 @@ class ProfileQC(object):
             logging.warn("Sorry I'm not ready to evaluate valid_geolocation()")
 
         if 'valid_speed' in cfg:
-            # Think about. ARGO also has a test  valid_speed, but that is
+            # Think about. Argo also has a test valid_speed, but that is
             #   in respect to sucessive profiles. How is the best way to
             #   distinguish them here?
             try:
@@ -301,7 +301,7 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
-        # ARGO, test #12. (10C, 5PSU)
+        # Argo, test #12. (10C, 5PSU)
         if 'digit_roll_over' in cfg:
             threshold = cfg['digit_roll_over']
             s = step(self.input[v])
