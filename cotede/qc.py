@@ -351,7 +351,18 @@ class ProfileQC(object):
                 for f in y.features:
                     self.auxiliary[v][f] = y.features[f]
 
-            self.flags[v]['woa_normbias'] = y.flags['woa_normbias']
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
+
+        if 'cars_normbias' in cfg:
+            y = CARS_NormBias(self.input, v, cfg['cars_normbias'])
+
+            if self.saveauxiliary:
+                for f in y.features:
+                    self.auxiliary[v][f] = y.features[f]
+
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])

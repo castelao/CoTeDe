@@ -10,6 +10,9 @@
     "woa_normbias": {
         "threshold": 10
         },
+    "cars_normbias": {
+        "threshold": 10
+        },
     "global_range": {
         "minval": -2.5,
         "maxval": 45

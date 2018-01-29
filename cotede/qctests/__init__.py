@@ -18,3 +18,4 @@ from .spike import Spike, spike
 from .bin_spike import Bin_Spike, bin_spike
 from .tukey53H import Tukey53H, tukey53H_norm
 from .woa_normbias import WOA_NormBias, woa_normbias
+from .cars_normbias import CARS_NormBias
