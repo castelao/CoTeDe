@@ -9,9 +9,6 @@
 import numpy as np
 from numpy import ma
 
-FLAG_GOOD = 1
-FLAG_BAD = 4
-
 
 def spike(x):
     """ Spike
@@ -48,11 +45,11 @@ class Spike(object):
         try:
             flag_good = self.cfg['flag_good']
         except:
-            flag_good = FLAG_GOOD
+            flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
         except:
-            flag_bad = FLAG_BAD
+            flag_bad = 4
 
         assert (np.size(threshold) == 1) and \
                 (threshold is not None) and \
