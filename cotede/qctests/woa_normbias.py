@@ -113,7 +113,7 @@ def woa_normbias(data, v, cfg):
 
 
 class WOA_NormBias(object):
-    def __init__(self, data, varname, cfg):
+    def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname
         self.cfg = cfg
@@ -124,7 +124,8 @@ class WOA_NormBias(object):
             self.cfg['use_standard_error'] = False
 
         self.set_features()
-        self.test()
+        if autoflag:
+            self.test()
 
     def keys(self):
         return self.features.keys() + \

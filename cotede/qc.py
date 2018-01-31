@@ -410,7 +410,7 @@ class ProfileQC(object):
                     RoC[1:] = ma.absolute(ma.diff(self.input[v]))
                     features['rate_of_change'] = RoC
                 elif (f == 'woa_normbias'):
-                    y = WOA_NormBias(self.input, v, {})
+                    y = WOA_NormBias(self.input, v, {}, autoflag=False)
                     features['woa_normbias'] = \
                             np.abs(y.features['woa_normbias'])
                 else:
@@ -442,7 +442,7 @@ class ProfileQC(object):
                     RoC[1:] = ma.absolute(ma.diff(data[v]))
                     features['rate_of_change'] = RoC
                 elif (f == 'woa_normbias'):
-                    y = WOA_NormBias(self.input, v, {})
+                    y = WOA_NormBias(self.input, v, {}, autoflag=False)
                     features['woa_normbias'] = \
                             np.abs(y.features['woa_normbias'])
                 else:

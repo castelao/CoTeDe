@@ -12,7 +12,7 @@ from oceansdb import CARS
 
 
 class CARS_NormBias(object):
-    def __init__(self, data, varname, cfg):
+    def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname
         self.cfg = cfg
@@ -23,10 +23,8 @@ class CARS_NormBias(object):
             self.cfg['use_standard_error'] = False
 
         self.set_features()
-        try:
+        if autoflag:
             self.test()
-        except:
-            pass
 
     def keys(self):
         return self.features.keys() + \
