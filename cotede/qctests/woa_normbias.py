@@ -167,7 +167,7 @@ class WOA_NormBias(object):
         else:
             vtype = self.varname
 
-        idx = ~ma.getmaskarray(depth) & np.array(depth > 0)
+        idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
         woa = db[vtype].extract(
                 var=['mean', 'standard_deviation', 'standard_error',
                     'number_of_observations'],
