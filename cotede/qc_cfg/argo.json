@@ -26,7 +26,9 @@
         "shallow_max": 9.0,
         "deep_max": 3.0
         },
-    "digit_roll_over": 10,
+    "digit_roll_over": {
+        "threshold": 10
+        },
     "stuck_value": null,
     "density_inversion": {
         "threshold": -0.03,
@@ -58,7 +60,9 @@
         "shallow_max": 1.5,
         "deep_max": 0.5
         },
-    "digit_roll_over": 5,
+    "digit_roll_over": {
+        "threshold": 5
+        },
     "stuck_value": null,
     "density_inversion": {
         "threshold": -0.03,

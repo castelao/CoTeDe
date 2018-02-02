@@ -301,22 +301,14 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
-        # Argo, test #12. (10C, 5PSU)
         if 'digit_roll_over' in cfg:
-            threshold = cfg['digit_roll_over']
-            s = step(self.input[v])
+            y = DigitRollOver(self.input, v, cfg['digit_roll_over'])
 
             if self.saveauxiliary:
-                self.auxiliary[v]['step'] = s
-
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-
-            flag[np.nonzero(ma.absolute(s) > threshold)] = 4
-            flag[np.nonzero(ma.absolute(s) <= threshold)] = 1
-
-            self.flags[v]['digit_roll_over'] = flag
+                for f in y.features.keys():
+                    self.auxiliary[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'bin_spike' in cfg:
             y = Bin_Spike(self.input, v, cfg['bin_spike'])

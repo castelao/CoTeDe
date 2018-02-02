@@ -37,7 +37,9 @@
         "shallow_max": 9.0,
         "deep_max": 3.0
         },
-    "digit_roll_over": 10,
+    "digit_roll_over": {
+        "threshold": 10
+        },
     "rate_of_change": 4,
     "cum_rate_of_change": {
         "memory": 0.8,
@@ -115,6 +117,8 @@
         "shallow_max": 1.5,
         "deep_max": 0.5
         },
-    "digit_roll_over": 5
+    "digit_roll_over": {
+        "threshold": 5
+        }
     }
 }

@@ -10,7 +10,9 @@
         "minval": -2.5,
         "maxval": 40
         },
-    "digit_roll_over": 10,
+    "digit_roll_over": {
+        "threshold": 10
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 9.0,
@@ -30,7 +32,9 @@
         "minval": 2,
         "maxval": 41
         },
-    "digit_roll_over": 5,
+    "digit_roll_over": {
+        "threshold": 5
+        },
     "gradient_depthconditional": {
         "pressure_threshold": 500,
         "shallow_max": 1.5,
