@@ -66,11 +66,18 @@ class CARS_NormBias(object):
         else:
             vtype = self.varname
 
+        idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
         cars = db[vtype].extract(
                 var=['mn', 'std_dev'],
                 doy=doy,
-                depth=depth,
+                depth=depth[idx],
                 **kwargs)
+
+        if idx.all() is not True:
+            for v in cars.keys():
+                tmp = ma.masked_all(depth.shape, dtype=cars[v].dtype)
+                tmp[idx] = cars[v]
+                cars[v] = tmp
 
         self.features = {
                 'cars_mean': cars['mn'],
