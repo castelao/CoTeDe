@@ -430,9 +430,7 @@ class ProfileQC(object):
                     features['tukey53H_norm'] = tukey53H_norm(self.input[v],
                             k=1.5)
                 elif f == 'rate_of_change':
-                    RoC = ma.masked_all_like(data[v])
-                    RoC[1:] = ma.absolute(ma.diff(data[v]))
-                    features['rate_of_change'] = RoC
+                    features['rate_of_change'] = rate_of_change(self.input[v])
                 elif (f == 'woa_normbias'):
                     y = WOA_NormBias(self.input, v, {}, autoflag=False)
                     features['woa_normbias'] = \
