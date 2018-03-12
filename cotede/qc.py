@@ -391,22 +391,27 @@ class ProfileQC(object):
         if 'anomaly_detection' in  cfg:
             features = {}
             for f in cfg['anomaly_detection']['features']:
-                if f == 'spike':
-                    features['spike'] = spike(self.input[v])
-                elif f == 'gradient':
-                    features['gradient'] = gradient(self.input[v])
-                elif f == 'tukey53H_norm':
-                    features['tukey53H_norm'] = tukey53H_norm(self.input[v])
-                elif f == 'rate_of_change':
-                    RoC = ma.masked_all_like(self.input[v])
-                    RoC[1:] = ma.absolute(ma.diff(self.input[v]))
-                    features['rate_of_change'] = RoC
-                elif (f == 'woa_normbias'):
-                    y = WOA_NormBias(self.input, v, {}, autoflag=False)
-                    features['woa_normbias'] = \
-                            np.abs(y.features['woa_normbias'])
-                else:
-                    logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
+                try:
+                    features[f] = self.auxiliary[v][f]
+                except:
+                    if f == 'spike':
+                        features['spike'] = spike(self.input[v])
+                    elif f == 'gradient':
+                        features['gradient'] = gradient(self.input[v])
+                    elif f == 'tukey53H_norm':
+                        features['tukey53H_norm'] = tukey53H_norm(self.input[v])
+                    elif f == 'rate_of_change':
+                        features['rate_of_change'] = rate_of_change(self.input[v])
+                    elif (f == 'woa_normbias'):
+                        y = WOA_NormBias(self.input, v, {}, autoflag=False)
+                        features['woa_normbias'] = \
+                                np.abs(y.features['woa_normbias'])
+                    elif (f == 'cars_normbias'):
+                        y = CARS_NormBias(self.input, v, {}, autoflag=False)
+                        features['cars_normbias'] = \
+                                np.abs(y.features['cars_normbias'])
+                    else:
+                        logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
             prob, self.flags[v]['anomaly_detection'] = \
                     anomaly_detection(features, cfg['anomaly_detection'])
