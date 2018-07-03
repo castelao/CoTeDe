@@ -3,4 +3,3 @@ seabird>=0.10.2
 scipy>=0.18.0
 oceansdb>=0.8.3
 supportdata>=0.1.2
-pyARGO
