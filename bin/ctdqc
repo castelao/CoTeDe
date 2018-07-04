@@ -182,11 +182,11 @@ if options.clean is True:
     output = output[(output[:,5] == 1) & (output[:,3] ==1)]
 
 #print ",\t".join(varnames)
-print header
+print(header)
 for row in output:
     #print '%10s,\t%10s,\t%8s,\t%i,\t%8s,\t%i' % \
-    print '%17s,%17s,%17s,%17s,%17s,%17s' % \
-            (row[0], row[1], row[2], int(row[3]), row[4], int(row[5]))
+    print('%17s,%17s,%17s,%17s,%17s,%17s' %
+            (row[0], row[1], row[2], int(row[3]), row[4], int(row[5])))
 
 #np.savetxt(args[1], output.T,
 #        fmt='%.3f,\t%.2f,\t%.3f,\t%i,\t%.3f,\t%i',
