@@ -1,11 +1,12 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 """
 """
 
 import numpy as np
 from cotede.qc import ProfileQC
+
 
 class DummyData(object):
     def __init__(self):
@@ -15,6 +16,7 @@ class DummyData(object):
         return self.data[key]
     def keys(self):
         return self.data.keys()
+
 
 def test_common_flags():
     profile = DummyData()

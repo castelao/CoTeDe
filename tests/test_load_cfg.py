@@ -29,7 +29,7 @@ def test_no_local_duplicate_cfg():
 
 
 def test_inout():
-    """ load_cfg shouldn't overwrite input variable cfg
+    """ load_cfg shouldn't modify input variable cfg
     """
     cfg = 'cotede'
     out = load_cfg(cfg)
@@ -37,6 +37,12 @@ def test_inout():
 
 
 def test_dict():
+    """Test a user dict config
+
+       It is possible to define a full config instead of choosing one of the
+         builtins. This is done by giving a dictionary with the correct
+         structure.
+    """
     cfg = {'main': {'valid_datetime': None}}
     cfg_out = load_cfg(cfg)
     assert cfg_out == cfg
@@ -49,6 +55,11 @@ def test_default():
 
 
 def test_factory_cfgs():
+    """Load all available configs, one at a time
+
+       CoTeDe comes with builtin config. This test checks if can
+         load all those available configs.
+    """
     for cfg in CFG:
         print("Loading %s" % cfg)
         try:

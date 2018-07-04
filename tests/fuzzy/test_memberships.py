@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-import numpy as np
-from numpy.testing import assert_allclose
-from cotede.fuzzy.membership_functions import smf, zmf, trimf, trapmf
+"""Test memberships of Fuzzy logic
 
-
-"""
     Tests to be implemented:
         integer input
         masked input
 """
+
+import numpy as np
+from numpy.testing import assert_allclose
+from cotede.fuzzy.membership_functions import smf, zmf, trimf, trapmf
+
 
 def test_smf():
     x = [-4, 5.1, 0.1]
