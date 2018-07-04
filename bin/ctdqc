@@ -10,7 +10,7 @@ from optparse import OptionParser
 import numpy as np
 from numpy import ma
 
-from seabird import CNVError
+from seabird.exceptions import CNVError
 from cotede.qc import fProfileQC, combined_flag
 
 
