@@ -5,8 +5,8 @@
 """
 
 from numpy import ma
-
 from cotede.qctests import density_inversion
+from data import DummyData
 
 
 def test():
@@ -16,11 +16,10 @@ def test():
         print('GSW package not available. Can\'t run density_inversion test.')
         return
 
-    dummy_data = {
-        'PRES': ma.masked_array([0.0, 100, 5000]),
-        'TEMP': ma.masked_array([25.18, 19.73, 2.13]),
-        'PSAL': ma.masked_array([36.00, 34.74, 34.66])
-        }
+    profile = DummyData()
+    profile.data['PRES'] = ma.masked_array([1.0, 100, 200, 300, 500, 5000])
+    profile.data['TEMP'] = ma.masked_array([27.44, 14.55, 11.96, 11.02, 7.65, 2.12])
+    profile.data['PSAL'] = ma.masked_array([35.71, 35.50, 35.13, 35.02, 34.72, 35.03])
 
     cfg = {
             'threshold': -0.03,
@@ -28,6 +27,6 @@ def test():
             'flag_bad': 4
             }
 
-    f, x = density_inversion(dummy_data, cfg, saveaux=True)
+    f, x = density_inversion(profile, cfg, saveaux=True)
 
-    assert (f == [0,4,4]).all()
+    assert (f == [0, 4, 4, 4, 4, 4]).all()

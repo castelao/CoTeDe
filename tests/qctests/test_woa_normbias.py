@@ -4,21 +4,13 @@
 """
 """
 
-#from numpy import ma
-
 from datetime import datetime
 import numpy as np
+
 from cotede.qctests import woa_normbias
 from cotede.qc import ProfileQC
+from data import DummyData
 
-class DummyData(object):
-    def __init__(self):
-        self.attributes = {}
-        self.data = {}
-    def __getitem__(self, key):
-        return self.data[key]
-    def keys(self):
-        return self.data.keys()
 
 def test_attribute():
     profile = DummyData()

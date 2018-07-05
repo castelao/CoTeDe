@@ -5,14 +5,7 @@
 """
 
 from cotede.qctests import location_at_sea
-
-
-class DummyData(object):
-    def __init__(self):
-        self.attributes = {}
-        self.data = {}
-    def __getitem__(self, key):
-        return data[key]
+from data import DummyData
 
 
 def test_attribute():

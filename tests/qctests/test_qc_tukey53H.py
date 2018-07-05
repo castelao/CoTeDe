@@ -8,14 +8,16 @@ import numpy as np
 from numpy import ma
 
 from cotede.qctests import Tukey53H
+from data import DummyData
 
 
 def test():
-    dummy_data = {
-        'PRES': ma.masked_array([1.0, 100, 200, 300, 500, 5000]),
-        'TEMP': ma.masked_array([27.44, 14.55, 11.96, 11.02, 7.65, 2.12]),
-        'PSAL': ma.masked_array([35.71, 35.50, 35.13, 35.02, 34.72, 35.03])
-        }
+    profile = DummyData()
+
+    profile.data['PRES'] = ma.masked_array([1.0, 100, 200, 300, 500, 5000])
+    profile.data['TEMP'] = ma.masked_array([27.44, 14.55, 11.96, 11.02, 7.65, 2.12])
+    profile.data['PSAL'] = ma.masked_array([35.71, 35.50, 35.13, 35.02, 34.72, 35.03])
+
     features = {
             'tukey53H': ma.masked_array([0, 0, 0.3525000000000009,
                 0.35249999999999915, 0, 0],
@@ -33,7 +35,7 @@ def test():
             'flag_bad': 4
             }
 
-    y = Tukey53H(dummy_data, 'TEMP', cfg)
+    y = Tukey53H(profile, 'TEMP', cfg)
     y.test()
 
     assert type(y.features) is dict
