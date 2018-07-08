@@ -15,6 +15,10 @@ def location_at_sea(data, cfg=None):
             this before.
     """
     try:
+        flag_good = cfg['flag_good']
+    except:
+        flag_good = 1
+    try:
         flag_bad = cfg['flag_bad']
     except:
         flag_bad = 3
