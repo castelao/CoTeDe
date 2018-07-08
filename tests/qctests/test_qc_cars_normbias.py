@@ -13,6 +13,21 @@ from cotede.qc import ProfileQC
 from data import DummyData
 
 
+def test():
+    """
+    """
+    profile = DummyData()
+    cfg = {"TEMP": {"cars_normbias": {"threshold": 10}},
+            "PSAL": {"cars_normbias": {"threshold": 10}}}
+    pqc = ProfileQC(profile, cfg=cfg)
+
+    assert 'cars_normbias' in pqc.flags['TEMP']
+    assert sorted(np.unique(pqc.flags['TEMP']['cars_normbias'])) == [1, 9]
+    #assert sorted(np.unique(pqc.flags['TEMP2']['cars_normbias'])) == [1]
+    assert sorted(np.unique(pqc.flags['PSAL']['cars_normbias'])) == [1, 9]
+    #assert sorted(np.unique(pqc.flags['PSAL2']['cars_normbias'])) == [1]
+
+
 def test_attribute():
     profile = DummyData()
     profile.attributes['datetime'] = datetime(2016, 6, 4)
