@@ -5,6 +5,7 @@ import numpy as np
 #   flags are masked, i.e. only eliminate where the flags
 #   could guarantee it was false.
 
+
 def combined_flag(flags, criteria=None):
     """ Returns the combined flag considering all the criteria
 
@@ -33,12 +34,12 @@ def make_qc_index(flags, criteria, type="anytrue"):
     ind = flags[criteria[0]].copy()
     if type == "anytrue":
         for c in criteria:
-            ind[(ind == True) | (flags[c] == True)] = True
+            ind[(ind is True) | (flags[c] is True)] = True
         #ind[np.nonzero((ind == True) | (np.array(flags[c]) == True))[0]] = True
     elif type == "alltrue":
         for c in criteria:
-            ind[(ind == True) | (flags[c] == True)] = True
+            ind[(ind is True) | (flags[c] is True)] = True
     for c in criteria:
-        ind[(ind == False) | (flags[c] == False)] = False
-        #ind[np.nonzero((ind == False) | (np.array(flags[c]) == False))[0]] = False
+        ind[(ind is False) | (flags[c] is False)] = False
+        # ind[np.nonzero((ind == False) | (np.array(flags[c]) == False))[0]] = False
     return ind
