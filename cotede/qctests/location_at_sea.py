@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import numpy as np
 import oceansdb
 
 def location_at_sea(data, cfg=None):
@@ -54,11 +55,13 @@ def location_at_sea(data, cfg=None):
                 var='height',
                 lat=data.attributes['LATITUDE'],
                 lon=data.attributes['LONGITUDE'])
+        h = etopo['height']
 
-        if etopo['height'] <= 0:
-            return 1
-        elif etopo['height'] > 0:
-            return flag_bad
+        flag = np.zeros(h.shape, dtype='i1')
+        flag[np.nonzero(h <= 0)] = flag_good
+        flag[np.nonzero(h > 0)] = flag_bad
+
+        return flag
 
     except:
         return 0
