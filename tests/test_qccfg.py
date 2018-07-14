@@ -4,9 +4,10 @@ import json
 
 import numpy as np
 
-from seabird import cnv
 import cotede.qc
-from cotede.utils import download_testdata
+from cotede.qc import ProfileQC
+
+from data import DummyData
 
 
 def test_cfg_json():
@@ -51,14 +52,16 @@ def test_cfg_existentprocedure():
 def test_multiple_cfg():
     """ I should think about a way to test if the output make sense.
     """
-
-    datafile = download_testdata("dPIRX010.cnv")
-    data = cnv.fCNV(datafile)
+    profile = DummyData()
     for cfg in [None, 'cotede', 'gtspp', 'eurogoos']:
-        pqc = cotede.qc.ProfileQC(data, cfg=cfg)
+        pqc = cotede.qc.ProfileQC(profile, cfg=cfg)
         assert sorted(pqc.flags.keys()) == \
-                ['PSAL', 'PSAL2', 'TEMP', 'TEMP2', 'common'], \
+                ['PSAL', 'TEMP', 'common'], \
                 "Incomplete flagging for %s: %s" % (cfg, pqc.flags.keys())
+                # ['PSAL', 'PSAL2', 'TEMP', 'TEMP2', 'common'], \
+
     # Manually defined
-    pqc = cotede.qc.ProfileQC(data, cfg={'TEMP': {"spike": 6.0,}})
-    assert len(pqc.flags) > 0
+    pqc = cotede.qc.ProfileQC(profile, cfg={
+        "main": {},
+        "TEMP": {"spike": {"threshold": 6.0,}}})
+    assert sorted(pqc.flags['TEMP'].keys()) == ['overall', 'spike']
