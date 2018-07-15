@@ -1,26 +1,28 @@
+# -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+""" Check the structure of a ProfileQC object
+"""
+
 # I should split in two tests, one for generic expected proprieties and
 #   contents, and another test for specific contents, like keys, and values
 #   itself. But this last one must require a md5.
 
 import numpy as np
-from cotede.utils import download_testdata
 
-def func(datafile):
-    from seabird import cnv
-    import cotede.qc
-    data = cnv.fCNV(datafile)
-    pqc = cotede.qc.ProfileQC(data, saveauxiliary=True)
-    return pqc
+from cotede.qc import ProfileQC
+from data import DummyData
 
 
-def test_answer():
-    datafile = download_testdata("dPIRX010.cnv")
-    pqc = func(datafile=datafile)
-    assert type(pqc.keys()) == list
+def test():
+    profile = DummyData()
+    pqc = ProfileQC(profile)
+
+    # assert type(pqc.keys()) == list
     assert type(pqc.attributes) == dict
     assert hasattr(pqc, 'input')
     assert hasattr(pqc, 'flags')
-    assert hasattr(pqc, 'auxiliary')
+    assert hasattr(pqc, 'features')
     assert type(pqc.flags) == dict
     for k in pqc.flags.keys():
         assert type(pqc.flags[k]) == dict
