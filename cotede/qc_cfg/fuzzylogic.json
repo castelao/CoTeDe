@@ -5,11 +5,15 @@
         }
     },
 "TEMP": {
-    "spike": 6.0,
+    "spike": {
+    	"threshold": 6.0
+    	},
     "woa_normbias": {
         "threshold": 6
         },
-    "gradient": 9.0,
+    "gradient": {
+    	"threshold": 9.0
+    	},
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
@@ -39,11 +43,15 @@
         }
     },
 "PSAL": {
-    "spike": 0.9,
+    "spike": {
+    	"threshold": 0.9
+    	},
     "woa_normbias": {
         "threshold": 6
         },
-    "gradient": 4,
+    "gradient": {
+    	"threshold": 4
+    	},
     "fuzzylogic": {
 	"output": {
             "low": [0.0, 0.225, 0.45],
