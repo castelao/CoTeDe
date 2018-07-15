@@ -136,8 +136,10 @@ def fuzzy_uncertainty(features, cfg):
     for i in range(N):
         aggregated = np.zeros(N_out)
         for m in rules:
-            aggregated = np.fmax(aggregated, np.fmin(rules[m][i], output[m]))
-        if aggregated is not ma.masked:
+            if rules[m][i] is not ma.masked:
+                aggregated = np.fmax(aggregated,
+                                     np.fmin(rules[m][i], output[m]))
+        if aggregated.sum() > 0:
             uncertainty[i] = defuzz(output_range, aggregated, 'bisector')
 
     return uncertainty
