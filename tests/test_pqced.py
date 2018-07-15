@@ -1,20 +1,34 @@
+# -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+""" Check ProfileQCed
+"""
 
 import numpy as np
-from cotede.utils import download_testdata
 
-def func(datafile):
-    from seabird import cnv
-    import cotede.qc
-    data = cnv.fCNV(datafile)
-    ped = cotede.qc.ProfileQCed(data)
-    return ped
+from cotede.qc import ProfileQC, ProfileQCed
+from data import DummyData
 
 
-def test_answer():
-    datafile = download_testdata("dPIRX010.cnv")
-    ped = func(datafile=datafile)
-    keys = ['timeS', 'PRES', 'TEMP', 'TEMP2', 'CNDC', 'CNDC2',
-            'potemperature', 'potemperature2', 'PSAL', 'PSAL2',
-            'flag']
-    assert ped.keys() == keys
-    assert len(ped.attributes) == 13
+def test():
+    """
+    """
+    profile = DummyData()
+    pqc = ProfileQC(profile)
+
+    pqced = ProfileQCed(profile)
+
+    assert pqc.data.keys() == pqced.data.keys()
+    for v in pqc.data:
+        assert np.allclose(pqc[v].data, pqced[v].data)
+
+    assert not np.allclose(pqc['TEMP'].mask, pqced['TEMP'].mask)
+
+    assert pqc.attributes.keys() == pqced.attributes.keys()
+    for v in pqc.attributes:
+        assert pqc.attributes[v] == pqced.attributes[v]
+
+    assert pqc.flags.keys() == pqced.flags.keys()
+    for v in pqc.flags:
+        for f in pqc.flags[v]:
+            assert np.allclose(pqc.flags[v][f], pqced.flags[v][f])
