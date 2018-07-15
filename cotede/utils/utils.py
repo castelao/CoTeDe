@@ -6,8 +6,6 @@ import re
 import pkg_resources
 import json
 
-from supportdata import download_file
-
 
 def cotede_dir():
     return expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
