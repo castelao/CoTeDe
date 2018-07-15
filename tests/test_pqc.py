@@ -1,32 +1,37 @@
+# -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+""" Check fundamentals of ProfileQC object
+"""
+
 # I should split in two tests, one for generic expected proprieties and
 #   contents, and another test for specific contents, like keys, and values
 #   itself. But this last one must require a md5.
 
+
 import numpy as np
-from seabird import cnv
+
 import cotede.qc
-from cotede.utils import download_testdata
+from cotede.qc import ProfileQC
 from cotede.misc import combined_flag
+from data import DummyData
 
 
-def func(datafile, saveauxiliary):
-    data = cnv.fCNV(datafile)
-    pqc = cotede.qc.ProfileQC(data, saveauxiliary=saveauxiliary)
-    return pqc
+def test():
+    profile = DummyData()
+
+    pqc = ProfileQC(profile, saveauxiliary=False)
+    pqc = ProfileQC(profile, saveauxiliary=True)
 
 
-def test_answer():
-    datafile = download_testdata("dPIRX010.cnv")
+    keys = ['PRES', 'TEMP', 'PSAL', 'flag']
+    for v in profile.keys():
+        assert v in pqc.keys()
+        assert np.allclose(profile[v], pqc[v])
 
-    pqc = func(datafile=datafile, saveauxiliary=False)
-
-    pqc = func(datafile=datafile, saveauxiliary=True)
-
-    keys = ['timeS', 'PRES', 'TEMP', 'TEMP2', 'CNDC', 'CNDC2',
-            'potemperature', 'potemperature2', 'PSAL',
-            'PSAL2', 'flag']
-    assert pqc.keys() == keys
-    assert len(pqc.attributes) == 13
+    for a in profile.attributes:
+        assert a in pqc.attributes
+        assert profile.attributes[a] == pqc.attributes[a]
 
     assert hasattr(pqc, 'flags')
     assert type(pqc.flags) is dict
@@ -36,8 +41,8 @@ def test_answer():
         for f in pqc.flags[v]:
             assert pqc.flags[v][f].dtype == 'i1'
 
-    assert hasattr(pqc, 'auxiliary')
-    assert type(pqc.auxiliary) is dict
+    assert hasattr(pqc, 'features')
+    assert type(pqc.features) is dict
 
 
 def test_all_valid_no_9():
@@ -48,7 +53,10 @@ def test_all_valid_no_9():
 
         This test input all valid values, and check if there is no flag 9.
     """
-    datafile = download_testdata("dPIRX010.cnv")
-    pqc = cotede.qc.fProfileQC(datafile)
+    profile = DummyData()
+
+    pqc = ProfileQC(profile)
+
     assert pqc['TEMP'].mask.all() == False
-    assert ~(combined_flag(pqc.flags['TEMP']) == 9).any()
+    assert np.allclose(combined_flag(pqc.flags['TEMP']) == 9,
+                       profile['TEMP'].mask)
