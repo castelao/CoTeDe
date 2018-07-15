@@ -1,38 +1,35 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Check if pickle can serialize seabird's data objects
+""" Check if pickle can serialize CoTeDe's dataset.
 
+    This is critical to allow running CoTeDe with multiprocessing.
 """
 
 import pickle
 
-from seabird import cnv
+import numpy as np
 
-from cotede.utils import download_testdata
-from cotede.qc import ProfileQC, fProfileQC
-
-
-datalist = ["dPIRX010.cnv", "PIRA001.cnv", "dPIRX003.cnv"]
-INPUTFILES = [download_testdata(f) for f in datalist]
+from cotede.qc import ProfileQC
+from data import DummyData
 
 
 def test_serialize_ProfileQC():
         """ Serialize ProfileQC
         """
-        for datafile in INPUTFILES:
-            data = cnv.fCNV(datafile)
-            pqc = ProfileQC(data, saveauxiliary=False)
-            pqc2 = pickle.loads(pickle.dumps(pqc))
-            assert pqc.attributes == pqc2.attributes
-            #assert (profile.data == profile.data)
+        profile = DummyData()
+        pqc = ProfileQC(profile)
+        pqc2 = pickle.loads(pickle.dumps(pqc))
 
+        assert pqc.data.keys() == pqc2.data.keys()
+        for v in pqc.data:
+            assert np.allclose(pqc[v], pqc2[v])
 
-def test_serialize_fProfileQC():
-        """ Serialize fProfileQC
-        """
-        for datafile in INPUTFILES:
-            pqc = fProfileQC(datafile, saveauxiliary=False)
-            pqc2 = pickle.loads(pickle.dumps(pqc))
-            assert pqc.attributes == pqc2.attributes
-            #assert (profile.data == profile.data)
+        assert pqc.attributes.keys() == pqc2.attributes.keys()
+        for v in pqc.attributes:
+            assert pqc.attributes[v] == pqc2.attributes[v]
+
+        assert pqc.flags.keys() == pqc2.flags.keys()
+        for v in pqc.flags:
+            for f in pqc.flags[v]:
+                assert np.allclose(pqc.flags[v][f], pqc2.flags[v][f])
