@@ -133,37 +133,3 @@ def load_cfg(cfg=None):
         #self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
         return cfg
-
-
-def download_testdata(filename):
-
-    d = os.path.join(cotede_dir(), 'testdata')
-    if not os.path.exists(d):
-        os.makedirs(d)
-
-    test_files = {
-            'dPIRX010.cnv': {
-                "url": "https://s3.amazonaws.com/cotede/test_data/dPIRX010.cnv",
-                "md5": "8691409accb534c83c8bd412afbdd285"},
-            'dPIRX003.cnv': {
-                "url": "https://s3.amazonaws.com/cotede/test_data/dPIRX003.cnv",
-                "md5": "4b941b902a3aea7d99e1cf4c78c51877"},
-            'PIRA001.cnv': {
-                "url": "https://s3.amazonaws.com/cotede/test_data/PIRA001.cnv",
-                "md5": "5ded777144300b63c8775b1d7f033f92"},
-            'TSG_PIR_001.cnv': {
-                "url": "https://s3.amazonaws.com/cotede/test_data/TSG_PIR_001.cnv",
-                "md5": "2950ccb9f77e0802557b011c63d2e39b"},
-            '20150127_prof.nc': {
-                "url": "https://s3.amazonaws.com/cotede/test_data/20150127_prof.nc",
-                "md5": "cedc63d54a556e4782dbacfb2d6cfb30"},
-            }
-
-    assert filename in test_files.keys(), \
-            "%s is not a valid test file" % filename
-
-    download_file(d, test_files[filename]["url"], filename=filename,
-            md5hash=test_files[filename]["md5"])
-    datafile = os.path.join(d, filename)
-
-    return datafile
