@@ -461,31 +461,6 @@ class ProfileQC(object):
             logging.warn("Failled to run descentPrate")
 
 
-class fProfileQC(ProfileQC):
-    """ Apply ProfileQC straight from a file.
-    """
-    def __init__(self, inputfile, cfg=None, saveauxiliary=True, verbose=True,
-            logger=None):
-        """
-        """
-        #self.logger = logger or logging.getLogger(__name__)
-        logging.getLogger(logger or __name__)
-        self.name = 'fProfileQC'
-
-        try:
-            # Not the best way, but will work for now. I should pass
-            #   the reference for the logger being used.
-            input = cnv.fCNV(inputfile, logger=None)
-        except CNVError as e:
-            #self.attributes['filename'] = basename(inputfile)
-            logging.error(e.msg)
-            raise
-
-        super(fProfileQC, self).__init__(input, cfg=cfg,
-                saveauxiliary=saveauxiliary, verbose=verbose,
-                logger=logger)
-
-
 class ProfileQCed(ProfileQC):
     """
     """
