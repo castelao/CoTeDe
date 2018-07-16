@@ -8,34 +8,44 @@
         },
     "anomaly_detection": {
         "threshold": -18.0,
-            "features": {
-                "gradient": {
-                    "model": "exponweib",
-		    "qlimit": 0.013500,
-		    "param": [1.431385, 0.605537, 0.013500, 0.015567]
-		    },
-                "spike": {
-                    "model": "exponweib",
-		    "qlimit": 0.000400,
-		    "param": [1.078231, 0.512053, 0.000400, 0.002574]
-		    },
-		"tukey53H_norm": {
-                    "model": "exponweib",
-                        "qlimit": 0.001614,
-			"param": [4.497367, 0.351177, 0.001612, 0.000236]
-			},
-                "rate_of_change": {
-                    "model": "exponweib",
-		    "qlimit": 0.041700,
-		    "param": [2.668970, 0.469459, 0.041696, 0.017221]
-		    },
-                "woa_normbias": {
-                    "model": "exponweib",
-		    "qlimit": 1.615422,
-		    "param": [0.899871, 0.987157, 1.615428, 0.662358]
-		    }
-		}
-	}
+        "features": {
+            "gradient": {
+                "model": "exponweib",
+                "qlimit": 0.011202,
+                "param": [13.37195, 0.245429, 0.011027, 0.000161]
+                },
+            "spike": {
+                "model": "exponweib",
+                "qlimit": 0.004000,
+                "param": [2.724854, 0.169980, 0.001000, 0.000044]
+                },
+            "tukey53H_norm": {
+                "model": "exponweib",
+                "qlimit": 0.001614,
+                "param": [4.497367, 0.351177, 0.001612, 0.000236]
+                },
+            "rate_of_change": {
+                "model": "exponweib",
+                "qlimit": 0.036701,
+                "param": [1.478929, 0.523945, 0.036701, 0.045529]
+                },
+            "woa_normbias": {
+                "model": "exponweib",
+                "qlimit": 1.707276,
+                "param": [5.960434, 0.336008, 1.705502, 0.042680]
+                },
+            "cars_normbias": {
+                "model": "exponweib",
+                "qlimit": 1.809731,
+                "param": [0.967740, 0.803820, 1.809730, 0.980883]
+                },
+            "constant_cluster_size": {
+                "model": "exponweib",
+                "qlimit": 4.000000,
+                "param": [2.819822, 0.234766, 4.000000, 0.702378]
+                }
+            }
+        }
     },
 "PSAL": {
 	"anomaly_detection": {
