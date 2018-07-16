@@ -11,7 +11,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 
 from cotede.qctests import *
 from cotede.misc import combined_flag
