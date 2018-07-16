@@ -184,6 +184,18 @@ class ProfileQC(object):
             self.flags[v]['profile_envelop'] = profile_envelop(
                     self.input, cfg['profile_envelop'], v)
 
+        if 'constant_cluster_size' in cfg:
+            y = ConstantClusterSize(self.input,
+                                    v,
+                                    cfg['constant_cluster_size'],
+                                    autoflag=False)
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.auxiliary[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
+
         if 'gradient' in cfg:
             y = Gradient(self.input, v, cfg['gradient'])
             y.test()
@@ -395,6 +407,9 @@ class ProfileQC(object):
                         features['spike'] = spike(self.input[v])
                     elif f == 'gradient':
                         features['gradient'] = gradient(self.input[v])
+                    elif f == 'constant_cluster_size':
+                        features['constant_cluster_size'] = \
+                                constant_cluster_size(self.input[v])
                     elif f == 'tukey53H_norm':
                         features['tukey53H_norm'] = tukey53H_norm(self.input[v])
                     elif f == 'rate_of_change':
