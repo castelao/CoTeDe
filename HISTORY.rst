@@ -3,6 +3,11 @@
 History
 =======
 
+0.20 - Jul, 2018
+----------------
+
+* Removing dependency on pyArgo and pySeabird. Generalizing CoTeDe for other uses, thus now on PyArgo, PySeabird, and other packages to come public soon that use CoTeDe.
+
 0.19
 ----------------
 
