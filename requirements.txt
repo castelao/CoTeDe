@@ -1,3 +1,3 @@
 numpy>=1.11.1
 scipy>=0.18.0
-oceansdb>=0.8.3
+oceansdb>=0.8.4
