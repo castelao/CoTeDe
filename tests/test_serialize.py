@@ -21,15 +21,15 @@ def test_serialize_ProfileQC():
         pqc = ProfileQC(profile)
         pqc2 = pickle.loads(pickle.dumps(pqc))
 
-        assert pqc.data.keys() == pqc2.data.keys()
+        assert sorted(pqc.data.keys()) == sorted(pqc2.data.keys())
         for v in pqc.data:
             assert np.allclose(pqc[v], pqc2[v])
 
-        assert pqc.attributes.keys() == pqc2.attributes.keys()
+        assert sorted(pqc.attributes.keys()) == sorted(pqc2.attributes.keys())
         for v in pqc.attributes:
             assert pqc.attributes[v] == pqc2.attributes[v]
 
-        assert pqc.flags.keys() == pqc2.flags.keys()
+        assert sorted(pqc.flags.keys()) == sorted(pqc2.flags.keys())
         for v in pqc.flags:
             for f in pqc.flags[v]:
                 assert np.allclose(pqc.flags[v][f], pqc2.flags[v][f])
