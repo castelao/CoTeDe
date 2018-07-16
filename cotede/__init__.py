@@ -2,6 +2,6 @@
 
 __author__ = 'Guilherme Castelao'
 __email__ = 'guilherme@castelao.net'
-__version__ = '0.20.0'
+__version__ = '0.20.1'
 
 from cotede import qc
