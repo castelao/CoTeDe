@@ -22,11 +22,11 @@ CoTe De l'eau
 `CoTeDe <http://cotede.castelao.net>`_ is an Open Source Python package to quality control (QC) hydrographic data such as temperature and salinity.
 It was designed to attend individual scientists as well as operational systems with large databases, reading the inputs from different formats and types of sensors, and processing those in parallel for high performance. 
 To achieve that, CoTeDe is highly customizable, allowing the user to compose the desired set of tests, as well as the specific parameters of each test. 
-Otherwise there are preset QC procedures conforming with GTSPP, EuroGOOS and ARGO recommendations. 
+Otherwise there are preset QC procedures conforming with GTSPP, EuroGOOS and Argo recommendations. 
 It is also implemented innovating approaches to QC like the Fuzzy Logic (Timms 2011, Morello 2014) and Anomaly Detection (Castelão 2015). 
 
 At this point it is operational for profiles (CTD, XBT and Argo) and tracks (TSG). 
-For CTD profiles and TSG time series it uses `PySeabird package <http://seabird.castelao.net>`_ to interpret directly the SeaBird's .cnv output file, and for argo it uses `PyARGO package <https://github.com/castelao/pyARGO>`_ to interpret the netCDF files.
+For CTD profiles and TSG time series it uses `PySeabird package <http://seabird.castelao.net>`_ to interpret directly the SeaBird's .cnv output file, and for argo it uses `PyArgo package <https://github.com/castelao/pyARGO>`_ to interpret the netCDF files.
 
 This is the result from several generations of quality control systems,
 which started in 2006, when I developed from scratch an automatic quality 
