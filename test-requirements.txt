@@ -4,3 +4,4 @@ pytest-xdist
 pandas
 netCDF4
 matplotlib
+tox
