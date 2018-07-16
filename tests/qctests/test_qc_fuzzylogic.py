@@ -5,7 +5,6 @@
 """
 
 import numpy as np
-from numpy import ma
 
 from cotede.qc import ProfileQC
 from data import DummyData

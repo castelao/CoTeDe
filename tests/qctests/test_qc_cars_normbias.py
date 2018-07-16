@@ -4,10 +4,9 @@
 """
 """
 
-#from numpy import ma
-
 from datetime import datetime
 import numpy as np
+
 from cotede.qctests import cars_normbias
 from cotede.qc import ProfileQC
 from data import DummyData
@@ -38,7 +37,6 @@ def test_attribute():
 
     cfg = {"TEMP": {"cars_normbias": {"threshold": 6}}}
     pqc = ProfileQC(profile, cfg=cfg)
-    print(pqc.features['TEMP'])
     assert 'cars_normbias' in pqc.flags['TEMP']
     assert pqc.flags['TEMP']['cars_normbias'].shape == profile.data['TEMP'].shape
     assert (pqc.flags['TEMP']['cars_normbias'] == [1, 1, 1, 3, 1, 1, 0, 0]).all()
