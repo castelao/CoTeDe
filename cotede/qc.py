@@ -330,16 +330,13 @@ class ProfileQC(object):
 
         if 'density_inversion' in cfg:
             try:
+                y = DensityInversion(self.input, cfg=cfg['density_inversion'])
+
                 if self.saveauxiliary:
-                    self.flags[v]['density_inversion'], \
-                            self.auxiliary[v]['density_step'] = \
-                            density_inversion(
-                                    self.input,
-                                    cfg['density_inversion'],
-                                    saveaux=True)
-                else:
-                    self.flags[v]['density_inversion'] = density_inversion(
-                            self.input, cfg['density_inversion'])
+                    for f in y.features.keys():
+                        self.auxiliary[v][f] = y.features[f]
+                for f in y.flags:
+                    self.flags[v][f] = y.flags[f]
             except:
                 print("Fail on density_inversion")
 
