@@ -32,6 +32,8 @@ class ConstantClusterSize(object):
         self.cfg = cfg
 
         self.set_features()
+        if autoflag:
+            self.test()
 
     def keys(self):
         return self.features.keys() + \
