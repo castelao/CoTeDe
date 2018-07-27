@@ -171,8 +171,13 @@ class ProfileQC(object):
                 print("Fail on valid_speed")
 
         if 'global_range' in cfg:
-            self.flags[v]['global_range'] = global_range(
-                    self.input, v, cfg['global_range'])
+            y = GlobalRange(self.input, v, cfg['global_range'])
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.auxiliary[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'regional_range' in cfg:
             logging.warn("Sorry, I'm no ready to evaluate regional_range()")
