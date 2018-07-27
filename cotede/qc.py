@@ -190,9 +190,8 @@ class ProfileQC(object):
                     self.input, cfg['profile_envelop'], v)
 
         if 'constant_cluster_size' in cfg:
-            y = ConstantClusterSize(self.input,
-                                    v,
-                                    cfg['constant_cluster_size'])
+            y = ConstantClusterSize(
+                    self.input, v, cfg['constant_cluster_size'])
 
             if self.saveauxiliary:
                 for f in y.features.keys():
