@@ -63,7 +63,7 @@ class ProfileQC(object):
         if saveauxiliary:
             #self.auxiliary = {}
             # build_auxiliary is not exactly the best way to do it.
-            self.build_auxiliary()
+            self.build_features()
 
         # I should use common or main, but must be consistent
         #   between defaults and flags.keys()
@@ -83,8 +83,8 @@ class ProfileQC(object):
         return self.input.data
 
     @property
-    def features(self):
-        return self.auxiliary
+    def auxiliary(self):
+        return self.features
 
     def keys(self):
         """ Return the available keys in self.data
@@ -128,11 +128,11 @@ class ProfileQC(object):
                     self.cfg['main']['location_at_sea'])
 
         if self.saveauxiliary:
-            self.auxiliary['common'] = {}
+            self.features['common'] = {}
             # Need to improve this. descentPrate doesn't make sense
             #   for Argo. That's why the try.
             try:
-                self.auxiliary['common']['descentPrate'] = \
+                self.features['common']['descentPrate'] = \
                         descentPrate(self.input)
             except:
                 pass
@@ -149,8 +149,8 @@ class ProfileQC(object):
                         np.ones(N, dtype='i1')
 
         if self.saveauxiliary:
-            if v not in self.auxiliary.keys():
-                self.auxiliary[v] = {}
+            if v not in self.features.keys():
+                self.features[v] = {}
 
         if 'platform_identification' in cfg:
             logging.warn("Sorry I'm not ready to evaluate platform_identification()")
@@ -165,7 +165,7 @@ class ProfileQC(object):
             try:
                 if self.saveauxiliary:
                     self.flags[v]['valid_speed'], \
-                            self.auxiliary[v]['valid_speed'] = \
+                            self.features[v]['valid_speed'] = \
                             possible_speed(self.input, cfg['valid_speed'])
             except:
                 print("Fail on valid_speed")
@@ -175,7 +175,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features.keys():
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
@@ -195,7 +195,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features.keys():
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
@@ -204,7 +204,7 @@ class ProfileQC(object):
             y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['gradient'] = y.features['gradient']
+                self.features[v]['gradient'] = y.features['gradient']
 
             self.flags[v]['gradient'] = y.flags['gradient']
 
@@ -242,7 +242,7 @@ class ProfileQC(object):
             y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['spike'] = y.features['spike']
+                self.features[v]['spike'] = y.features['spike']
 
             self.flags[v]['spike'] = y.flags['spike']
 
@@ -295,7 +295,7 @@ class ProfileQC(object):
             y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['tukey53H_norm'] = \
+                self.features[v]['tukey53H_norm'] = \
                         y.features['tukey53H_norm']
 
             self.flags[v]['tukey53H_norm'] = y.flags['tukey53H_norm']
@@ -318,7 +318,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features.keys():
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
@@ -327,7 +327,7 @@ class ProfileQC(object):
             # y.test()
 
             if self.saveauxiliary:
-                self.auxiliary[v]['bin_spike'] = y.features['bin_spike']
+                self.features[v]['bin_spike'] = y.features['bin_spike']
 
             # self.flags[v]['bin_spike'] = y.flags['bin_spike']
 
@@ -337,7 +337,7 @@ class ProfileQC(object):
 
                 if self.saveauxiliary:
                     for f in y.features.keys():
-                        self.auxiliary[v][f] = y.features[f]
+                        self.features[v][f] = y.features[f]
                 for f in y.flags:
                     self.flags[v][f] = y.flags[f]
             except:
@@ -350,7 +350,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features:
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
 
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
@@ -360,7 +360,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features:
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
 
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
@@ -369,7 +369,7 @@ class ProfileQC(object):
         #    ind = np.isfinite(self.input[v])
         #    ind = ma.getmaskarray(self.input[v])
         #    if self.saveauxiliary:
-        #        self.auxiliary[v]['pstep'] = ma.concatenate(
+        #        self.features[v]['pstep'] = ma.concatenate(
         #                [ma.masked_all(1),
         #                    np.diff(self.input['PRES'][ind])])
 
@@ -378,7 +378,7 @@ class ProfileQC(object):
 
             if self.saveauxiliary:
                 for f in y.features.keys():
-                    self.auxiliary[v][f] = y.features[f]
+                    self.features[v][f] = y.features[f]
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
@@ -401,7 +401,7 @@ class ProfileQC(object):
             features = {}
             for f in cfg['anomaly_detection']['features']:
                 try:
-                    features[f] = self.auxiliary[v][f]
+                    features[f] = self.features[v][f]
                 except:
                     if f == 'spike':
                         features['spike'] = spike(self.input[v])
@@ -429,11 +429,11 @@ class ProfileQC(object):
                     anomaly_detection(features, cfg['anomaly_detection'])
 
             if self.saveauxiliary:
-                self.auxiliary[v]['anomaly_detection'] = prob
+                self.features[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
             self.flags[v]['morello2014'] = morello2014(
-                    features=self.auxiliary[v],
+                    features=self.features[v],
                     cfg=cfg['morello2014'])
 
         if 'fuzzylogic' in  cfg:
@@ -461,13 +461,13 @@ class ProfileQC(object):
 
         self.flags[v]['overall'] = combined_flag(self.flags[v])
 
-    def build_auxiliary(self):
-        if not hasattr(self, 'auxiliary'):
-            self.auxiliary = {}
+    def build_features(self):
+        if not hasattr(self, 'features'):
+            self.features = {}
 
-        self.auxiliary['common'] = {}
+        self.features['common'] = {}
         try:
-            self.auxiliary['common']['descentPrate'] = \
+            self.features['common']['descentPrate'] = \
                     descentPrate(self.input)
         except:
             logging.warn("Failled to run descentPrate")
