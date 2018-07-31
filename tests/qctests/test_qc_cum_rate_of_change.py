@@ -5,7 +5,7 @@
 """
 
 from numpy import ma
-from cotede.qctests import cum_rate_of_change
+from cotede.qctests import CumRateOfChange, cum_rate_of_change
 from data import DummyData
 
 
@@ -17,12 +17,14 @@ def test():
 
     cfg = {
             'memory': 0.8,
-            'threshold': None,
+            'threshold': 4,
             'flag_good': 1,
             'flag_bad': 4
             }
 
-    x = cum_rate_of_change(profile, 'TEMP', cfg['memory'])
+    y = CumRateOfChange(profile, 'TEMP', cfg)
+    assert type(y.features) is dict
 
+    x = cum_rate_of_change(profile['TEMP'], cfg['memory'])
     assert type(x) is ma.MaskedArray
     # assert ma.allclose(x, dummy_output)

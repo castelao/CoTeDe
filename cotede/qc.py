@@ -383,17 +383,13 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'cum_rate_of_change' in cfg:
-            x = cum_rate_of_change(self.input, v,
-                    cfg['cum_rate_of_change']['memory'])
-            self.flags[v]['cum_rate_of_change'] = np.zeros(x.shape, dtype='i1')
-            self.flags[v]['cum_rate_of_change'][
-                    np.nonzero(x <= cfg['cum_rate_of_change']['threshold'])
-                    ] = 1
-            self.flags[v]['cum_rate_of_change'][
-                    np.nonzero(x > cfg['cum_rate_of_change']['threshold'])
-                    ] = 4
-            self.flags[v]['cum_rate_of_change'][
-                    ma.getmaskarray(self.input[v])] = 9
+            y = CumRateOfChange(self.input, v, cfg['cum_rate_of_change'])
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         # FIXME: the Anomaly Detection and Fuzzy require some features
         #   to be estimated previously. Generalize this.

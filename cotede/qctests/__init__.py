@@ -6,10 +6,10 @@ from .location_at_sea import location_at_sea
 from .profile_envelop import profile_envelop
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed
-from .cum_rate_of_change import cum_rate_of_change
 from .morello2014 import morello2014
 from .fuzzylogic import fuzzylogic
 
+from .cum_rate_of_change import CumRateOfChange, cum_rate_of_change
 from .global_range import GlobalRange
 from .rate_of_change import RateOfChange, rate_of_change
 from .gradient import Gradient, gradient

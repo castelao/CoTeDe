@@ -22,13 +22,13 @@ def rate_of_change(x):
 
 
 class RateOfChange(object):
-    def __init__(self, data, varname, cfg, noflag=False):
+    def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname
         self.cfg = cfg
 
         self.set_features()
-        if not noflag:
+        if autoflag:
             self.test()
 
     def keys(self):
