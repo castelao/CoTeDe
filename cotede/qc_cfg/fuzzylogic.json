@@ -9,7 +9,7 @@
     	"threshold": 6.0
     	},
     "woa_normbias": {
-        "threshold": 6
+        "threshold": 10
         },
     "gradient": {
     	"threshold": 9.0
@@ -47,7 +47,7 @@
     	"threshold": 0.9
     	},
     "woa_normbias": {
-        "threshold": 6
+        "threshold": 10
         },
     "gradient": {
     	"threshold": 4
