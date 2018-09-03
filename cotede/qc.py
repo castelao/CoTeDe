@@ -435,21 +435,10 @@ class ProfileQC(object):
         if 'fuzzylogic' in  cfg:
             features = {}
             for f in cfg['fuzzylogic']['features']:
-                if f == 'spike':
-                    features['spike'] = spike(self.input[v])
-                elif f == 'gradient':
-                    features['gradient'] = gradient(self.input[v])
-                elif f == 'tukey53H_norm':
-                    features['tukey53H_norm'] = tukey53H_norm(self.input[v],
-                            k=1.5)
-                elif f == 'rate_of_change':
-                    features['rate_of_change'] = rate_of_change(self.input[v])
-                elif (f == 'woa_normbias'):
-                    y = WOA_NormBias(self.input, v, {}, autoflag=False)
-                    features['woa_normbias'] = \
-                            np.abs(y.features['woa_normbias'])
-                else:
-                    logging.error("Sorry, I can't evaluate fuzzylogic with: %s" % f)
+                try:
+                    features[f] = self.features[v][f]
+                except:
+                    logging.error("Can't evaluate fuzzylogic with: %s" % f)
 
             self.flags[v]['fuzzylogic'] = fuzzylogic(
                     features=features,
