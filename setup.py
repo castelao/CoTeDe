@@ -24,7 +24,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='cotede',
-    version='0.20.1',
+    version='0.20.2',
     description='Quality Control of Temperature and Salinity profiles',
     long_description=readme + '\n\n' + history,
     author='Guilherme Castelão',
@@ -56,6 +56,7 @@ setup(
     scripts=["bin/ctdqc"],
     extras_require = {
         'GSW': ["gsw>=3.0.6"],
-        'manualqc': ["matplotlib"]
+        'manualqc': ["matplotlib"],
+        'regional': ["Shapely>=1.6.4"]
     }
 )
