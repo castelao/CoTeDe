@@ -84,6 +84,8 @@ class ProfileQC(object):
 
     @property
     def auxiliary(self):
+        print('ATENTION: Please use .features instead.'
+              'auxiliary will be eventually removed.')
         return self.features
 
     def keys(self):
