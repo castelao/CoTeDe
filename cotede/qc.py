@@ -276,7 +276,13 @@ class ProfileQC(object):
             self.flags[v]['spike_depthconditional'] = flag
 
         if 'stuck_value' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate stuck_value()")
+            y = StuckValue(self.input, v, cfg['stuck_value'], autoflag=True)
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'grey_list' in cfg:
             logging.warn("Sorry I'm not ready to evaluate grey_list()")

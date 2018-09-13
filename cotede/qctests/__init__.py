@@ -21,3 +21,4 @@ from .cars_normbias import CARS_NormBias
 from .digit_roll_over import DigitRollOver
 from .constant_cluster_size import ConstantClusterSize, constant_cluster_size
 from .density_inversion import DensityInversion, densitystep
+from .stuck_value import StuckValue
