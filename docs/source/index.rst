@@ -24,7 +24,6 @@ User Documentation
    overview
    install
    getting_started
-   commandline
    qctests
    anomaly_detection
    fuzzy_logic
