@@ -11,18 +11,6 @@ def cotede_dir():
     return expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
 
 
-def make_file_list(inputdir, inputpattern):
-    """ Search inputdir recursively for inputpattern
-    """
-    inputfiles = []
-    for dirpath, dirnames, filenames in os.walk(inputdir):
-        for filename in filenames:
-            if re.match(inputpattern, filename):
-                inputfiles.append(os.path.join(dirpath, filename))
-    inputfiles.sort()
-    return inputfiles
-
-
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save

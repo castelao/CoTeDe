@@ -10,7 +10,7 @@ import multiprocessing as mp
 import numpy as np
 from numpy import ma
 
-from cotede.utils import make_file_list
+from seabird.utils import make_file_list
 import cotede.qc
 
 
