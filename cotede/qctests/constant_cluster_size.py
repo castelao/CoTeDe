@@ -7,22 +7,32 @@ from numpy import ma
 
 
 def constant_cluster_size(x, tol=0):
-    """ Estimate the cluster size with constant value
+    """Estimate the cluster size with (nearly) constant value
 
-        Returns how many consecutive neighbor values are equal or less than
-          the given tolerance difference.
+       Returns how many consecutive neighbor values are within a given
+         tolerance range. Note that invalid values, like NaN, are ignored.
     """
-    dx = np.diff(x)
-    fwd = np.zeros(np.shape(x), dtype='i')
-    bwd = np.zeros(np.shape(x), dtype='i')
-    idx = np.nonzero(np.absolute(dx) <= tol)[0]
+    assert np.ndim(x) == 1, 'Not ready for more than 1 dimension'
 
-    for i in idx:
-        fwd[i+1] = 1 + fwd[i]
-    for i in idx[::-1]:
-        bwd[i] = 1 + bwd[i+1]
+    # Adding a tolerance to handle roundings due to different numeric types.
+    tol = tol + 1e-5 * tol
 
-    return fwd + bwd
+    ivalid = np.nonzero(~ma.getmaskarray(ma.fix_invalid(x)))[0]
+    dx = np.diff(x[ivalid])
+
+    cluster_size = np.zeros(np.shape(x), dtype='i')
+    for i, iv in enumerate(ivalid):
+        idx = np.absolute(dx[i:].cumsum()) > tol
+        if True in idx:
+            cluster_size[iv] += np.nonzero(idx)[0].min()
+        else:
+            cluster_size[iv] += idx.size
+        idx = np.absolute(dx[0:i][::-1].cumsum()) > tol
+        if True in idx:
+            cluster_size[iv] += np.nonzero(idx)[0].min()
+        else:
+            cluster_size[iv] += idx.size
+    return cluster_size
 
 
 class ConstantClusterSize(object):
