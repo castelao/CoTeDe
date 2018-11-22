@@ -50,17 +50,17 @@ class ConstantClusterSize(object):
             ["flag_%s" % f for f in self.flags.keys()]
 
     def set_features(self):
-        self.features = {
-                'constant_cluster_size': constant_cluster_size(
-                    self.data[self.varname])}
+        cluster_size = constant_cluster_size(self.data[self.varname])
+        N = ma.compressed(self.data[self.varname]).size
+        cluster_fraction = cluster_size / N
+
+        self.features = {'constant_cluster_size': cluster_size,
+                         'constant_cluster_fraction': cluster_fraction,
+                         }
 
     def test(self):
         self.flags = {}
-        try:
-            threshold = self.cfg['threshold']
-        except:
-            print("Deprecated cfg format. It should contain a threshold item.")
-            threshold = self.cfg
+        threshold = self.cfg['threshold']
 
         try:
             flag_good = self.cfg['flag_good']
@@ -71,14 +71,20 @@ class ConstantClusterSize(object):
         except:
             flag_bad = 4
 
-        assert (np.size(threshold) == 1) \
-               and (threshold is not None) \
-               and (np.isfinite(threshold))
+        # assert (np.size(threshold) == 1) \
+        #        and (threshold is not None) \
+        #        and (np.isfinite(threshold))
+
+        if isinstance(threshold, str) and (threshold[-1] == '%'):
+            threshold = float(threshold[:-1]) * 1e-2
+            feature_name = 'constant_cluster_fraction'
+        else:
+            feature_name = 'constant_cluster_size'
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        idx = np.nonzero(self.features['constant_cluster_size'] > threshold)
+        idx = np.nonzero(self.features[feature_name] > threshold)
         flag[idx] = flag_bad
-        idx = np.nonzero(self.features['constant_cluster_size'] <= threshold)
+        idx = np.nonzero(self.features[feature_name] <= threshold)
         flag[idx] = flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['constant_cluster_size'] = flag
+        self.flags[feature_name] = flag
