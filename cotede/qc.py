@@ -11,11 +11,12 @@ import logging
 import numpy as np
 from numpy import ma
 
-logging.basicConfig(level=logging.WARNING)
-
 from cotede.qctests import *
 from cotede.misc import combined_flag
 from cotede.utils import load_cfg
+
+
+module_logger = logging.getLogger(__name__)
 
 
 class ProfileQC(object):
@@ -38,8 +39,7 @@ class ProfileQC(object):
                 not defined, take the default value.
             - Is the best return another dictionary?
         """
-        #self.logger = logger or logging.getLogger(__name__)
-        logging.getLogger(logger or __name__)
+        # self.logger = logging.getLogger(logger or 'cotede.ProfileQC')
 
         try:
             self.name = input.filename
@@ -52,6 +52,7 @@ class ProfileQC(object):
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
 
         self.cfg = load_cfg(cfg)
+        module_logger.debug("Using cfg: {}".format(self.cfg))
 
         self.input = input
         if attributes is None:
@@ -73,8 +74,8 @@ class ProfileQC(object):
         for v in self.input.keys():
             for c in self.cfg.keys():
                 if re.match("(%s)2?$" % c, v):
-                    logging.debug(" %s - evaluating: %s, as type: %s" %
-                            (self.name, v, c))
+                    module_logger.debug(" %s - evaluating: %s, as type: %s" %
+                                            (self.name, v, c))
                     self.evaluate(v, self.cfg[c])
                     break
 
@@ -84,8 +85,8 @@ class ProfileQC(object):
 
     @property
     def auxiliary(self):
-        print('ATENTION: Please use .features instead.'
-              'auxiliary will be eventually removed.')
+        module_logger.warning('ATENTION: Please use .features instead.'
+                              'auxiliary will be eventually removed.')
         return self.features
 
     def keys(self):
@@ -100,7 +101,8 @@ class ProfileQC(object):
 
     def evaluate_common(self, cfg):
         if 'main' not in self.cfg.keys():
-            logging.warn("ATTENTION, there is no main setup in the QC cfg")
+            module_logger.warning(
+                    "ATTENTION, there is no main setup in the QC cfg")
             return
 
         self.flags['common'] = {}
@@ -155,10 +157,12 @@ class ProfileQC(object):
                 self.features[v] = {}
 
         if 'platform_identification' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate platform_identification()")
+            module_logger.warning(
+                    "Sorry I'm not ready to evaluate platform_identification()")
 
         if 'valid_geolocation' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate valid_geolocation()")
+            module_logger.warning(
+                    "Sorry I'm not ready to evaluate valid_geolocation()")
 
         if 'valid_speed' in cfg:
             # Think about. Argo also has a test valid_speed, but that is
@@ -170,7 +174,7 @@ class ProfileQC(object):
                             self.features[v]['valid_speed'] = \
                             possible_speed(self.input, cfg['valid_speed'])
             except:
-                print("Fail on valid_speed")
+                module_logger.warning("Fail on valid_speed")
 
         if 'global_range' in cfg:
             y = GlobalRange(self.input, v, cfg['global_range'])
@@ -182,10 +186,12 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'regional_range' in cfg:
-            logging.warn("Sorry, I'm no ready to evaluate regional_range()")
+            module_logger.warning(
+                    "Sorry, I'm no ready to evaluate regional_range()")
 
         if 'pressure_increasing' in cfg:
-            logging.warn("Sorry, I'm no ready to evaluate pressure_increasing()")
+            module_logger.warning(
+                    "Sorry, I'm no ready to evaluate pressure_increasing()")
 
         if 'profile_envelop' in cfg:
             self.flags[v]['profile_envelop'] = profile_envelop(
@@ -287,16 +293,19 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'grey_list' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate grey_list()")
+            module_logger.warning("Sorry I'm not ready to evaluate grey_list()")
 
         if 'gross_sensor_drift' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate gross_sensor_drift()")
+            module_logger.warning(
+                    "Sorry I'm not ready to evaluate gross_sensor_drift()")
 
         if 'frozen_profile' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate frozen_profile()")
+            module_logger.warning(
+                    "Sorry I'm not ready to evaluate frozen_profile()")
 
         if 'deepest_pressure' in cfg:
-            logging.warn("Sorry I'm not ready to evaluate deepest_pressure()")
+            module_logger.warning(
+                    "Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
             y = Tukey53H(self.input, v, cfg['tukey53H_norm'])
@@ -349,7 +358,7 @@ class ProfileQC(object):
                 for f in y.flags:
                     self.flags[v][f] = y.flags[f]
             except:
-                print("Fail on density_inversion")
+                module_logger.warning("Fail on density_inversion")
 
         if 'woa_normbias' in cfg:
             y = WOA_NormBias(self.input, v, cfg['woa_normbias'])
@@ -427,7 +436,8 @@ class ProfileQC(object):
                         features['cars_normbias'] = \
                                 np.abs(y.features['cars_normbias'])
                     else:
-                        logging.error("Sorry, I can't evaluate anomaly_detection with: %s" % f)
+                        module_logger.error(
+                                "Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
             prob, self.flags[v]['anomaly_detection'] = \
                     anomaly_detection(features, cfg['anomaly_detection'])
@@ -446,7 +456,7 @@ class ProfileQC(object):
                 try:
                     features[f] = self.features[v][f]
                 except:
-                    logging.error("Can't evaluate fuzzylogic with: %s" % f)
+                    module_logger.error("Can't evaluate fuzzylogic with: %s" % f)
 
             self.flags[v]['fuzzylogic'] = fuzzylogic(
                     features=features,
