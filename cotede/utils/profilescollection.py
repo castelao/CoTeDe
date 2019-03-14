@@ -10,7 +10,10 @@ import multiprocessing as mp
 import numpy as np
 from numpy import ma
 
-from seabird.utils import make_file_list
+try:
+    from seabird.utils import make_file_list
+except:
+    pass
 import cotede.qc
 
 
@@ -20,6 +23,9 @@ def process_profiles_serial(inputfiles, cfg=None, saveauxiliary=False,
     """ Quality control a list of CTD files
     """
 #    logger = logger or logging.getLogger(__name__)
+    print("This function will be removed. If interested in processing CTD files, please install the package PySeabird (pip install seabird).")
+    import time; time.sleep(5)
+
 
     profiles = []
     for f in inputfiles:
@@ -38,6 +44,8 @@ def process_profiles(inputfiles, cfg=None, saveauxiliary=True,
     # verbose=True, timeout=60, logger=None):
     """ Quality control a list of CTD files in parallel
     """
+    print("This function will be removed. If interested in processing CTD files, please install the package PySeabird (pip install seabird).")
+    import time; time.sleep(5)
     # logger = logger or logging.getLogger(__name__)
     npes = 2 * mp.cpu_count()
     npes = min(npes, len(inputfiles))
@@ -120,6 +128,8 @@ class ProfilesQCCollection(object):
             cfg=None, saveauxiliary=False, timeout=60):
         """
         """
+        print("This function will be removed. If interested in processing CTD files, please install the package PySeabird (pip install seabird).")
+        import time; time.sleep(5)
         self.name = "ProfilesQCCollection"
 
         self.inputfiles = make_file_list(inputdir, inputpattern)
@@ -188,6 +198,9 @@ class ProfilesQCPandasCollection(object):
             cfg=None, saveauxiliary=False, timeout=60):
         """
         """
+        print("This function will be removed. If interested in processing CTD files, please install the package PySeabird (pip install seabird).")
+        import time; time.sleep(5)
+
         try:
             import pandas as pd
         except:
