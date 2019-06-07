@@ -13,29 +13,45 @@ from numpy import ma
 def bin_spike(x, l):
     """
 
+        l is the number of points used for comparison, thus l=2 means that each
+          point will be compared only against the previous and following
+          measurements. l=2 is is probably not a good choice, too small.
+
+        Maybe use pstsd instead?
+
         Dummy way to avoid warnings when x[ini:fin] are all masked.
         Improve this in the future.
     """
+    assert x.ndim == 1, "I'm not ready to deal with multidimensional x"
+
+    assert l%2 == 0, "l must be an even integer"
+
     N = len(x)
     bin = ma.masked_all(N)
-    half_window = l/2
-    for i in range(half_window, N-half_window):
+    # bin_std = ma.masked_all(N)
+    half_window = int(l/2)
+    idx = (i for i in range(half_window, N - half_window) if np.isfinite(x[i]))
+    for i in idx:
         ini = max(0, i - half_window)
         fin = min(N, i + half_window)
-        if ~x[ini:fin].mask.any():
+        # At least 3 valid points
+        if ma.compressed(x[ini:fin]).size >= 3:
             bin[i] = x[i] - ma.median(x[ini:fin])
-            #bin_std[i] = (T[ini:fin]).std()
+            # bin_std[i] = (np.append(x[ini:i], x[i+1:fin+1])).std()
+            bin[i] /= (np.append(x[ini:i], x[i+1:fin+1])).std()
 
     return bin
 
 
 class Bin_Spike(object):
-    def __init__(self, data, varname, cfg):
+    def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname
         self.cfg = cfg
 
         self.set_features()
+        if autoflag:
+            self.test()
 
     def keys(self):
         return self.features.keys() + \
@@ -59,7 +75,7 @@ class Bin_Spike(object):
         except:
             print("Deprecated cfg format. It should contain flag_good & flag_bad.")
             flag_good = 1
-            flag_bad = 4
+            flag_bad = 3
 
         assert (np.size(threshold) == 1) and \
                 (threshold is not None) and \
