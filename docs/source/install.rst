@@ -5,7 +5,7 @@ Installation
 Requirements
 ============
 
-- `Python <http://www.python.org/>`_ 2.6 (>=2.6.5), 2.7, 3.1 or 3.2
+- `Python <http://www.python.org/>`_ 2.7, or >= 3.6
 
 - `Numpy <http://www.numpy.org>`_ (>=1.1)
 

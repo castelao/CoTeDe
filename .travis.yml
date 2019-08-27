@@ -4,8 +4,8 @@ sudo: false
 
 python:
   - "2.7"
-  - "3.5"
   - "3.6"
+  - "3.7"
 
 before_install:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
@@ -21,7 +21,7 @@ before_install:
   - conda info -a
 
 install:
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip atlas numpy scipy hdf4 libnetcdf netcdf4 pandas matplotlib pytest
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pip numpy scipy hdf4 libnetcdf netcdf4 pandas matplotlib
   - source activate test-environment
   - pip install -r test-requirements.txt
   - pip install codecov pytest-cov
