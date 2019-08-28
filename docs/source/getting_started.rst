@@ -2,6 +2,8 @@
 Getting Started with CoTeDe
 ***************************
 
+To quality control CTD or TSG, please check the `PySeabird Manual <https://seabird.readthedocs.io>`_.
+
 Inside python
 =============
 
