@@ -56,9 +56,9 @@ class ProfileQC(object):
 
         self.input = input
         if attributes is None:
-            self.attributes = input.attributes
+            self.attrs = input.attributes
         else:
-            self.attributes = attributes
+            self.attrs = attributes
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
@@ -82,6 +82,12 @@ class ProfileQC(object):
     @property
     def data(self):
         return self.input.data
+
+    @property
+    def attributes(self):
+        """Temporary solution while migrating attributes -> attrs
+        """
+        return self.attrs
 
     @property
     def auxiliary(self):
