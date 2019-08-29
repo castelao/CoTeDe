@@ -2,8 +2,12 @@
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 
+import logging
+
 import numpy as np
 from numpy import ma
+
+module_logger = logging.getLogger(__name__)
 
 
 class StuckValue(object):

@@ -8,11 +8,15 @@
 
 """
 
+import logging
+
 import numpy as np
 from numpy import ma
 
 from .rate_of_change import rate_of_change
 
+
+module_logger = logging.getLogger(__name__)
 
 class DigitRollOver(object):
     def __init__(self, data, varname, cfg, noflag=False):
@@ -36,17 +40,17 @@ class DigitRollOver(object):
         self.flags = {}
         try:
             threshold = self.cfg['threshold']
-        except:
-            print("Deprecated cfg format. It should contain a threshold item.")
+        except KeyError:
+            module_logger.debug("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
         try:
             flag_good = self.cfg['flag_good']
-        except:
+        except KeyError:
             flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
-        except:
+        except KeyError:
             flag_bad = 4
 
         assert (np.size(threshold) == 1) \

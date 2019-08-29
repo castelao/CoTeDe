@@ -3,11 +3,13 @@
 """
 """
 
+import logging
+
 import numpy as np
 from numpy import ma
 
-FLAG_GOOD = 1
-FLAG_BAD = 4
+
+module_logger = logging.getLogger(__name__)
 
 def tukey53H(x):
     """Spike test Tukey 53H from Goring & Nikora 2002
@@ -77,7 +79,7 @@ class Tukey53H(object):
         self.flags = {}
         try:
             threshold = self.cfg['threshold']
-        except:
+        except KeyError:
             print("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg['k']
 
@@ -87,12 +89,12 @@ class Tukey53H(object):
 
         try:
             flag_good = self.cfg['flag_good']
-        except:
-            flag_good = FLAG_GOOD
+        except KeyError:
+            flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
-        except:
-            flag_bad = FLAG_BAD
+        except KeyError:
+            flag_bad = 4
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
         flag[np.nonzero(self.features['tukey53H_norm'] > threshold)] = \

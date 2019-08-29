@@ -3,8 +3,12 @@
 """
 """
 
+import logging
+
 from numpy import ma
 
+
+module_logger = logging.getLogger(__name__)
 
 def descentPrate(data):
     """

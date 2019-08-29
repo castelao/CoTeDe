@@ -6,9 +6,13 @@
 
 """
 
+import logging
+
 import numpy as np
 from numpy import ma
 
+
+module_logger = logging.getLogger(__name__)
 
 def spike(x):
     """ Spike
@@ -21,6 +25,8 @@ def spike(x):
 
 class Spike(object):
     def __init__(self, data, varname, cfg):
+        module_logger.debug("Spike check")
+
         self.data = data
         self.varname = varname
         self.cfg = cfg
@@ -38,17 +44,17 @@ class Spike(object):
         self.flags = {}
         try:
             threshold = self.cfg['threshold']
-        except:
-            print("Deprecated cfg format. It should contain a threshold item.")
+        except KeyError:
+            module_logger.debug("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
         try:
             flag_good = self.cfg['flag_good']
-        except:
+        except KeyError:
             flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
-        except:
+        except KeyError:
             flag_bad = 4
 
         assert (np.size(threshold) == 1) and \

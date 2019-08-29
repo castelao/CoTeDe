@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 import numpy as np
 import oceansdb
+
+module_logger = logging.getLogger(__name__)
+
 
 def location_at_sea(data, cfg=None):
     """ Evaluate if location is at sea.
@@ -29,18 +34,18 @@ def location_at_sea(data, cfg=None):
     # Temporary solution while migrating to OceanSites variables syntax
     if ('LATITUDE' not in data.attributes) and \
             ('latitude' in data.attributes):
-                print("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
+                module_logger.debug("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
                 data.attributes['LATITUDE'] = data.attributes['latitude']
     if ('LONGITUDE' not in data.attributes) and \
             ('longitude' in data.attributes):
-                print("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
+                module_logger.debug("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
                 data.attributes['LONGITUDE'] = data.attributes['longitude']
 
     if ('LATITUDE' not in data.attributes) or \
             (data.attributes['LATITUDE'] == None) or \
             ('LONGITUDE' not in data.attributes) or \
             (data.attributes['LONGITUDE'] == None):
-                print("Missing geolocation (lat/lon)")
+                module_logger.debug("Missing geolocation (lat/lon)")
                 return 0
 
     if (data.attributes['LATITUDE'] > 90) or \

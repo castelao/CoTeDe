@@ -4,11 +4,14 @@
     Quality Control based on anomaly detection
 """
 
+import logging
 
 import numpy as np
 #from numpy import ma
 from cotede.anomaly_detection import estimate_anomaly
 
+
+module_logger = logging.getLogger(__name__)
 
 def anomaly_detection(features, cfg):
     """

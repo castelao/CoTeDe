@@ -19,11 +19,14 @@
 """
 
 from datetime import timedelta
+import logging
 
 import numpy as np
 from numpy import ma
 
 from oceansdb import WOA
+
+module_logger = logging.getLogger(__name__)
 
 
 def woa_normbias(data, v, cfg):
@@ -107,7 +110,7 @@ def woa_normbias(data, v, cfg):
                 'woa_mean': woa['mean']}
 
     finally:
-        # self.logger.warn("%s - WOA is not available at this site" %
+        # self.logger.warnning("%s - WOA is not available at this site" %
         # self.name)
         return flag, features
 
@@ -212,18 +215,18 @@ class WOA_NormBias(object):
         # 3 is the possible minimum to estimate the std, but I shold use higher.
         try:
             min_samples = self.cfg['min_samples']
-        except:
+        except KeyError:
             min_samples = 3
 
         self.flags = {}
 
         try:
             flag_good = self.cfg['flag_good']
-        except:
+        except KeyError:
             flag_good = 1
         try:
             flag_bad = self.cfg['flag_bad']
-        except:
+        except KeyError:
             flag_bad = 3
 
         threshold = self.cfg['threshold']

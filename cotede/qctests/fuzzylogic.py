@@ -4,7 +4,6 @@
     Quality Control based on fuzzy logic.
 """
 
-
 import numpy as np
 from cotede.fuzzy import fuzzy_uncertainty
 
