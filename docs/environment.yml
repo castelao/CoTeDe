@@ -1,7 +1,11 @@
 name: cotede
 
 dependencies:
-- python=2.7
-- numpy=1.11.1
-- netcdf4=1.2.4
-- scipy=0.18.0
+- python
+- numpy
+- netcdf4
+- scipy
+- matplotlib
+- pip
+- pip:
+    - oceansdb>=0.8.6
