@@ -137,15 +137,15 @@ class ProfileQC(object):
                     self.input,
                     self.cfg['main']['location_at_sea'])
 
-        if self.saveauxiliary:
-            self.features['common'] = {}
-            # Need to improve this. descentPrate doesn't make sense
-            #   for Argo. That's why the try.
-            try:
-                self.features['common']['descentPrate'] = \
-                        descentPrate(self.input)
-            except:
-                pass
+        # if self.saveauxiliary:
+        #     self.features['common'] = {}
+        #     # Need to improve this. descentPrate doesn't make sense
+        #     #   for Argo. That's why the try.
+        #     try:
+        #         self.features['common']['descentPrate'] = \
+        #                 descentPrate(self.input)
+        #     except:
+        #         pass
 
     def evaluate(self, v, cfg):
 
@@ -475,11 +475,11 @@ class ProfileQC(object):
             self.features = {}
 
         self.features['common'] = {}
-        try:
-            self.features['common']['descentPrate'] = \
-                    descentPrate(self.input)
-        except:
-            logging.warn("Failled to run descentPrate")
+        # try:
+        #     self.features['common']['descentPrate'] = \
+        #             descentPrate(self.input)
+        # except:
+        #     logging.warn("Failled to run descentPrate")
 
 
 class ProfileQCed(ProfileQC):
