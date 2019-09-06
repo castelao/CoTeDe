@@ -10,13 +10,16 @@ CoTe De l'eau
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/travis/castelao/CoTeDe.svg
-        :target: https://travis-ci.org/castelao/CoTeDe
+   :target: https://travis-ci.org/castelao/CoTeDe
 
 .. image:: https://codecov.io/gh/castelao/CoTeDe/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/castelao/CoTeDe
+   :target: https://codecov.io/gh/castelao/CoTeDe
 
 .. image:: https://img.shields.io/pypi/v/cotede.svg
-        :target: https://pypi.python.org/pypi/cotede
+   :target: https://pypi.python.org/pypi/cotede
+
+.. image:: https://mybinder.org/badge_logo.svg
+   :target: https://mybinder.org/v2/gh/castelao/CoTeDe/master?filepath=docs%2Fnotebooks
 
 
 `CoTeDe <http://cotede.castelao.net>`_ is an Open Source Python package to quality control (QC) hydrographic data such as temperature and salinity.
@@ -35,6 +38,7 @@ Later I was advising the quality control of the brazilian hydrography of PIRATA.
 
 My vision is that we can do better than we do today with more flexible classification techniques, which includes machine learning, to minimize the burden on manual expert QC improving the consistency, performance and reliability of the QC procedure for oceanographic data, especially for realtime operations.
 
+
 Why use CoTeDe
 --------------
 
@@ -47,6 +51,7 @@ CoTeDe can apply different quality control procedures:
 Process multiple files in parallel, ideal for large datasets.
 
 Export output, original data plus flags, into netCDF files following OCEANSites data structure.
+
 
 Quick howto
 -----------
@@ -72,6 +77,7 @@ To evaluate a full set of profiles at once, like all profiles from a cruise, use
         dataset.flags['temperature'].keys()
 
 Check the notebooks gallery for more examples and functionalities: http://nbviewer.ipython.org/github/castelao/CoTeDe/tree/master/docs/notebooks/
+
 
 Documentation
 -------------
