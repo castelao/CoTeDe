@@ -3,6 +3,7 @@
 import logging
 
 import numpy as np
+from numpy import ma
 import oceansdb
 
 module_logger = logging.getLogger(__name__)
@@ -70,3 +71,111 @@ def location_at_sea(data, cfg=None):
 
     except:
         return 0
+
+
+def get_bathymetry(lat, lon):
+    """Interpolate bathymetry from ETOPO
+
+       For a given (lat, lon), interpolates the bathymetry from ETOPO
+    """
+    assert np.shape(lat) == np.shape(lon), "Lat & Lon shape mismatch"
+    assert np.shape(lat) == ()
+
+    ETOPO = oceansdb.ETOPO()
+
+    etopo = ETOPO["topography"].extract(var="height", lat=lat, lon=lon)
+    return {"bathymetry": -etopo["height"]}
+
+
+class LocationAtSea(object):
+    def __init__(self, data, cfg, autoflag=True):
+        self.data = data
+        assert isinstance(cfg, dict)
+        self.cfg = cfg
+
+        self.set_features()
+        if autoflag:
+            self.test()
+
+    def keys(self):
+        return self.features.keys() + ["flag_%s" % f for f in self.flags.keys()]
+
+    def set_features(self):
+        assert hasattr(self.data, "attrs"), "Missing attributes"
+
+        # Temporary solution while migrating to OceanSites variables syntax
+        if ("LATITUDE" not in self.data.attrs) and ("latitude" in self.data.attrs):
+            module_logger.debug(
+                "Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE"
+            )
+            self.data.attrs["LATITUDE"] = self.data.attrs["latitude"]
+        if ("LONGITUDE" not in self.data.attrs) and ("longitude" in self.data.attrs):
+            module_logger.debug(
+                "Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE"
+            )
+            self.data.attrs["LONGITUDE"] = self.data.attrs["longitude"]
+
+        if (
+            ("LATITUDE" not in self.data.attrs)
+            or (self.data.attrs["LATITUDE"] is None)
+            or ("LONGITUDE" not in self.data.attrs)
+            or (self.data.attrs["LONGITUDE"] is None)
+        ):
+            module_logger.debug("Missing geolocation (lat/lon)")
+            self.features = {
+                "bathymetry": ma.fix_invalid([np.nan]),
+                "bathymetry_std": ma.fix_invalid([np.nan]),
+            }
+            return
+
+        if (
+            (self.data.attrs["LATITUDE"] > 90)
+            or (self.data.attrs["LATITUDE"] < -90)
+            or (self.data.attrs["LONGITUDE"] > 360)
+            or (self.data.attrs["LONGITUDE"] < -180)
+        ):
+            self.features = {
+                "bathymetry": ma.fix_invalid([np.nan]),
+                "bathymetry_std": ma.fix_invalid([np.nan]),
+            }
+            return
+
+        lat = self.data.attrs["LATITUDE"]
+        lon = self.data.attrs["LONGITUDE"]
+        try:
+            self.features = get_bathymetry(lat=lat, lon=lon)
+        except:
+            self.features = {
+                "bathymetry": ma.fix_invalid([np.nan]),
+                "bathymetry_std": ma.fix_invalid([np.nan]),
+            }
+
+    def test(self):
+        self.flags = {}
+        try:
+            threshold = self.cfg["threshold"]
+        except KeyError:
+            module_logger.debug("No threshold for location at sea. I'll use 0")
+            threshold = 0
+
+        assert (
+            (np.size(threshold) == 1)
+            and (threshold is not None)
+            and (np.isfinite(threshold))
+        )
+
+        try:
+            flag_good = self.cfg["flag_good"]
+        except KeyError:
+            flag_good = 1
+        try:
+            flag_bad = self.cfg["flag_bad"]
+        except KeyError:
+            flag_bad = 3
+
+        self.features
+        flag = np.zeros(self.features["bathymetry"].shape, dtype="i1")
+        flag[np.nonzero(self.features["bathymetry"] < threshold)] = flag_bad
+        flag[np.nonzero(self.features["bathymetry"] >= threshold)] = flag_good
+        flag[ma.getmaskarray(self.features["bathymetry"])] = 9
+        self.flags["location_at_sea"] = flag

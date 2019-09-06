@@ -2,7 +2,7 @@
 
 from .qctests import *
 from .descentPrate import descentPrate
-from .location_at_sea import location_at_sea
+from .location_at_sea import LocationAtSea, location_at_sea
 from .profile_envelop import profile_envelop
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed

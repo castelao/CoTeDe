@@ -4,7 +4,7 @@
 """ Consistency check for location at sea QC test.
 """
 
-from cotede.qctests import location_at_sea
+from cotede.qctests import LocationAtSea, location_at_sea
 from data import DummyData
 
 
@@ -78,3 +78,12 @@ def test_nonelocation():
     del(data.attributes['LONGITUDE'])
     data.attributes['LATITUDE'] = 1
     assert location_at_sea(data) == 0
+
+
+def test_LocationAtSea():
+    data = DummyData()
+    t = LocationAtSea(data, cfg={})
+    assert hasattr(t, 'features')
+    assert 'bathymetry' in t.features
+    assert hasattr(t, 'flags')
+    assert 'location_at_sea' in t.flags
