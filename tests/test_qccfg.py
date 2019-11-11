@@ -31,7 +31,7 @@ def test_cfg_json():
         except:
             assert False, "Failed to load %s" % cfgfile
 
-        assert type(cfg) is dict
+        assert isinstance(cfg, dict)
         for k in cfg.keys():
             assert len(cfg[k]) > 0
 

@@ -50,7 +50,7 @@ def test_dict():
 
 def test_default():
     cfg_out = load_cfg()
-    assert type(cfg_out) is dict
+    assert isinstance(cfg_out, dict)
     assert len(cfg_out) > 0
 
 
@@ -66,8 +66,36 @@ def test_factory_cfgs():
             cfg_out = load_cfg(cfg)
         except:
             assert False, "Couldn't load: %s" % cfg
-        assert type(cfg_out) is dict
+        assert isinstance(cfg_out, dict)
         assert len(cfg_out) > 0
 
 
 # Missing a test to load cfg at ~/.cotede
+
+def test_dict_input():
+    """Test a dictionary input, i.e. manually defined config
+
+       It should return the same dictionary
+    """
+    cfg = {'temperature': {'global_range': 'test'}}
+    assert cfg == load_cfg(cfg)
+
+
+def test_inheritance():
+    """Test inheritance
+    """
+    cfg = load_cfg('cotede')
+    cfg2 = load_cfg({'inherit': 'cotede'})
+    for c in cfg:
+        assert c in cfg
+        assert cfg[c] == cfg2[c]
+
+    # If is a list, the last is the lowest priority
+    cfg2 = load_cfg({'inherit': ['cotede', 'gtspp']})
+    for c in cfg:
+        assert c in cfg
+        if not isinstance(cfg[c], dict):
+            assert cfg[c] == cfg2[c]
+        else:
+            for cc in cfg[c]:
+                assert cfg[c][cc] == cfg2[c][cc]
