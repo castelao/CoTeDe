@@ -3,8 +3,13 @@
 """ The tests itself to QC the data
 """
 
+import logging
+
 import numpy as np
 from numpy import ma
+
+
+module_logger = logging.getLogger(__name__)
 
 def step(x):
     y = ma.masked_all(x.shape, dtype=x.dtype)
@@ -63,3 +68,34 @@ def pstep():
 
 def constant_value():
     pass
+
+
+class QCCheck(object):
+    """Basic template for a QC check
+    """
+    def __init__(self, data, varname, cfg, autoflag=True):
+        self.data = data
+        self.varname = varname
+        self.cfg = cfg
+
+        self.set_flags()
+        self.set_features()
+        if autoflag:
+            self.test()
+
+    def set_flags(self):
+        try:
+            self.flag_good = self.cfg['flag_good']
+        except (KeyError, TypeError):
+            module_logger.debug("flag_good undefined. Using default value")
+            self.flag_good = 1
+
+        try:
+            self.flag_bad = self.cfg['flag_bad']
+        except (KeyError, TypeError):
+            module_logger.debug("flag_bad undefined. Using default value")
+            self.flag_bad = 4
+
+    def keys(self):
+        return self.features.keys() + \
+            ["flag_%s" % f for f in self.flags.keys()]

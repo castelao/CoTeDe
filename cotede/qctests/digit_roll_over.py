@@ -13,25 +13,13 @@ import logging
 import numpy as np
 from numpy import ma
 
+from .qctests import QCCheck
 from .rate_of_change import rate_of_change
 
 
 module_logger = logging.getLogger(__name__)
 
-class DigitRollOver(object):
-    def __init__(self, data, varname, cfg, noflag=False):
-        self.data = data
-        self.varname = varname
-        self.cfg = cfg
-
-        self.set_features()
-        if not noflag:
-            self.test()
-
-    def keys(self):
-        return self.features.keys() + \
-            ["flag_%s" % f for f in self.flags.keys()]
-
+class DigitRollOver(QCCheck):
     def set_features(self):
         self.features = {
                 'rate_of_change': rate_of_change(self.data[self.varname])}
@@ -58,9 +46,8 @@ class DigitRollOver(object):
             and (np.isfinite(threshold))
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        idx = ma.absolute(self.features['rate_of_change']) > threshold
-        flag[np.nonzero(idx)] = flag_bad
-        idx = ma.absolute(self.features['rate_of_change']) <= threshold
-        flag[np.nonzero(idx)] = flag_good
+        feature = ma.absolute(self.features['rate_of_change'])
+        flag[np.nonzero(feature > threshold)] = self.flag_bad
+        flag[np.nonzero(feature <= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
         self.flags['digit_roll_over'] = flag

@@ -6,6 +6,8 @@ import numpy as np
 from numpy import ma
 import oceansdb
 
+from .qctests import QCCheck
+
 module_logger = logging.getLogger(__name__)
 
 
@@ -87,7 +89,7 @@ def get_bathymetry(lat, lon):
     return {"bathymetry": -etopo["height"]}
 
 
-class LocationAtSea(object):
+class LocationAtSea(QCCheck):
     def __init__(self, data, cfg, autoflag=True):
         self.data = data
         assert isinstance(cfg, dict)
@@ -96,9 +98,6 @@ class LocationAtSea(object):
         self.set_features()
         if autoflag:
             self.test()
-
-    def keys(self):
-        return self.features.keys() + ["flag_%s" % f for f in self.flags.keys()]
 
     def set_features(self):
         assert hasattr(self.data, "attrs"), "Missing attributes"

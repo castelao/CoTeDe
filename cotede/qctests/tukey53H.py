@@ -8,8 +8,11 @@ import logging
 import numpy as np
 from numpy import ma
 
+from .qctests import QCCheck
+
 
 module_logger = logging.getLogger(__name__)
+
 
 def tukey53H(x):
     """Spike test Tukey 53H from Goring & Nikora 2002
@@ -50,18 +53,7 @@ def tukey53H_norm(x, l=12):
     return Delta/sigma
 
 
-class Tukey53H(object):
-    def __init__(self, data, varname, cfg):
-        self.data = data
-        self.varname = varname
-        self.cfg = cfg
-
-        self.set_features()
-
-    def keys(self):
-        return self.features.keys() + \
-            ["flag_%s" % f for f in self.flags.keys()]
-
+class Tukey53H(QCCheck):
     def set_features(self):
         self.features = {
                 'tukey53H': tukey53H(self.data[self.varname]),
@@ -87,19 +79,10 @@ class Tukey53H(object):
                 (threshold is not None) and \
                 (np.isfinite(threshold))
 
-        try:
-            flag_good = self.cfg['flag_good']
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg['flag_bad']
-        except KeyError:
-            flag_bad = 4
-
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
         flag[np.nonzero(self.features['tukey53H_norm'] > threshold)] = \
-                flag_bad
+                self.flag_bad
         flag[np.nonzero(self.features['tukey53H_norm'] <= threshold)] = \
-                flag_good
+                self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
         self.flags['tukey53H_norm'] = flag

@@ -11,6 +11,8 @@ import logging
 import numpy as np
 from numpy import ma
 
+from .qctests import QCCheck
+
 
 module_logger = logging.getLogger(__name__)
 
@@ -23,20 +25,7 @@ def spike(x):
     return y
 
 
-class Spike(object):
-    def __init__(self, data, varname, cfg):
-        module_logger.debug("Spike check")
-
-        self.data = data
-        self.varname = varname
-        self.cfg = cfg
-
-        self.set_features()
-
-    def keys(self):
-        return self.features.keys() + \
-            ["flag_%s" % f for f in self.flags.keys()]
-
+class Spike(QCCheck):
     def set_features(self):
         self.features = {'spike': spike(self.data[self.varname])}
 
@@ -48,21 +37,13 @@ class Spike(object):
             module_logger.debug("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
-        try:
-            flag_good = self.cfg['flag_good']
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg['flag_bad']
-        except KeyError:
-            flag_bad = 4
-
         assert (np.size(threshold) == 1) and \
                 (threshold is not None) and \
                 (np.isfinite(threshold))   
 
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        flag[np.nonzero(self.features['spike'] > threshold)] = flag_bad
-        flag[np.nonzero(self.features['spike'] <= threshold)] = flag_good
+        feature = self.features["spike"]
+        flag[np.nonzero(feature > threshold)] = self.flag_bad
+        flag[np.nonzero(feature <= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
         self.flags['spike'] = flag
