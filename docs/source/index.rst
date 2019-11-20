@@ -21,12 +21,11 @@ User Documentation
 .. toctree::
    :maxdepth: 1
 
-   overview
+   readme
    install
+   data_model
    getting_started
    qctests
-   anomaly_detection
-   fuzzy_logic
    history
 
 Indices and tables

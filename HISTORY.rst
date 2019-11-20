@@ -6,7 +6,8 @@ History
 0.20 - Jul, 2018
 ----------------
 
-* Removing dependency on pyArgo and pySeabird. Generalizing CoTeDe for other uses, thus now on PyArgo, PySeabird, and other packages to come public soon that use CoTeDe.
+* Removing dependency on `pySeabird <https://github.com/castelao/seabird>`_ and pyArgo. 
+  Inversion of roles to generalize CoTeDe for other uses. Before CoTeDe would depend on pySeabird, but now CoTeDe is an optional requirement for pySeabird to QC CTD and TSG.
 
 0.19
 ----------------
@@ -21,7 +22,7 @@ History
 0.16 - Mar, 2016
 ----------------
 
-* Using external package OceansDB to handle climatologies and bathymetry.
+* Using external package `OceansDB <https://github.com/castelao/oceansdb>`_ to handle climatologies and bathymetry.
 
 0.15 - Dec, 2015
 ----------------
@@ -48,8 +49,8 @@ History
 
 Since 0.9 some of the most important changes.
 
-* Following CF vocabulary for variables names (PRES, TEMP, PSAL...)
-* Partial support to ARGO profiles
+* Following OceanSites vocabulary for variable names (PRES, TEMP, PSAL...)
+* Partial support to Argo profiles
 * Added density invertion test
 * Included haversine to avoid dependency on MAUD.
 * tox and travis support.
@@ -57,7 +58,7 @@ Since 0.9 some of the most important changes.
 0.9 - Dec, 2013
 ---------------
 
-* Going public
+* A few people already had access but at this point it went open publicly.
 
 0.7.3
 -----
@@ -72,24 +73,29 @@ Since 0.9 some of the most important changes.
 0.5.0
 -----
 
-* Implemented ProfileQCCollection
+* Implemented ProfileQCCollection (later moved to PySeabird).
 
 0.4 - Sep, 2013
 ---------------
 
-* gradient and spike tests with depth conditional thresholds
-* CruiseQC
+* Gradient and spike tests with depth conditional thresholds.
+* CruiseQC (later replaced by ProfileQCCollection).
 * Use default threshold values for the QC tests.
 
 0.1 - May 24, 2013
 ------------------
 
-* Initial release.
+* Renamed to CoTeDe. Another major refactoring.
 
 QC_ML - 2011
 ------------
 
-* QC_ML, a machine learning approach to quality control hydrographic data, the initial prototype of CoTeDe. I refactored the system I developed to quality control TSG, to evaluate the PIRATA's CTD stations for INPE. At this point I migrated from my personal Subversion server to Bitbucket, and I lost the history and logs before this point.
+* Renamed to QC_ML, a machine learning approach to quality control hydrographic data, the initial prototype of Anomaly Detection approach. I refactored the system I developed to quality control TSG, to evaluate the PIRATA's CTD stations for INPE. At that point I migrated from my personal Subversion server to Bitbucket, and I lost the detailed history and logs before that. 
+
+2008
+----
+
+* Modified to parse Seabird CTDs so that the .cnv files could be directly QCed.
 
 2006
 ----
