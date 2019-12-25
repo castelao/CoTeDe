@@ -11,6 +11,14 @@ def cotede_dir():
     return expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
 
 
+def cotederc(subdir=None):
+    """Returns the directory with custom config for CoTeDe
+    """
+    path = expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
+    if subdir is not None:
+        path = os.path.join(path, subdir)
+    return path
+
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save
