@@ -8,7 +8,7 @@ from numpy import ma
 
 class DummyData(object):
     def __init__(self):
-        self.attributes = {
+        self.attrs = {
                 'datetime': datetime(2016,6,4),
                 'LATITUDE': 15, 'LONGITUDE': -38}
         self.data = {
@@ -27,3 +27,8 @@ class DummyData(object):
 
     def keys(self):
         return self.data.keys()
+
+    @property
+    def attributes(self):
+        print('attributes will be removed. Use attrs instead!')
+        return self.attrs
