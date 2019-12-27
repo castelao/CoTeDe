@@ -13,8 +13,8 @@ def test_attribute():
 
     coords = [[10, -30, 1], [10, 330, 1]]
     for lat, lon, flag in coords:
-        data.attributes['LATITUDE'] = lat
-        data.attributes['LONGITUDE'] = lon
+        data.attrs['LATITUDE'] = lat
+        data.attrs['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
 
 
@@ -23,8 +23,8 @@ def test_attribute_inland():
 
     coords = [[-10, -60, 3], [-10, 300, 3]]
     for lat, lon, flag in coords:
-        data.attributes['LATITUDE'] = lat
-        data.attributes['LONGITUDE'] = lon
+        data.attrs['LATITUDE'] = lat
+        data.attrs['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
 
 
@@ -33,8 +33,8 @@ def test_greenwich():
 
     coords = [[0, 0, 1], [6, 0, 3], [-10, 0, 1]]
     for lat, lon, flag in coords:
-        data.attributes['LATITUDE'] = lat
-        data.attributes['LONGITUDE'] = lon
+        data.attrs['LATITUDE'] = lat
+        data.attrs['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
 
 
@@ -57,8 +57,8 @@ def test_badlocation():
 
     coords = [[91, -30, 3], [-91, -30, 3], [10, -361, 3], [10, 1000, 3]]
     for lat, lon, flag in coords:
-        data.attributes['LATITUDE'] = lat
-        data.attributes['LONGITUDE'] = lon
+        data.attrs['LATITUDE'] = lat
+        data.attrs['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
 
 
@@ -67,16 +67,16 @@ def test_nonelocation():
 
     coords = [[None, 1, 0], [1, None, 0]]
     for lat, lon, flag in coords:
-        data.attributes['LATITUDE'] = lat
-        data.attributes['LONGITUDE'] = lon
+        data.attrs['LATITUDE'] = lat
+        data.attrs['LONGITUDE'] = lon
         assert location_at_sea(data) == flag
 
-    del(data.attributes['LATITUDE'])
-    data.attributes['LONGITUDE'] = 1
+    del(data.attrs['LATITUDE'])
+    data.attrs['LONGITUDE'] = 1
     assert location_at_sea(data) == 0
 
-    del(data.attributes['LONGITUDE'])
-    data.attributes['LATITUDE'] = 1
+    del(data.attrs['LONGITUDE'])
+    data.attrs['LATITUDE'] = 1
     assert location_at_sea(data) == 0
 
 

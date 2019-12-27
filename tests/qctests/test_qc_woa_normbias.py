@@ -29,9 +29,9 @@ def test():
 
 def test_attribute():
     profile = DummyData()
-    profile.attributes['datetime'] = datetime(2016,6,4)
-    profile.attributes['LATITUDE'] = -30.0
-    profile.attributes['LONGITUDE'] = 15
+    profile.attrs['datetime'] = datetime(2016,6,4)
+    profile.attrs['LATITUDE'] = -30.0
+    profile.attrs['LONGITUDE'] = 15
     profile.data['PRES'] = np.array([2.0, 5.0, 6.0, 21.0, 44.0, 79.0, 1000, 5000])
     profile.data['TEMP'] = np.array([16.0, 15.6, 15.9, 15.7, 15.2, 14.1, 8.6, 2.0])
 
@@ -47,9 +47,9 @@ def test_standard_error():
     """
 
     profile = DummyData()
-    profile.attributes['datetime'] = datetime(2016,6,4)
-    profile.attributes['LATITUDE'] = -30.0
-    profile.attributes['LONGITUDE'] = 15
+    profile.attrs['datetime'] = datetime(2016,6,4)
+    profile.attrs['LATITUDE'] = -30.0
+    profile.attrs['LONGITUDE'] = 15
     profile.data['PRES'] = np.array([2.0, 5.0, 6.0, 21.0, 44.0, 79.0, 1000, 5000])
     profile.data['TEMP'] = np.array([16.0, 15.6, 15.9, 15.7, 15.2, 14.1, 8.6, 2.0])
 
