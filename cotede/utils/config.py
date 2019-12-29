@@ -64,7 +64,8 @@ def load_cfg(cfgname="cotede"):
         except:
             # Otherwise, try to load from user's directory
             p = os.path.join(cotederc(), "cfg", "{}.json".format(cfgname))
-            cfg = json.loads(p, object_pairs_hook=OrderedDict)
+            with open(p, 'r') as f:
+                cfg = json.load(f, object_pairs_hook=OrderedDict)
         # self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
 
