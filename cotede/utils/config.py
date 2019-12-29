@@ -58,13 +58,13 @@ def load_cfg(cfgname="cotede"):
         try:
             # If cfg is available in qc_cfg, use it
             p = pkg_resources.resource_string(
-                "cotede", "qc_cfg/{}.json".format(cfgname)
+                "cotede", os.path.join("qc_cfg", "{}.json".format(cfgname))
             )
             cfg = json.loads(p, object_pairs_hook=OrderedDict)
             # self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
         except:
             # Otherwise, try to load from user's directory
-            p = os.path.join(cotederc(), "cfg/{}.json".format(cfgname))
+            p = os.path.join(cotederc(), "cfg", "{}.json".format(cfgname))
             cfg = json.loads(p, object_pairs_hook=OrderedDict)
         # self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
