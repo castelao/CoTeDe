@@ -52,8 +52,7 @@ def load_cfg(cfgname="cotede"):
     # A given manual configuration has priority
     if isinstance(cfgname, dict):
         # self.logger.debug("%s - User's QC cfg." % self.name)
-        # cfg = OrderedDict(copy.deepcopy(cfgname))
-        cfg = copy.deepcopy(cfgname)
+        cfg = OrderedDict(copy.deepcopy(cfgname))
     elif isinstance(cfgname, str):
         try:
             # If cfg is available in qc_cfg, use it
