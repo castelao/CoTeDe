@@ -191,7 +191,7 @@ class ProfileQC(object):
                 module_logger.warning("Fail on valid_speed")
 
         if 'global_range' in cfg:
-            y = GlobalRange(self.input, v, cfg['global_range'])
+            y = GlobalRange(self.input, v, cfg['global_range'], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -213,7 +213,7 @@ class ProfileQC(object):
 
         if 'constant_cluster_size' in cfg:
             y = ConstantClusterSize(
-                    self.input, v, cfg['constant_cluster_size'])
+                    self.input, v, cfg['constant_cluster_size'], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -222,18 +222,19 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'gradient' in cfg:
-            y = Gradient(self.input, v, cfg['gradient'])
-            y.test()
+            y = Gradient(self.input, v, cfg['gradient'], autoflag=True)
 
             if self.saveauxiliary:
-                self.features[v]['gradient'] = y.features['gradient']
-
-            self.flags[v]['gradient'] = y.flags['gradient']
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'gradient_depthconditional' in cfg:
             y = GradientDepthConditional(self.input,
                                          v,
-                                         cfg['gradient_depthconditional'])
+                                         cfg['gradient_depthconditional'],
+                                         autoflag=True)
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features[v][f] = y.features[f]
@@ -241,18 +242,20 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'spike' in cfg:
-            y = Spike(self.input, v, cfg['spike'])
-            y.test()
+            y = Spike(self.input, v, cfg['spike'], autoflag=True)
 
             if self.saveauxiliary:
-                self.features[v]['spike'] = y.features['spike']
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
-            self.flags[v]['spike'] = y.flags['spike']
 
         if 'spike_depthconditional' in cfg:
             y = SpikeDepthConditional(self.input,
                                          v,
-                                         cfg['spike_depthconditional'])
+                                         cfg['spike_depthconditional'],
+                                         autoflag=True)
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features[v][f] = y.features[f]
@@ -284,15 +287,13 @@ class ProfileQC(object):
                     "Sorry I'm not ready to evaluate deepest_pressure()")
 
         if 'tukey53H_norm' in cfg:
-            y = Tukey53H(self.input, v, cfg['tukey53H_norm'])
-            y.test()
+            y = Tukey53H(self.input, v, cfg['tukey53H_norm'], autoflag=True)
 
             if self.saveauxiliary:
-                self.features[v]['tukey53H_norm'] = \
-                        y.features['tukey53H_norm']
-
-            self.flags[v]['tukey53H_norm'] = y.flags['tukey53H_norm']
-
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
         #if 'spike_depthsmooth' in cfg:
         #    from maud.window_func import _weight_hann as wfunc
         #    cfg_tmp = cfg['spike_depthsmooth']
@@ -307,7 +308,10 @@ class ProfileQC(object):
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
         if 'digit_roll_over' in cfg:
-            y = DigitRollOver(self.input, v, cfg['digit_roll_over'])
+            y = DigitRollOver(self.input,
+                              v,
+                              cfg['digit_roll_over'],
+                              autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -316,17 +320,19 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'bin_spike' in cfg:
-            y = Bin_Spike(self.input, v, cfg['bin_spike'])
-            # y.test()
+            y = Bin_Spike(self.input, v, cfg['bin_spike'], autoflag=True)
 
             if self.saveauxiliary:
-                self.features[v]['bin_spike'] = y.features['bin_spike']
-
-            # self.flags[v]['bin_spike'] = y.flags['bin_spike']
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'density_inversion' in cfg:
             try:
-                y = DensityInversion(self.input, cfg=cfg['density_inversion'])
+                y = DensityInversion(self.input,
+                                     cfg=cfg['density_inversion'],
+                                     autoflag=True)
 
                 if self.saveauxiliary:
                     for f in y.features.keys():
@@ -337,24 +343,23 @@ class ProfileQC(object):
                 module_logger.warning("Fail on density_inversion")
 
         if 'woa_normbias' in cfg:
-            y = WOA_NormBias(self.input, v, cfg['woa_normbias'])
-            #        self.attributes)
-            y.test()
+            y = WOA_NormBias(self.input, v, cfg['woa_normbias'], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features:
                     self.features[v][f] = y.features[f]
-
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
         if 'cars_normbias' in cfg:
-            y = CARS_NormBias(self.input, v, cfg['cars_normbias'])
+            y = CARS_NormBias(self.input,
+                              v,
+                              cfg['cars_normbias'],
+                              autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features:
                     self.features[v][f] = y.features[f]
-
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
@@ -367,7 +372,10 @@ class ProfileQC(object):
         #                    np.diff(self.input['PRES'][ind])])
 
         if 'rate_of_change' in cfg:
-            y = RateOfChange(self.input, v, cfg['rate_of_change'])
+            y = RateOfChange(self.input,
+                             v,
+                             cfg['rate_of_change'],
+                             autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -376,7 +384,10 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if 'cum_rate_of_change' in cfg:
-            y = CumRateOfChange(self.input, v, cfg['cum_rate_of_change'])
+            y = CumRateOfChange(self.input,
+                                v,
+                                cfg['cum_rate_of_change'],
+                                autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
