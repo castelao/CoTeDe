@@ -22,3 +22,5 @@ from .digit_roll_over import DigitRollOver
 from .constant_cluster_size import ConstantClusterSize, constant_cluster_size
 from .density_inversion import DensityInversion, densitystep
 from .stuck_value import StuckValue
+from .gradient_depthconditional import GradientDepthConditional
+from .spike_depthconditional import SpikeDepthConditional

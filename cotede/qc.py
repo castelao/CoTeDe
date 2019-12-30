@@ -231,33 +231,14 @@ class ProfileQC(object):
             self.flags[v]['gradient'] = y.flags['gradient']
 
         if 'gradient_depthconditional' in cfg:
-            cfg_tmp = cfg['gradient_depthconditional']
-            g = gradient(self.input[v])
-            flag = np.zeros(g.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            # ---- Shallow zone -----------------
-            threshold = cfg_tmp['shallow_max']
-            flag[np.nonzero( \
-                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (g > threshold))] \
-                    = 4
-            flag[np.nonzero( \
-                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold))] \
-                    = 1
-            # ---- Deep zone --------------------
-            threshold = cfg_tmp['deep_max']
-            flag[np.nonzero( \
-                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (g > threshold))] \
-                    = 4
-            flag[np.nonzero( \
-                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (g <= threshold))] \
-                    = 1
-
-            self.flags[v]['gradient_depthconditional'] = flag
+            y = GradientDepthConditional(self.input,
+                                         v,
+                                         cfg['gradient_depthconditional'])
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'spike' in cfg:
             y = Spike(self.input, v, cfg['spike'])
@@ -269,33 +250,14 @@ class ProfileQC(object):
             self.flags[v]['spike'] = y.flags['spike']
 
         if 'spike_depthconditional' in cfg:
-            cfg_tmp = cfg['spike_depthconditional']
-            s = spike(self.input[v])
-            flag = np.zeros(s.shape, dtype='i1')
-            # Flag as 9 any masked input value
-            flag[ma.getmaskarray(self.input[v])] = 9
-            # ---- Shallow zone -----------------
-            threshold = cfg_tmp['shallow_max']
-            flag[np.nonzero( \
-                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (s > threshold))] \
-                    = 4
-            flag[np.nonzero( \
-                    (self['PRES'] <= cfg_tmp['pressure_threshold']) & \
-                    (s <= threshold))] \
-                    = 1
-            # ---- Deep zone --------------------
-            threshold = cfg_tmp['deep_max']
-            flag[np.nonzero( \
-                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (s > threshold))] \
-                    = 4
-            flag[np.nonzero( \
-                    (self['PRES'] > cfg_tmp['pressure_threshold']) & \
-                    (s <= threshold))] \
-                    = 1
-
-            self.flags[v]['spike_depthconditional'] = flag
+            y = SpikeDepthConditional(self.input,
+                                         v,
+                                         cfg['spike_depthconditional'])
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'stuck_value' in cfg:
             y = StuckValue(self.input, v, cfg['stuck_value'], autoflag=True)
