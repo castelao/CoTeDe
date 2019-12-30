@@ -7,6 +7,9 @@
 
 import numpy as np
 from numpy import ma
+
+from .qctests import QCCheck
+
 try:
     import gsw
 except:
@@ -38,7 +41,7 @@ def densitystep(S, T, P):
     return ma.fix_invalid(ds)
 
 
-class DensityInversion(object):
+class DensityInversion(QCCheck):
     def __init__(self, data, cfg, autoflag=True):
         assert ('TEMP' in data.keys()), \
                 "Missing TEMP"
@@ -54,10 +57,6 @@ class DensityInversion(object):
         if autoflag:
             self.test()
 
-    def keys(self):
-        return self.features.keys() + \
-            ["flag_%s" % f for f in self.flags.keys()]
-
     def set_features(self):
         self.features = {'densitystep': densitystep(self.data['PSAL'],
                                                     self.data['TEMP'],
@@ -65,29 +64,17 @@ class DensityInversion(object):
 
     def test(self):
         self.flags = {}
-        try:
-            threshold = self.cfg['threshold']
-        except:
-            print("Deprecated cfg format. It should contain a threshold item.")
-            threshold = self.cfg
-
-        try:
-            flag_good = self.cfg['flag_good']
-        except:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg['flag_bad']
-        except:
-            flag_bad = 4
 
         assert (np.size(threshold) == 1) and \
                 (threshold is not None) and \
                 (np.isfinite(threshold))
 
+        flag = np.zeros(self.data['TEMP'].shape, dtype="i1")
+        threshold = self.cfg['threshold']
+        feature = self.features['densitystep']
+        flag[np.nonzero(feature < threshold)] = self.flag_bad
+        flag[np.nonzero(feature >= threshold)] = self.flag_good
         mask = np.any([ma.getmaskarray(self.data[v]) for v in
             ['PRES', 'TEMP', 'PSAL']], axis=0)
-        flag = np.zeros(mask.shape, dtype='i1')
-        flag[np.nonzero(self.features['densitystep'] < threshold)] = flag_bad
-        flag[np.nonzero(self.features['densitystep'] >= threshold)] = flag_good
         flag[mask] = 9
         self.flags['density_inversion'] = flag
