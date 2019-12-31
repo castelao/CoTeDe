@@ -208,8 +208,14 @@ class ProfileQC(object):
                     "Sorry, I'm no ready to evaluate pressure_increasing()")
 
         if 'profile_envelop' in cfg:
-            self.flags[v]['profile_envelop'] = profile_envelop(
-                    self.input, cfg['profile_envelop'], v)
+            y = ProfileEnvelop(
+                    self.input, v, cfg['profile_envelop'], autoflag=True)
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'constant_cluster_size' in cfg:
             y = ConstantClusterSize(
