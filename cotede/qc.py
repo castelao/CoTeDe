@@ -175,8 +175,14 @@ class ProfileQC(object):
                     "Sorry I'm not ready to evaluate platform_identification()")
 
         if 'valid_geolocation' in cfg:
-            module_logger.warning(
-                    "Sorry I'm not ready to evaluate valid_geolocation()")
+            y = ValidGeolocation(
+                    self.input, v, cfg['valid_geolocation'], autoflag=True)
+
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'valid_speed' in cfg:
             # Think about. Argo also has a test valid_speed, but that is
