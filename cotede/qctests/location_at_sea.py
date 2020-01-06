@@ -4,12 +4,15 @@ import logging
 
 import numpy as np
 from numpy import ma
-import oceansdb
 
 from .qctests import QCCheck
 
 module_logger = logging.getLogger(__name__)
 
+try:
+    import oceansdb
+except ImportError:
+    module_logger.debug("OceansDB package is not available")
 
 def location_at_sea(data, cfg=None):
     """ Evaluate if location is at sea.
@@ -32,37 +35,35 @@ def location_at_sea(data, cfg=None):
     except:
         flag_bad = 3
 
-    assert hasattr(data, 'attributes'), "Missing attributes"
+    assert hasattr(data, 'attrs'), "Missing attributes"
 
     # Temporary solution while migrating to OceanSites variables syntax
-    if ('LATITUDE' not in data.attributes) and \
-            ('latitude' in data.attributes):
+    if ('LATITUDE' not in data.attrs) and ('latitude' in data.attrs):
                 module_logger.debug("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
-                data.attributes['LATITUDE'] = data.attributes['latitude']
-    if ('LONGITUDE' not in data.attributes) and \
-            ('longitude' in data.attributes):
+                data.attrs['LATITUDE'] = data.attrs['latitude']
+    if ('LONGITUDE' not in data.attrs) and ('longitude' in data.attrs):
                 module_logger.debug("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
-                data.attributes['LONGITUDE'] = data.attributes['longitude']
+                data.attrs['LONGITUDE'] = data.attrs['longitude']
 
-    if ('LATITUDE' not in data.attributes) or \
-            (data.attributes['LATITUDE'] == None) or \
-            ('LONGITUDE' not in data.attributes) or \
-            (data.attributes['LONGITUDE'] == None):
+    if ('LATITUDE' not in data.attrs) or \
+            (data.attrs['LATITUDE'] == None) or \
+            ('LONGITUDE' not in data.attrs) or \
+            (data.attrs['LONGITUDE'] == None):
                 module_logger.debug("Missing geolocation (lat/lon)")
                 return 0
 
-    if (data.attributes['LATITUDE'] > 90) or \
-            (data.attributes['LATITUDE'] < -90) or \
-            (data.attributes['LONGITUDE'] > 360) or \
-            (data.attributes['LONGITUDE'] < -180):
+    if (data.attrs['LATITUDE'] > 90) or \
+            (data.attrs['LATITUDE'] < -90) or \
+            (data.attrs['LONGITUDE'] > 360) or \
+            (data.attrs['LONGITUDE'] < -180):
                 return flag_bad
 
     try:
         ETOPO = oceansdb.ETOPO()
         etopo = ETOPO['topography'].extract(
                 var='height',
-                lat=data.attributes['LATITUDE'],
-                lon=data.attributes['LONGITUDE'])
+                lat=data.attrs['LATITUDE'],
+                lon=data.attrs['LONGITUDE'])
         h = etopo['height']
 
         flag = np.zeros(h.shape, dtype='i1')
@@ -75,44 +76,40 @@ def location_at_sea(data, cfg=None):
         return 0
 
 
-def get_bathymetry(lat, lon):
+def get_bathymetry(lat, lon, resolution='5min'):
     """Interpolate bathymetry from ETOPO
 
        For a given (lat, lon), interpolates the bathymetry from ETOPO
     """
     assert np.shape(lat) == np.shape(lon), "Lat & Lon shape mismatch"
-    assert np.shape(lat) == ()
 
-    ETOPO = oceansdb.ETOPO()
+    db = oceansdb.ETOPO(resolution=resolution)
 
-    etopo = ETOPO["topography"].extract(var="height", lat=lat, lon=lon)
-    return {"bathymetry": -etopo["height"]}
+    etopo = db["topography"].track(var="height", lat=lat, lon=lon)
+    return {"bathymetry": -etopo["height"].astype('i')}
 
 
 class LocationAtSea(QCCheck):
-    def __init__(self, data, cfg, autoflag=True):
-        self.data = data
-        assert isinstance(cfg, dict)
-        self.cfg = cfg
-
-        self.set_features()
-        if autoflag:
-            self.test()
-
     def set_features(self):
-        assert hasattr(self.data, "attrs"), "Missing attributes"
+        if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
+            lat = self.data["LATITUDE"]
+            lon = self.data["LONGITUDE"]
+        elif ("LATITUDE" in self.data.attrs) and ("LONGITUDE" in self.data.attrs):
+            lat = self.data.attrs["LATITUDE"]
+            lon = self.data.attrs["LONGITUDE"]
+        else:
+            module_logger.debug("Missing geolocation (lat/lon)")
+            self.features = {}
+            return
 
-        # Temporary solution while migrating to OceanSites variables syntax
-        if ("LATITUDE" not in self.data.attrs) and ("latitude" in self.data.attrs):
-            module_logger.debug(
-                "Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE"
-            )
-            self.data.attrs["LATITUDE"] = self.data.attrs["latitude"]
-        if ("LONGITUDE" not in self.data.attrs) and ("longitude" in self.data.attrs):
-            module_logger.debug(
-                "Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE"
-            )
-            self.data.attrs["LONGITUDE"] = self.data.attrs["longitude"]
+        try:
+            self.features = get_bathymetry(lat=lat, lon=lon)
+        except:
+            self.features = {
+                "bathymetry": ma.fix_invalid([np.nan]),
+                "bathymetry_std": ma.fix_invalid([np.nan]),
+            }
+        return
 
         if (
             ("LATITUDE" not in self.data.attrs)
@@ -125,6 +122,7 @@ class LocationAtSea(QCCheck):
                 "bathymetry": ma.fix_invalid([np.nan]),
                 "bathymetry_std": ma.fix_invalid([np.nan]),
             }
+            self.flags["valid_position"] = self.flag_bad
             return
 
         if (
@@ -157,24 +155,8 @@ class LocationAtSea(QCCheck):
             module_logger.debug("No threshold for location at sea. I'll use 0")
             threshold = 0
 
-        assert (
-            (np.size(threshold) == 1)
-            and (threshold is not None)
-            and (np.isfinite(threshold))
-        )
-
-        try:
-            flag_good = self.cfg["flag_good"]
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg["flag_bad"]
-        except KeyError:
-            flag_bad = 3
-
-        self.features
         flag = np.zeros(self.features["bathymetry"].shape, dtype="i1")
-        flag[np.nonzero(self.features["bathymetry"] < threshold)] = flag_bad
-        flag[np.nonzero(self.features["bathymetry"] >= threshold)] = flag_good
+        flag[np.nonzero(self.features["bathymetry"] < threshold)] = self.flag_bad
+        flag[np.nonzero(self.features["bathymetry"] >= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.features["bathymetry"])] = 9
         self.flags["location_at_sea"] = flag

@@ -132,18 +132,14 @@ class ProfileQC(object):
                 f = 3
             self.flags['common']['datetime_range'] = f
 
-        if 'location_at_sea' in self.cfg['main']:
-            y = LocationAtSea(self.input, cfg['main']['location_at_sea'])
+        if 'location_at_sea' in self.cfg['common']:
+            y = LocationAtSea(self.input, cfg['common']['location_at_sea'])
 
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features['common'][f] = y.features[f]
             for f in y.flags:
                 self.flags['common'][f] = y.flags[f]
-
-            self.flags['common']['location_at_sea'] = location_at_sea(
-                    self.input,
-                    self.cfg['main']['location_at_sea'])
 
         # if self.saveauxiliary:
         #     self.features['common'] = {}
