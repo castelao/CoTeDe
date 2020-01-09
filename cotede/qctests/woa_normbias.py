@@ -26,6 +26,8 @@ from numpy import ma
 
 from oceansdb import WOA
 
+from .qctests import QCCheckVar
+
 module_logger = logging.getLogger(__name__)
 
 
@@ -68,7 +70,7 @@ def woa_normbias(data, v, cfg):
         #        cfg['file'],
         #        varnames=cfg['vars'])
 
-        print("Sorry, I'm temporary not ready to handle tracks.")
+        module_logger.error("Sorry, I'm temporary not ready to handle tracks.")
         #woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
         #        doy=d,
         #        depth=[0],
@@ -79,7 +81,7 @@ def woa_normbias(data, v, cfg):
             ('LONGITUDE' in data.attributes.keys()) and \
             ('PRES' in data.keys()):
 
-                woa = db[vtype].extract(
+                woa = db[vtype].track(
                         var=['mean', 'standard_deviation',
                             'number_of_observations'],
                         doy=int(data.attributes['datetime'].strftime('%j')),
@@ -115,7 +117,7 @@ def woa_normbias(data, v, cfg):
         return flag, features
 
 
-class WOA_NormBias(object):
+class WOA_NormBias(QCCheckVar):
     def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname
@@ -126,43 +128,40 @@ class WOA_NormBias(object):
         if 'use_standard_error' not in self.cfg:
             self.cfg['use_standard_error'] = False
 
+        self.set_flags()
         self.set_features()
         if autoflag:
             self.test()
 
-    def keys(self):
-        return self.features.keys() + \
-                ["flag_%s" % f for f in self.flags.keys()]
-
     def set_features(self):
+        try:
+            doy = int(self.data.attrs['date'].strftime('%j'))
+        except:
+            doy = int(self.data.attrs['datetime'].strftime('%j'))
 
-        if ('LATITUDE' in self.data.attributes.keys()) and \
-                ('LONGITUDE' in self.data.attributes.keys()):
+        if ('LATITUDE' in self.data.attrs.keys()) and \
+                ('LONGITUDE' in self.data.attrs.keys()):
+                    mode = 'profile'
                     kwargs = {
-                            'lat': self.data.attributes['LATITUDE'],
-                            'lon': self.data.attributes['LONGITUDE']}
+                            'lat': self.data.attrs['LATITUDE'],
+                            'lon': self.data.attrs['LONGITUDE']}
 
         if ('LATITUDE' in self.data.keys()) and \
                 ('LONGITUDE' in self.data.keys()):
+                    mode = 'track'
                     dLmax = max(
-                            data['LATITUDE'].max()-data['LATITUDE'].min(),
-                            data['LONGITUDE'].max()-data['LONGITUDE'].min())
+                            self.data['LATITUDE'].max() - self.data['LATITUDE'].min(),
+                            self.data['LONGITUDE'].max() - self.data['LONGITUDE'].min())
                     # Only use each measurement coordinate if it is spread.
                     if dLmax >= 0.01:
                         kwargs = {
                             'lat': self.data['LATITUDE'],
-                            'lon': self.data['LONGITUDE'],
-                            'alongtrack_axis': ['lat', 'lon']}
+                            'lon': self.data['LONGITUDE']}
 
         if ('DEPTH' in self.data.keys()):
             depth = self.data['DEPTH']
         elif ('PRES' in self.data.keys()):
             depth = self.data['PRES']
-
-        try:
-            doy = int(self.data.attributes['date'].strftime('%j'))
-        except:
-            doy = int(self.data.attributes['datetime'].strftime('%j'))
 
         db = WOA()
         if self.varname[-1] == '2':
@@ -171,7 +170,15 @@ class WOA_NormBias(object):
             vtype = self.varname
 
         idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
-        woa = db[vtype].extract(
+        if mode == 'track':
+            woa = db[vtype].track(
+                var=['mean', 'standard_deviation', 'standard_error',
+                    'number_of_observations'],
+                doy=doy,
+                depth=depth[idx],
+                **kwargs)
+        else:
+            woa = db[vtype].extract(
                 var=['mean', 'standard_deviation', 'standard_error',
                     'number_of_observations'],
                 doy=doy,
@@ -220,15 +227,6 @@ class WOA_NormBias(object):
 
         self.flags = {}
 
-        try:
-            flag_good = self.cfg['flag_good']
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg['flag_bad']
-        except KeyError:
-            flag_bad = 3
-
         threshold = self.cfg['threshold']
         assert (np.size(threshold) == 1) and \
                 (threshold is not None)
@@ -238,10 +236,10 @@ class WOA_NormBias(object):
         normbias_abs = np.absolute(self.features['woa_normbias'])
         ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
                 (normbias_abs <= threshold))
-        flag[ind] = flag_good
+        flag[ind] = self.flag_good
         ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
                 (normbias_abs > threshold))
-        flag[ind] = flag_bad
+        flag[ind] = self.flag_bad
 
         # Flag as 9 any masked input value
         flag[ma.getmaskarray(self.data[self.varname])] = 9
