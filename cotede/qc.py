@@ -72,11 +72,17 @@ class ProfileQC(object):
         self.evaluate_common(self.cfg)
 
         for v in self.input.keys():
-            for c in self.cfg.keys():
-                if re.match("(%s)2?$" % c, v):
+            if v == 'TEMP':
+                vv = 'sea_water_temperature'
+            elif v == 'PSAL':
+                vv = 'sea_water_salinity'
+            else:
+                vv = v
+            for c in self.cfg['variables']:
+                if re.match("(%s)2?$" % c, vv):
                     module_logger.debug(" %s - evaluating: %s, as type: %s" %
                                             (self.name, v, c))
-                    self.evaluate(v, self.cfg[c])
+                    self.evaluate(v, self.cfg['variables'][c])
                     break
 
     @property
@@ -106,27 +112,22 @@ class ProfileQC(object):
         return self.input[key]
 
     def evaluate_common(self, cfg):
-        if 'main' not in self.cfg.keys():
-            module_logger.warning(
-                    "ATTENTION, there is no main setup in the QC cfg")
-            return
-
         self.flags['common'] = {}
 
-        if 'valid_datetime' in self.cfg['main']:
-            if 'datetime' in self.attributes.keys() and \
-                    type(self.attributes['datetime']) == datetime:
+        if 'valid_datetime' in self.cfg['common']:
+            if 'datetime' in self.attrs.keys() and \
+                    type(self.attrs['datetime']) == datetime:
                 f = 1
             else:
                 f = 3
             self.flags['common']['valid_datetime'] = f
 
-        if 'datetime_range' in self.cfg['main']:
-            if 'datetime' in self.attributes.keys() and \
-                    (self.attributes['datetime'] >=
-                            self.cfg['main']['datetime_range']['minval']) and \
-                    (self.attributes['datetime'] <=
-                            self.cfg['main']['datetime_range']['maxval']):
+        if 'datetime_range' in self.cfg['common']:
+            if 'datetime' in self.attrs.keys() and \
+                    (self.attrs['datetime'] >=
+                            self.cfg['common']['datetime_range']['minval']) and \
+                    (self.attrs['datetime'] <=
+                            self.cfg['common']['datetime_range']['maxval']):
                 f = 1
             else:
                 f = 3

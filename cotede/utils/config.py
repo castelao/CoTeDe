@@ -69,6 +69,7 @@ def load_cfg(cfgname="cotede"):
         # self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
         #            (self.name, cfg))
 
+    cfg = fix_config(cfg)
     if "inherit" in cfg:
         if isinstance(cfg["inherit"], str):
             cfg["inherit"] = [cfg["inherit"]]
@@ -76,3 +77,64 @@ def load_cfg(cfgname="cotede"):
             cfg = inheritance(cfg, load_cfg(parent))
 
     return cfg
+
+
+def fix_config(cfg):
+    """Adjust the config to the latest standard, if necessary
+
+       This function allows backward compatibility with old config descriptos
+       updating them to the current standard.
+    """
+    if ('revision' in cfg) and (cfg['revision'] == '0.21'):
+        return cfg
+
+    if 'revision' not in cfg:
+        cfg = convert_pre_to_021(cfg)
+
+    return cfg
+
+
+def convert_pre_to_021(cfg):
+    """Convert config standard 0.20 into 0.21
+
+       Revision 0.20 is the original standard, which lacked a revision.
+
+       Variables moved from top level to inside item 'variables'.
+       Ocean Sites nomenclature moved to CF standard vocabulary:
+         - TEMP -> sea_water_temperature
+         - PSAL -> sea_water_salinity
+    """
+    def label(v):
+        """Convert Ocean Sites vocabulary to CF standard names
+        """
+        if v == 'PRES':
+            return 'sea_water_pressure'
+        if v == 'TEMP':
+            return 'sea_water_temperature'
+        elif v == 'PSAL':
+            return 'sea_water_salinity'
+        else:
+            return v
+
+    keys = list(cfg.keys())
+
+    output = OrderedDict()
+    output['revision'] = '0.21'
+
+    if 'inherit' in keys:
+        output['inherit'] = cfg['inherit']
+        keys.remove('inherit')
+
+    if 'main' in cfg:
+        output['common'] = cfg['main']
+        keys.remove('main')
+    elif 'common' in cfg:
+        output['common'] = cfg['common']
+        keys.remove('common')
+
+    output['variables'] = OrderedDict()
+    for k in keys:
+        output['variables'][label(k)] = cfg[k]
+        # output[k] = cfg[k]
+
+    return output
