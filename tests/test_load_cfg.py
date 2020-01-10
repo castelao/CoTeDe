@@ -90,12 +90,30 @@ def test_inheritance():
         assert c in cfg
         assert cfg[c] == cfg2[c]
 
+def test_inheritance_priority():
+    """Test priority when inheriting
+
+       When inheritance is a list, the first item has priority over
+       the last one.
+    """
+    def walk_and_check(cfg, cfg2):
+        for c in cfg:
+            assert c in cfg2, "Missing %s in inherited cfg2" % c
+            if not isinstance(cfg[c], dict):
+                assert cfg[c] == cfg2[c], \
+                        "Missing %s in cfg2" % c
+            else:
+                walk_and_check(cfg[c], cfg2[c])
+
+    cfg = load_cfg('cotede')
     # If is a list, the last is the lowest priority
     cfg2 = load_cfg({'inherit': ['cotede', 'gtspp']})
-    for c in cfg:
-        assert c in cfg
-        if not isinstance(cfg[c], dict):
-            assert cfg[c] == cfg2[c]
-        else:
-            for cc in cfg[c]:
-                assert cfg[c][cc] == cfg2[c][cc]
+    walk_and_check(cfg, cfg2)
+
+    try:
+        cfg2 = load_cfg({'inherit': ['gtspp', 'cotede']})
+        walk_and_check(cfg, cfg2)
+        failed = False
+    except:
+        failed = True
+    assert failed, "It should fail in inverse priority"
