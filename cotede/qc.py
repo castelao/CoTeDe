@@ -66,10 +66,8 @@ class ProfileQC(object):
             # build_auxiliary is not exactly the best way to do it.
             self.build_features()
 
-        # I should use common or main, but must be consistent
-        #   between defaults and flags.keys()
-        # Think about it
-        self.evaluate_common(self.cfg)
+        if 'common' in self.cfg:
+            self.evaluate_common(self.cfg)
 
         for v in self.input.keys():
             if v == 'TEMP':
