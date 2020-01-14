@@ -9,7 +9,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 module_logger = logging.getLogger(__name__)
 
@@ -40,7 +40,7 @@ def profile_envelop(data, cfg, varname):
     return flag
 
 
-class ProfileEnvelop(QCCheck):
+class ProfileEnvelop(QCCheckVar):
     def test(self):
         self.flags = {}
 

@@ -11,14 +11,14 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 from .spike import spike
 
 
 module_logger = logging.getLogger(__name__)
 
 
-class SpikeDepthConditional(QCCheck):
+class SpikeDepthConditional(QCCheckVar):
     def set_features(self):
         self.features = {"spike": spike(self.data[self.varname])}
 

@@ -7,15 +7,12 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 module_logger = logging.getLogger(__name__)
 
 
-class StuckValue(QCCheck):
-    def set_features(self):
-        self.features = {}
-
+class StuckValue(QCCheckVar):
     def test(self):
         self.flags = {}
 

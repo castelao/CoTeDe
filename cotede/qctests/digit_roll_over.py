@@ -13,13 +13,13 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 from .rate_of_change import rate_of_change
 
 
 module_logger = logging.getLogger(__name__)
 
-class DigitRollOver(QCCheck):
+class DigitRollOver(QCCheckVar):
     def set_features(self):
         self.features = {
                 'rate_of_change': rate_of_change(self.data[self.varname])}

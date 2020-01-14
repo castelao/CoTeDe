@@ -11,7 +11,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
@@ -28,7 +28,7 @@ def gradient(x):
     return y
 
 
-class Gradient(QCCheck):
+class Gradient(QCCheckVar):
     def set_features(self):
         self.features = {'gradient': gradient(self.data[self.varname])}
 

@@ -73,15 +73,24 @@ def constant_value():
 class QCCheck(object):
     """Basic template for a QC check
     """
-    def __init__(self, data, varname, cfg, autoflag=True):
+    def __init__(self, data, cfg=None, autoflag=True):
         self.data = data
-        self.varname = varname
         self.cfg = cfg
 
         self.set_flags()
         self.set_features()
         if autoflag:
             self.test()
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+    @property
+    def attrs(self):
+        return self.data.attrs
+
+    def set_features(self):
+        self.features = {}
 
     def set_flags(self):
         try:
@@ -99,3 +108,11 @@ class QCCheck(object):
     def keys(self):
         return self.features.keys() + \
             ["flag_%s" % f for f in self.flags.keys()]
+
+
+class QCCheckVar(QCCheck):
+    """Template for a QC check of a specific variable
+    """
+    def __init__(self, data, varname, cfg=None, autoflag=True):
+        self.varname = varname
+        super().__init__(data, cfg, autoflag)

@@ -11,7 +11,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 module_logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def valid_geolocation(lat, lon):
     return idx
 
 
-class ValidGeolocation(QCCheck):
+class ValidGeolocation(QCCheckVar):
     def test(self):
         self.flags = {}
 

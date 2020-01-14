@@ -15,12 +15,12 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
 
-class GlobalRange(QCCheck):
+class GlobalRange(QCCheckVar):
     def test(self):
         self.flags = {}
         assert ('minval' in self.cfg) and ('maxval' in self.cfg), \

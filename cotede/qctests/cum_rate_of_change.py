@@ -24,7 +24,7 @@ i = small, medium, large
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 def cum_rate_of_change(x, memory):
@@ -39,7 +39,7 @@ def cum_rate_of_change(x, memory):
     return y
 
 
-class CumRateOfChange(QCCheck):
+class CumRateOfChange(QCCheckVar):
     def set_features(self):
         self.features = {
                 'cum_rate_of_change': cum_rate_of_change(

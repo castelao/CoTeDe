@@ -15,7 +15,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ def rate_of_change(x):
     return y
 
 
-class RateOfChange(QCCheck):
+class RateOfChange(QCCheckVar):
     def set_features(self):
         self.features = {
                 'rate_of_change': rate_of_change(self.data[self.varname])}

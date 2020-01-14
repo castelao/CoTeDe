@@ -4,7 +4,7 @@
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 def constant_cluster_size(x, tol=0):
@@ -36,7 +36,7 @@ def constant_cluster_size(x, tol=0):
     return cluster_size
 
 
-class ConstantClusterSize(QCCheck):
+class ConstantClusterSize(QCCheckVar):
     def set_features(self):
         cluster_size = constant_cluster_size(self.data[self.varname])
         N = ma.compressed(self.data[self.varname]).size

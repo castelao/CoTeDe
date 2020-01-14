@@ -8,7 +8,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ def tukey53H_norm(x, l=12):
     return Delta/sigma
 
 
-class Tukey53H(QCCheck):
+class Tukey53H(QCCheckVar):
     def set_features(self):
         self.features = {
                 'tukey53H': tukey53H(self.data[self.varname]),

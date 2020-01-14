@@ -11,13 +11,13 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheck
+from .qctests import QCCheckVar
 from .gradient import gradient
 
 module_logger = logging.getLogger(__name__)
 
 
-class GradientDepthConditional(QCCheck):
+class GradientDepthConditional(QCCheckVar):
     def set_features(self):
         self.features = {"gradient": gradient(self.data[self.varname])}
 
