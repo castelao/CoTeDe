@@ -43,9 +43,10 @@ def test_dict():
          builtins. This is done by giving a dictionary with the correct
          structure.
     """
-    cfg = {'main': {'valid_datetime': None}}
+    cfg = {'common': {'valid_datetime': None}}
     cfg_out = load_cfg(cfg)
-    assert cfg_out == cfg
+    assert 'common' in cfg_out, "Missing 'common' in load_cfg output"
+    assert cfg_out['common'] == cfg['common']
 
 
 def test_default():
@@ -78,7 +79,8 @@ def test_dict_input():
        It should return the same dictionary
     """
     cfg = {'temperature': {'global_range': 'test'}}
-    assert cfg == load_cfg(cfg)
+    cfg_out = load_cfg(cfg)
+    assert cfg_out['variables']['temperature'] == cfg['temperature']
 
 
 def test_inheritance():
