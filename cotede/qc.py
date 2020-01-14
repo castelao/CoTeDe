@@ -193,15 +193,6 @@ class ProfileQC(object):
             except:
                 module_logger.warning("Fail on valid_speed")
 
-        if 'global_range' in cfg:
-            y = GlobalRange(self.input, v, cfg['global_range'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
         if 'regional_range' in cfg:
             module_logger.warning(
                     "Sorry, I'm no ready to evaluate regional_range()")
@@ -209,76 +200,6 @@ class ProfileQC(object):
         if 'pressure_increasing' in cfg:
             module_logger.warning(
                     "Sorry, I'm no ready to evaluate pressure_increasing()")
-
-        if 'profile_envelop' in cfg:
-            y = ProfileEnvelop(
-                    self.input, v, cfg['profile_envelop'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'constant_cluster_size' in cfg:
-            y = ConstantClusterSize(
-                    self.input, v, cfg['constant_cluster_size'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'gradient' in cfg:
-            y = Gradient(self.input, v, cfg['gradient'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'gradient_depthconditional' in cfg:
-            y = GradientDepthConditional(self.input,
-                                         v,
-                                         cfg['gradient_depthconditional'],
-                                         autoflag=True)
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'spike' in cfg:
-            y = Spike(self.input, v, cfg['spike'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-
-        if 'spike_depthconditional' in cfg:
-            y = SpikeDepthConditional(self.input,
-                                         v,
-                                         cfg['spike_depthconditional'],
-                                         autoflag=True)
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'stuck_value' in cfg:
-            y = StuckValue(self.input, v, cfg['stuck_value'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
 
         if 'grey_list' in cfg:
             module_logger.warning("Sorry I'm not ready to evaluate grey_list()")
@@ -295,8 +216,27 @@ class ProfileQC(object):
             module_logger.warning(
                     "Sorry I'm not ready to evaluate deepest_pressure()")
 
-        if 'tukey53H_norm' in cfg:
-            y = Tukey53H(self.input, v, cfg['tukey53H_norm'], autoflag=True)
+        catalog = {
+                'bin_spike': Bin_Spike,
+                'cars_normbias': CARS_NormBias,
+                'constant_cluster_size': ConstantClusterSize,
+                'cum_rate_of_change': CumRateOfChange,
+                'digit_roll_over': DigitRollOver,
+                'global_range': GlobalRange,
+                'gradient': Gradient,
+                'gradient_depthconditional': GradientDepthConditional,
+                'profile_envelop': ProfileEnvelop,
+                'rate_of_change': RateOfChange,
+                'spike': Spike,
+                'spike_depthconditional': SpikeDepthConditional,
+                'stuck_value': StuckValue,
+                'tukey53H_norm': Tukey53H,
+                'woa_normbias': WOA_NormBias,
+                }
+
+        for criterion in [c for c in catalog if c in cfg]:
+            Procedure = catalog[criterion]
+            y = Procedure(self.input, v, cfg[criterion], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -316,27 +256,6 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
-        if 'digit_roll_over' in cfg:
-            y = DigitRollOver(self.input,
-                              v,
-                              cfg['digit_roll_over'],
-                              autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'bin_spike' in cfg:
-            y = Bin_Spike(self.input, v, cfg['bin_spike'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
         if 'density_inversion' in cfg:
             try:
                 y = DensityInversion(self.input,
@@ -351,27 +270,6 @@ class ProfileQC(object):
             except:
                 module_logger.warning("Fail on density_inversion")
 
-        if 'woa_normbias' in cfg:
-            y = WOA_NormBias(self.input, v, cfg['woa_normbias'], autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features:
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'cars_normbias' in cfg:
-            y = CARS_NormBias(self.input,
-                              v,
-                              cfg['cars_normbias'],
-                              autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features:
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])
         #    ind = ma.getmaskarray(self.input[v])
@@ -379,30 +277,6 @@ class ProfileQC(object):
         #        self.features[v]['pstep'] = ma.concatenate(
         #                [ma.masked_all(1),
         #                    np.diff(self.input['PRES'][ind])])
-
-        if 'rate_of_change' in cfg:
-            y = RateOfChange(self.input,
-                             v,
-                             cfg['rate_of_change'],
-                             autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
-
-        if 'cum_rate_of_change' in cfg:
-            y = CumRateOfChange(self.input,
-                                v,
-                                cfg['cum_rate_of_change'],
-                                autoflag=True)
-
-            if self.saveauxiliary:
-                for f in y.features.keys():
-                    self.features[v][f] = y.features[f]
-            for f in y.flags:
-                self.flags[v][f] = y.flags[f]
 
         # FIXME: the Anomaly Detection and Fuzzy require some features
         #   to be estimated previously. Generalize this.
