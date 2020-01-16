@@ -54,8 +54,8 @@ def test_attribute():
 
     coords = [[10, -30, 1], [10, 330, 1]]
     for lat, lon, flag in coords:
-        data.attrs['LATITUDE'] = lat
-        data.attrs['LONGITUDE'] = lon
+        data.attrs["LATITUDE"] = lat
+        data.attrs["LONGITUDE"] = lon
         assert location_at_sea(data) == flag
 
 
@@ -64,21 +64,21 @@ def test_attribute_inland():
 
     coords = [[-10, -60, 3], [-10, 300, 3]]
     for lat, lon, flag in coords:
-        data.attrs['LATITUDE'] = lat
-        data.attrs['LONGITUDE'] = lon
+        data.attrs["LATITUDE"] = lat
+        data.attrs["LONGITUDE"] = lon
         assert location_at_sea(data) == flag
 
 
-def notready_test_data():
+def test_data():
     data = DummyData()
 
-    data.data['LATITUDE'] = 10
-    data.data['LONGITUDE'] = -30
+    data.data["LATITUDE"] = 10
+    data.data["LONGITUDE"] = -30
     flag = location_at_sea(data)
     assert flag == 1
 
-    data.data['LATITUDE'] = 10
-    data.data['LONGITUDE'] = 330
+    data.data["LATITUDE"] = 10
+    data.data["LONGITUDE"] = 330
     flag = location_at_sea(data)
     assert flag == 1
 
@@ -88,8 +88,8 @@ def test_badlocation():
 
     coords = [[91, -30, 3], [-91, -30, 3], [10, -361, 3], [10, 1000, 3]]
     for lat, lon, flag in coords:
-        data.attrs['LATITUDE'] = lat
-        data.attrs['LONGITUDE'] = lon
+        data.attrs["LATITUDE"] = lat
+        data.attrs["LONGITUDE"] = lon
         assert location_at_sea(data) == flag
 
 
@@ -98,16 +98,16 @@ def test_nonelocation():
 
     coords = [[None, 1, 0], [1, None, 0]]
     for lat, lon, flag in coords:
-        data.attrs['LATITUDE'] = lat
-        data.attrs['LONGITUDE'] = lon
+        data.attrs["LATITUDE"] = lat
+        data.attrs["LONGITUDE"] = lon
         assert location_at_sea(data) == flag
 
-    del(data.attrs['LATITUDE'])
-    data.attrs['LONGITUDE'] = 1
+    del data.attrs["LATITUDE"]
+    data.attrs["LONGITUDE"] = 1
     assert location_at_sea(data) == 0
 
-    del(data.attrs['LONGITUDE'])
-    data.attrs['LATITUDE'] = 1
+    del data.attrs["LONGITUDE"]
+    data.attrs["LATITUDE"] = 1
     assert location_at_sea(data) == 0
 
 
@@ -119,14 +119,14 @@ def test_LocationAtSea_attrs():
        Locking etopo resolution, since it can change the values.
     """
     data = DummyData()
-    y = LocationAtSea(data, cfg={'resolution': '5min'})
+    y = LocationAtSea(data, cfg={"resolution": "5min"})
 
-    assert hasattr(y, 'features')
-    assert 'bathymetry' in y.features
-    assert ma.allclose(y.features['bathymetry'], 5036)
-    assert hasattr(y, 'flags')
-    assert 'location_at_sea' in y.flags
-    assert ma.allclose(y.flags['location_at_sea'], 1)
+    assert hasattr(y, "features")
+    assert "bathymetry" in y.features
+    assert ma.allclose(y.features["bathymetry"], 5036)
+    assert hasattr(y, "flags")
+    assert "location_at_sea" in y.flags
+    assert ma.allclose(y.flags["location_at_sea"], 1)
 
 
 def test_LocationAtSea_track():
@@ -144,14 +144,14 @@ def test_LocationAtSea_track():
        are combined.
     """
     data = DummyData()
-    data.data['LATITUDE'] = [15, 12, 8]
-    data.data['LONGITUDE'] = [-38, 222, 0]
+    data.data["LATITUDE"] = [15, 12, 8]
+    data.data["LONGITUDE"] = [-38, 222, 0]
 
-    y = LocationAtSea(data, cfg={'resolution': '5min'})
+    y = LocationAtSea(data, cfg={"resolution": "5min"})
 
-    assert hasattr(y, 'features')
-    assert 'bathymetry' in y.features
-    assert ma.allclose(y.features['bathymetry'], [5036, 4995, -122])
-    assert hasattr(y, 'flags')
-    assert 'location_at_sea' in y.flags
-    assert ma.allclose(y.flags['location_at_sea'], [1, 1, 4])
+    assert hasattr(y, "features")
+    assert "bathymetry" in y.features
+    assert ma.allclose(y.features["bathymetry"], [5036, 4995, -122])
+    assert hasattr(y, "flags")
+    assert "location_at_sea" in y.flags
+    assert ma.allclose(y.flags["location_at_sea"], [1, 1, 4])
