@@ -10,7 +10,8 @@ import json
 def cotederc(subdir=None):
     """Returns the directory with custom config for CoTeDe
     """
-    path = expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
+    path = os.getenv("COTEDE_DIR", os.path.join("~", ".config", "cotederc"))
+    path = os.path.expanduser(path)
     if subdir is not None:
         path = os.path.join(path, subdir)
     return path
