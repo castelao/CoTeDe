@@ -7,7 +7,7 @@
 import os.path
 import pkg_resources
 
-from cotede.utils import load_cfg, cotede_dir
+from cotede.utils import load_cfg, cotederc
 
 
 CFG = [f[:-5] for f in pkg_resources.resource_listdir('cotede', 'qc_cfg')
@@ -23,7 +23,7 @@ def test_no_local_duplicate_cfg():
     """
 
     for cfg in CFG:
-        local_cfg = os.path.join(cotede_dir(), "cfg", "%s.json" % cfg)
+        local_cfg = os.path.join(cotederc(), "cfg", "%s.json" % cfg)
         assert not os.path.exists(local_cfg), \
                 "Redundant local cfg file: %s" % cfg
 

@@ -7,10 +7,6 @@ import pkg_resources
 import json
 
 
-def cotede_dir():
-    return expanduser(os.getenv('COTEDE_DIR', '~/.config/cotederc'))
-
-
 def cotederc(subdir=None):
     """Returns the directory with custom config for CoTeDe
     """
