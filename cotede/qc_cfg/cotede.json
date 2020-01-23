@@ -17,6 +17,18 @@
         "minval": -2.5,
         "maxval": 45
         },
+    "regional_range": [
+        {"name": "red_sea",
+            "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
+            "minval": 21.7,
+            "maxval": 40
+            },
+        {"name": "mediterranean",
+            "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
+            "minval": 10,
+            "maxval": 40
+            }
+        ],
     "spike": {
 	"threshold": 6.0
         },
@@ -100,6 +112,18 @@
         "minval": 0,
         "maxval": 60
         },
+    "regional_range": [
+        {"name": "red_sea",
+            "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
+            "minval": 2,
+            "maxval": 41
+            },
+        {"name": "mediterranean",
+            "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
+            "minval": 2,
+            "maxval": 40
+            }
+        ],
     "spike": {
         "threshold": 0.9
         },

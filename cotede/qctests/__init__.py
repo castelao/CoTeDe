@@ -11,6 +11,7 @@ from .fuzzylogic import fuzzylogic
 
 from .cum_rate_of_change import CumRateOfChange, cum_rate_of_change
 from .global_range import GlobalRange
+from .regional_range import RegionalRange
 from .rate_of_change import RateOfChange, rate_of_change
 from .gradient import Gradient, gradient
 from .spike import Spike, spike

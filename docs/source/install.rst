@@ -22,6 +22,8 @@ Optional requirement
 
 - `Matplotlib <http://matplotlib.org>`_: a powerfull library for data visualization. It is required for the graphic tools, like the visual inspection and classification of the data.
 
+- `Shapely <https://github.com/Toblerity/Shapely>`_: a Python package for computational geometry. It is required by the Regional Range test to evaluate which measurements are inside the considered domain.
+
 Installing CoTeDe
 ==================
 
@@ -50,7 +52,7 @@ To install with OceansDB in order to be able to run climatology tests, you can r
 
 To install multiple extras::
 
-    pip install cotede[GSW,OceansDB]
+    pip install cotede[GSW,OceansDB,Shapely]
 
 Last night's version
 ------------------

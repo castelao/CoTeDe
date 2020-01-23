@@ -90,6 +90,12 @@ The thresholds used are extreme values, wide enough to accommodate all possible 
 Regional Range
 ~~~~~~~~~~~~~~
 
+The regional Range test is equivalent to the Global Range but has a domain where it is applicable. Good examples are the Mediterranean Sea and the Red Sea, where the feasible range is more restrictive than required for the Global Range.
+
+This test requires the Python package Shapely to read a polygon geometry and evaluate which positions are within that domain.
+
+Reference: Argo QC manual
+
 Digit Rollover
 ~~~~~~~~~~~~~~~
 
@@ -273,7 +279,7 @@ Argo (Incomplete)
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | `Global range`_                                       |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| Regional range test                                   |            |        |                        |
+| `Regional Range`_                                     |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | Pressure increasing test                              |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+

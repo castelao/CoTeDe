@@ -191,10 +191,6 @@ class ProfileQC(object):
             except:
                 module_logger.warning("Fail on valid_speed")
 
-        if 'regional_range' in cfg:
-            module_logger.warning(
-                    "Sorry, I'm no ready to evaluate regional_range()")
-
         if 'pressure_increasing' in cfg:
             module_logger.warning(
                     "Sorry, I'm no ready to evaluate pressure_increasing()")
@@ -225,6 +221,7 @@ class ProfileQC(object):
                 'gradient_depthconditional': GradientDepthConditional,
                 'profile_envelop': ProfileEnvelop,
                 'rate_of_change': RateOfChange,
+                'regional_range': RegionalRange,
                 'spike': Spike,
                 'spike_depthconditional': SpikeDepthConditional,
                 'stuck_value': StuckValue,
