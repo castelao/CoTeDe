@@ -2,7 +2,7 @@
 Getting Started with CoTeDe
 ***************************
 
-To quality control CTD or TSG, please check the package `pySeabird <https://seabird.castelao.net>`_.
+To quality control CTD or TSG, please check the package `pySeabird <https://github.com/castelao/seabird>>`_.
 
 Inside python
 =============
