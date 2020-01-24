@@ -118,6 +118,8 @@ def woa_normbias(data, v, cfg):
 
 
 class WOA_NormBias(QCCheckVar):
+    flag_bad = 3
+
     def __init__(self, data, varname, cfg, autoflag=True):
         self.data = data
         self.varname = varname

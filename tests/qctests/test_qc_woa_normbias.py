@@ -35,7 +35,7 @@ def test_attribute():
     assert pqc.flags['TEMP']['woa_normbias'].shape == profile.data['TEMP'].shape
     assert np.unique(pqc.features['TEMP']['woa_mean']).size > 1
     assert (pqc.flags['TEMP']['woa_normbias'] ==
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 9]).all()
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 9]).all()
 
 
 def test_track():
@@ -54,7 +54,7 @@ def test_track():
     assert pqc.flags['TEMP']['woa_normbias'].shape == profile.data['TEMP'].shape
     assert np.unique(pqc.features['TEMP']['woa_mean']).size > 1
     assert (pqc.flags['TEMP']['woa_normbias'] ==
-            [1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 9]).all()
+            [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9]).all()
 
 
 def test_standard_error():
@@ -72,17 +72,17 @@ def test_standard_error():
     pqc = ProfileQC(profile, cfg=cfg)
     assert 'woa_normbias' in pqc.flags['TEMP']
     assert pqc.flags['TEMP']['woa_normbias'].shape == profile.data['TEMP'].shape
-    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 4, 0]).all()
+    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 3, 0]).all()
 
     cfg = {"TEMP": {"woa_normbias": {
         "threshold": 10, "use_standard_error": False}}}
     pqc_noSE = ProfileQC(profile, cfg=cfg)
     assert 'woa_normbias' in pqc.flags['TEMP']
     assert pqc.flags['TEMP']['woa_normbias'].shape == profile.data['TEMP'].shape
-    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 4, 0]).all()
+    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 3, 0]).all()
 
     cfg = {"TEMP": {"woa_normbias": {"threshold": 10, "use_standard_error": True}}}
     pqc_SE = ProfileQC(profile, cfg=cfg)
     assert 'woa_normbias' in pqc.flags['TEMP']
     assert pqc.flags['TEMP']['woa_normbias'].shape == profile.data['TEMP'].shape
-    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 4, 0]).all()
+    assert (pqc.flags['TEMP']['woa_normbias'] == [1, 1, 1, 1, 1, 1, 3, 0]).all()

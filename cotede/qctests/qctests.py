@@ -73,6 +73,8 @@ def constant_value():
 class QCCheck(object):
     """Basic template for a QC check
     """
+    flag_good = 1
+    flag_bad = 4
     def __init__(self, data, cfg=None, autoflag=True):
         self.data = data
         self.cfg = cfg
@@ -97,13 +99,11 @@ class QCCheck(object):
             self.flag_good = self.cfg['flag_good']
         except (KeyError, TypeError):
             module_logger.debug("flag_good undefined. Using default value")
-            self.flag_good = 1
 
         try:
             self.flag_bad = self.cfg['flag_bad']
         except (KeyError, TypeError):
             module_logger.debug("flag_bad undefined. Using default value")
-            self.flag_bad = 4
 
     def keys(self):
         return self.features.keys() + \
