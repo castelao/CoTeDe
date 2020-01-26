@@ -81,6 +81,15 @@ The point is considered at sea if the interpolated position has a negative verti
 
 This test implicitly requires the data to pass the `Valid Position`_ test.
 
+.. _test-deepest-pressure:
+
+Deepest Pressure
+~~~~~~~~~~~~~~~~
+
+Check for each measurement if the reference pressure (depth) is deeper than the operational limit for that sensor/platform. For instance, the Argo Solo-II operates up to 2000m while the Deep Solo goes up to 6000m. Measurements deeper than that suggest a bad vertical position.
+
+Reference: Argo QC manual 2.9.1
+
 Global Range
 ~~~~~~~~~~~~
 

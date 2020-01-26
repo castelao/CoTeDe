@@ -206,15 +206,12 @@ class ProfileQC(object):
             module_logger.warning(
                     "Sorry I'm not ready to evaluate frozen_profile()")
 
-        if 'deepest_pressure' in cfg:
-            module_logger.warning(
-                    "Sorry I'm not ready to evaluate deepest_pressure()")
-
         catalog = {
                 'bin_spike': Bin_Spike,
                 'cars_normbias': CARS_NormBias,
                 'constant_cluster_size': ConstantClusterSize,
                 'cum_rate_of_change': CumRateOfChange,
+                'deepest_pressure': DeepestPressure,
                 'digit_roll_over': DigitRollOver,
                 'global_range': GlobalRange,
                 'gradient': Gradient,
