@@ -47,157 +47,6 @@ Some procedures also provide a continuous scale usually representing the probabl
 For details on that, please check the description of the specific check.
 
 
-=====
-Tests
-=====
-
-These are the tests available in CoTeDe.
-Most of the QC recommended guides follow simmilar procedures with small variations, as described below when relevant.
-
-
-Valid Date
-~~~~~~~~~~
-
-Check if there is a valid date and time associated with the measurement.
-
-.. _Argo_valid_date:
-
-For Argo, the year also must be later than 1997.
-
-Valid Position
-~~~~~~~~~~~~~~
-
-.. _Argo_valid_position:
-
-Check if there is a valid position associated with the measurement. It should have a latitude between -90 and 90, and a longitude between -180 and 360.
-
-Location at Sea
-~~~~~~~~~~~~~~~
-
-.. _Argo_on_land:
-
-Check if the position is at sea, which is evaluated using ETOPO1, a bathymetry with resolution of 1 minute.
-The point is considered at sea if the interpolated position has a negative vertical level.
-
-This test implicitly requires the data to pass the `Valid Position`_ test.
-
-.. _test-deepest-pressure:
-
-Deepest Pressure
-~~~~~~~~~~~~~~~~
-
-Check for each measurement if the reference pressure (depth) is deeper than the operational limit for that sensor/platform. For instance, the Argo Solo-II operates up to 2000m while the Deep Solo goes up to 6000m. Measurements deeper than that suggest a bad vertical position.
-
-Reference: Argo QC manual 2.9.1
-
-Global Range
-~~~~~~~~~~~~
-
-This test evaluates if the measurement is a possible value in the ocean in normal conditions.
-The thresholds used are extreme values, wide enough to accommodate all possible values and do not discard uncommon, but possible, conditions.
-
-Regional Range
-~~~~~~~~~~~~~~
-
-The regional Range test is equivalent to the Global Range but has a domain where it is applicable. Good examples are the Mediterranean Sea and the Red Sea, where the feasible range is more restrictive than required for the Global Range.
-
-This test requires the Python package Shapely to read a polygon geometry and evaluate which positions are within that domain.
-
-Reference: Argo QC manual
-
-Digit Rollover
-~~~~~~~~~~~~~~~
-
-Every sensor has a limit of bits available to store the sample value, with this limit planned to cover the possible range.
-A spurious value over the bit range would be recorded as the scale rollover, resulting in a misleading value inside the possible scale.
-This test identifies extreme jumps on consecutive measurements, that are wider than expected, suggesting a rollover error.
-
-The difference on consecutive measurements must be smaller or equal to the threshold to be approved.
-
-Gradient
-~~~~~~~~
-
-  This test compares
-
-    .. math::
-
-       X_i = \left| V_i - \frac{V_{i+1} + V_{i-1}}{2} \right|
-
-Spike
-~~~~~
-
-.. math::
-
-   X_i = \left| V_i - \frac{V_{i+1} + V_{i-1}}{2} \right| - \left| \frac{V_{i+1} - V_{i-1}}{2} \right|
-
-Tukey 53H
-~~~~~~~~~
-
-This method to detect spikes is based on the procedure initially proposed by Goring & Nikora 2002 for Acoustic Doppler Velocimeters, and similar to the one adopted by Morello 2011.
-It takes advantage of the robustness of the median to create a smoother data series, which is then compared with the observation.
-This difference is normalized by the standard deviation of the observed data series after removing the large--scale variability.
-
-For one individual measurement :math:`x_i`, where :math:`i` is the position of the observation, it is evaluated as follows:
-
-1. :math:`x^{(1)}` is the median of the five points from :math:`x_{i-2}` to :math:`x_{i+2}`;
-2. :math:`x^{(2)}` is the median of the three points from :math:`x^{(1)}_{i-1}` to :math:`x^{(1)}_{i+1}`;
-3. :math:`x^{(3)}` is the defined by the Hanning smoothing filter:
-        :math:`\frac{1}{4}\left( x^{(2)}_{i-1} +2x^{(2)}_{i} +x^{(2)}_{i+1} \right)`
-4. :math:`x_i` is a spike if :math:`\frac{|x_i-x^{(3)}|}{\sigma} > k`, where :math:`\sigma` is the standard deviation of the lowpass filtered data.
-
-
-The default behavior in CoTeDe is to flag 4 if the test yields values higher than :math:`k=1.5`, and flag 1 if it is lower.
-
-
-Climatology
-~~~~~~~~~~~
-
-.. math::
-
-    X_i = \frac{V_{it} - <V_t>}{\sigma}
-
-
-.. _QARTOD_Clim:
-
-QARTOD climatological test is based on range
-
-Profile Envelop
-~~~~~~~~~~~~~~~
-
-
-Rate of Change
-~~~~~~~~~~~~~~
-
-.. _QARTOD_RoC:
-
-For QARTOD, the delta change is normalized by the standard deviation.
-
-Density Inversion
-~~~~~~~~~~~~~~~~~
-
-For QARTOD, falgs T, C, and SP observations.
-
-Density Treshold (DT)
-
-sigma_theta n-1 + DT > sigma_theta n
-
-Constant Cluster
-~~~~~~~~~~~~~~~~
-
-
-
-.. _Argo_stuck:
-
-For Argo ...
-
-.. _QARTOD_flatLine:
-
-For QARTOD ...
-
-.. _TSG_constantValue:
-
-For TSG ...
-
 ==========================
 Quality Control Procedures
 ==========================
@@ -214,59 +63,57 @@ Profile
 GTSPP
 ~~~~~
 
-+--------------------+------------+--------+-------------+----------+
-| Test               |         Flag        |       Threshold        |
-+--------------------+------------+--------+-------------+----------+
-|                    | if succeed | if fail| Temperature | Salinity |
-+====================+============+========+=============+==========+
-|                    |            |        |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Valid Date`_      |  1         | 4      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Valid Position`_  |  1         |        |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Location at Sea`_ |  1         |        |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Global Range`_    |  1         |        | -2 to 40 C  | 0 to 41  |
-+--------------------+------------+--------+-------------+----------+
-| `Gradient`_        |  1         | 4      | 10.0 C      | 5        |
-+--------------------+------------+--------+-------------+----------+
-| `Spike`_           |  1         |        | 2.0 C       | 0.3      |
-+--------------------+------------+--------+-------------+----------+
-| `Climatology`_     |  1         |        |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Profile Envelop`_ |            |        |                        |
-+--------------------+------------+--------+-------------+----------+
++-----------------------------+------------+--------+-------------+----------+
+| Test                        |         Flag        |       Threshold        |
++-----------------------------+------------+--------+-------------+----------+
+|                             | if succeed | if fail| Temperature | Salinity |
++=============================+============+========+=============+==========+
+| :ref:`test-valid-date`      |  1         | 4      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-valid-position`  |  1         |        |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-location-at-sea` |  1         |        |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-global-range`    |  1         |        | -2 to 40 C  | 0 to 41  |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-gradient`        |  1         | 4      | 10.0 C      | 5        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-spike`           |  1         |        | 2.0 C       | 0.3      |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-climatology`     |  1         |        |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-profile-envelop` |            |        |                        |
++-----------------------------+------------+--------+-------------+----------+
 
 
 EuroGOOS
 ~~~~~~~~
 
-+--------------------+------------+--------+-------------+----------+
-| Test               |         Flag        |       Threshold        |
-+--------------------+------------+--------+-------------+----------+
-|                    | if succeed | if fail| Temperature | Salinity |
-+====================+============+========+=============+==========+
-| `Valid Date`_      |  1         | 4      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Valid Position`_  |  1         | 4      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Location at Sea`_ |  1         | 4      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Global Range`_    |  1         | 4      | -2.5 to 40  | 2 to 41  |
-+--------------------+------------+--------+-------------+----------+
-| `Digit Rollover`_  |  1         | 4      |  10.0 C     | 5        |
-+--------------------+------------+--------+-------------+----------+
-| Gradient Cond.     |  1         | 4      |             |          |
-|  - < 500           |            |        | - 9.0 C     | - 1.5    |
-|  - > 500           |            |        | - 3.0 C     | - 0.5    |
-+--------------------+------------+--------+-------------+----------+
-| Spike Cond.        |  1         | 4      |             |          |
-|  - < 500           |            |        | - 6.0 C     | - 0.9    |
-|  - > 500           |            |        | - 2.0 C     | - 0.3    |
-+--------------------+------------+--------+-------------+----------+
-| `Climatology`_     |  1         |        |                        |
-+--------------------+------------+--------+-------------+----------+
++-----------------------------+------------+--------+-------------+----------+
+| Test                        |         Flag        |       Threshold        |
++-----------------------------+------------+--------+-------------+----------+
+|                             | if succeed | if fail| Temperature | Salinity |
++=============================+============+========+=============+==========+
+| :ref:`test-valid-date`      |  1         | 4      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-valid-position`  |  1         | 4      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-location-at-sea` |  1         | 4      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-global-range`    |  1         | 4      | -2.5 to 40  | 2 to 41  |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-digit-rollover`  |  1         | 4      |  10.0 C     | 5        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-gradient-cond`   |  1         | 4      |             |          |
+|  - < 500                    |            |        | - 9.0 C     | - 1.5    |
+|  - > 500                    |            |        | - 3.0 C     | - 0.5    |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-spike-cond`      |  1         | 4      |             |          |
+|  - < 500                    |            |        | - 6.0 C     | - 0.9    |
+|  - > 500                    |            |        | - 2.0 C     | - 0.3    |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-climatology`     |  1         |        |                        |
++-----------------------------+------------+--------+-------------+----------+
 
 
 Argo (Incomplete)
@@ -288,17 +135,17 @@ Argo (Incomplete)
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | Impossible speed test                                 |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Global range`_                                       |            |        |                        |
+| :ref:`test-global-range`                              |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Regional Range`_                                     |            |        |                        |
+| :ref:`test-regional-range`                            |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | Pressure increasing test                              |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Spike`_                                              |            |        |                        |
+| :ref:`test-spike`                                     |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | Top an dbottom spike test: obsolete                   |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Gradient`_                                           |            |        |                        |
+| :ref:`test-gradient`                                  |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | `Digit Rollover`_                                     |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
@@ -322,29 +169,29 @@ Argo (Incomplete)
 IMOS (Incomplete)
 ~~~~~~~~~~~~~~~~~
 
-+--------------------+------------+--------+-------------+----------+
-| Test               |         Flag        |       Threshold        |
-+--------------------+------------+--------+-------------+----------+
-|                    | if succeed | if fail| Temperature | Salinity |
-+====================+============+========+=============+==========+
-| `Valid Date`_      |  1         | 3      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Valid Position`_  |  1         | 3      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Location at Sea`_ |  1         | 3      |                        |
-+--------------------+------------+--------+-------------+----------+
-| `Global Range`_    |  1         |        | -2.5 to 40  | 2 to 41  |
-+--------------------+------------+--------+-------------+----------+
-| `Gradient`_        |  1         | 4      | 10.0 C      | 5        |
-+--------------------+------------+--------+-------------+----------+
-| `Spike`_           |  1         |        | 2.0 C       | 0.3      |
-+--------------------+------------+--------+-------------+----------+
-| `Climatology`_     |  1         |        |                        |
-+--------------------+------------+--------+-------------+----------+
++-----------------------------+------------+--------+-------------+----------+
+| Test                        |         Flag        |       Threshold        |
++-----------------------------+------------+--------+-------------+----------+
+|                             | if succeed | if fail| Temperature | Salinity |
++=============================+============+========+=============+==========+
+| :ref:`test-valid-date`      |  1         | 3      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-valid-position`  |  1         | 3      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-location-at-sea` |  1         | 3      |                        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-global-range`    |  1         |        | -2.5 to 40  | 2 to 41  |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-gradient`        |  1         | 4      | 10.0 C      | 5        |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-spike`           |  1         |        | 2.0 C       | 0.3      |
++-----------------------------+------------+--------+-------------+----------+
+| :ref:`test-climatology`     |  1         |        |                        |
++-----------------------------+------------+--------+-------------+----------+
 
 
-QARTOD
-~~~~~~
+QARTOD (Incomplete)
+~~~~~~~~~~~~~~~~~~~
 
 +----------------------------------------+------------+--------+-------------+----------+
 | Test                                   |         Flag        |       Threshold        |
@@ -357,11 +204,11 @@ QARTOD
 +----------------------------------------+------------+--------+-------------+----------+
 | Location at Sea                        |            |        |                        |
 +----------------------------------------+------------+--------+-------------+----------+
-| Gross Range                            |            |        |             |          |
+| :ref:`Gross Range <test-global-range>` |            |        |             |          |
 +----------------------------------------+------------+--------+-------------+----------+
 | :ref:`Climatological <QARTOD_Clim>`    |            |        |                        |
 +----------------------------------------+------------+--------+-------------+----------+
-| `Spike`_                               |            |        |             |          |
+| :ref:`test-spike`                      |            |        |             |          |
 +----------------------------------------+------------+--------+-------------+----------+
 | :ref:`Rate of Change <QARTOD_RoC>`     |            |    4   |             |          |
 +----------------------------------------+------------+--------+-------------+----------+
@@ -385,16 +232,16 @@ TSG
 Based on AOML procedure. Realtime data is evaluatd by tests 1 to 10, while the delayed mode is evaluated by tests 1 to 15.
 
   1. Platform Identification
-  2. `Valid Date`_
+  2. :ref:`test-valid-date`
   3. Impossible Location
   4. `Location at Sea`_
   5. Impossible Speed
   6. `Global Range`_
-  7. `Regional Range`_
-  8. `Spike`_
+  7. :ref:`test-regional-range`
+  8. :ref:`test-spike`
   9. :ref:`Constant Value <TSG_constantValue>`
-  10. `Gradient`_
-  11. Climatology
+  10. :ref:`test-gradient`
+  11. :ref:`test-climatology`
   12. NCEP Weekly analysis
   13. Buddy Check
   14. Water Samples
