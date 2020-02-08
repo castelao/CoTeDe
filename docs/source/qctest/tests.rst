@@ -207,3 +207,26 @@ A spurious value over the bit range would be recorded as the scale rollover, res
 This test identifies extreme jumps on consecutive measurements, that are wider than expected, suggesting a rollover error.
 
 The difference on consecutive measurements must be smaller or equal to the threshold to be approved.
+
+
+Monotonic Vertical Displacement
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Evaluates the vertical movement of a profiling platform.
+If the vertical movement stops, like in a constant depth, all measurements without vertical displacement, except the first one, are flagged bad.
+If there is an inversion, all measurements in the inverted sequence are flagged bad.
+
+The vertical movement is usually infered by the records of pressure or depth along the time.
+
+The argument from this test might come from the assimetry of every sampling platform.
+A CTD in a rosette usually samples in the downcast so the CTD itself measures a water parcel less disturbed by the sampling bottles and the rest of the rosette.
+Spray underwater gliders have the CTD intake in the upper part of the hull, hence the ascencion phase of the dive leads to cleaner samples.
+Therefore, a change in the "flight" pattern wouldn't mean a bad measurement per se, but an inconsistent measurement with he previous and following values.
+
+.. _GTSPP_increasing-depth:
+
+GTSPP evaluates depth.
+
+.. _Argo_increasing-pressure:
+
+Argo evaluates pressure.

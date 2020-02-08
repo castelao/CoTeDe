@@ -216,6 +216,7 @@ class ProfileQC(object):
                 'global_range': GlobalRange,
                 'gradient': Gradient,
                 'gradient_depthconditional': GradientDepthConditional,
+                'monotonic_z': MonotonicZ,
                 'profile_envelop': ProfileEnvelop,
                 'rate_of_change': RateOfChange,
                 'regional_range': RegionalRange,

@@ -27,3 +27,4 @@ from .gradient_depthconditional import GradientDepthConditional
 from .spike_depthconditional import SpikeDepthConditional
 from .valid_geolocation import ValidGeolocation
 from .deepest_pressure import DeepestPressure
+from .monotonic_z import MonotonicZ
