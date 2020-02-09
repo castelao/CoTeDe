@@ -33,6 +33,7 @@ class RegionalRange(QCCheckVar):
           }]
 
     """
+
     def test(self):
         self.flags = {}
 
@@ -41,8 +42,10 @@ class RegionalRange(QCCheckVar):
         try:
             import shapely
         except ImportError:
-            module_logger.debug("Regional range currently depends on module Shapely, which is not available. Regional range will return flag 0.")
-            self.flags['regional_range'] = np.zeros(feature.shape, dtype='i1')
+            module_logger.debug(
+                "Regional range currently depends on module Shapely, which is not available. Regional range will return flag 0."
+            )
+            self.flags["regional_range"] = np.zeros(feature.shape, dtype="i1")
             return
 
         if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
@@ -55,29 +58,30 @@ class RegionalRange(QCCheckVar):
             lat = self.data.attrs["LATITUDE"]
             lon = self.data.attrs["LONGITUDE"]
         else:
-            self.flags["regional_range"] = np.zeros(feature.shape, dtype='i1')
+            self.flags["regional_range"] = np.zeros(feature.shape, dtype="i1")
             return
 
         if not isinstance(self.cfg, list):
             self.cfg = [self.cfg]
 
-
-        flag = np.zeros(feature.shape, dtype='i1')
+        flag = np.zeros(feature.shape, dtype="i1")
         for cfg in self.cfg:
 
-            assert ('name' in cfg), "Regional Range must have a name"
+            assert "name" in cfg, "Regional Range must have a name"
 
-            assert ('minval' in cfg) and ('maxval' in cfg), \
-                    "Missing limits: minval & maxval"
+            assert ("minval" in cfg) and (
+                "maxval" in cfg
+            ), "Missing limits: minval & maxval"
 
-            minval = cfg['minval']
-            maxval = cfg['maxval']
+            minval = cfg["minval"]
+            maxval = cfg["maxval"]
 
-            assert minval < maxval, "Regional Range(%s): " \
-                    + "minval (%s) must be smaller than maxval(%s)" \
-                    % (v, minval, maxval)
+            assert minval < maxval, (
+                "Regional Range(%s): "
+                + "minval (%s) must be smaller than maxval(%s)" % (v, minval, maxval)
+            )
 
-            g = shapely.wkt.loads(cfg['region'])
+            g = shapely.wkt.loads(cfg["region"])
             if g.intersects(Point(lon, lat)):
                 flag[np.nonzero(feature < minval)] = self.flag_bad
                 flag[np.nonzero(feature > maxval)] = self.flag_bad
@@ -85,4 +89,4 @@ class RegionalRange(QCCheckVar):
                 idx = idx & (flag < self.flag_good)
                 flag[np.nonzero(idx)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['regional_range'] = flag
+        self.flags["regional_range"] = flag

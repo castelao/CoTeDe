@@ -21,15 +21,13 @@ def profile_envelop(data, cfg, varname):
     """
     # assert varname in data.keys()
 
-    z = data['PRES']
+    z = data["PRES"]
     x = data[varname]
 
-    flag = np.zeros(z.shape, dtype='i1')
+    flag = np.zeros(z.shape, dtype="i1")
 
     for layer in cfg:
-        ind = np.nonzero(
-                eval("(z %s) & (z %s)" % (layer[0], layer[1]))
-                )[0]
+        ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
         f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
 
         flag[ind[f == True]] = 1
@@ -44,23 +42,21 @@ class ProfileEnvelop(QCCheckVar):
     def test(self):
         self.flags = {}
 
-        z = self.data['PRES']
+        z = self.data["PRES"]
         x = self.data[self.varname]
 
         assert z.shape == x.shape
 
-        flag = np.zeros(x.shape, dtype='i1')
+        flag = np.zeros(x.shape, dtype="i1")
 
         for layer in self.cfg:
-            ind = np.nonzero(
-                eval("(z %s) & (z %s)" % (layer[0], layer[1]))
-                )[0]
+            ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
             f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
 
             flag[ind[f == True]] = self.flag_good
             flag[ind[f == False]] = self.flag_bad
 
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['profile_envelop'] = flag
+        self.flags["profile_envelop"] = flag
 
         return

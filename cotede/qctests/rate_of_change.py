@@ -20,6 +20,7 @@ from .qctests import QCCheckVar
 
 module_logger = logging.getLogger(__name__)
 
+
 def rate_of_change(x):
     y = ma.fix_invalid(np.ones_like(x) * np.nan)
     y[1:] = ma.diff(x)
@@ -36,7 +37,7 @@ class RateOfChange(QCCheckVar):
         self.flags = {}
         try:
             threshold = self.cfg['threshold']
-        except:
+        except KeyError:
             print("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 

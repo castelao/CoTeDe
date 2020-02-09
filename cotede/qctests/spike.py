@@ -16,6 +16,7 @@ from .qctests import QCCheckVar
 
 module_logger = logging.getLogger(__name__)
 
+
 def spike(x):
     """ Spike
     """
@@ -32,18 +33,22 @@ class Spike(QCCheckVar):
     def test(self):
         self.flags = {}
         try:
-            threshold = self.cfg['threshold']
+            threshold = self.cfg["threshold"]
         except KeyError:
-            module_logger.debug("Deprecated cfg format. It should contain a threshold item.")
+            module_logger.warning(
+                "Deprecated cfg format. It should contain a threshold item."
+            )
             threshold = self.cfg
 
-        assert (np.size(threshold) == 1) and \
-                (threshold is not None) and \
-                (np.isfinite(threshold))   
+        assert (
+            (np.size(threshold) == 1)
+            and (threshold is not None)
+            and (np.isfinite(threshold))
+        )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype='i1')
+        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
         feature = self.features["spike"]
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['spike'] = flag
+        self.flags["spike"] = flag
