@@ -1,5 +1,6 @@
 wheel>=0.23
 pytest>=4.4
+pytest-flake8
 pytest-xdist>=1.29
 pandas
 netCDF4
