@@ -17,8 +17,7 @@ def haversine(lat_a, lon_a, lat_b, lon_b):
 
     dlat = lat_a - lat_b
     dlon = lon_a - lon_b
-    d = np.sin(dlat / 2) ** 2 + \
-            np.cos(lat_a) * np.cos(lat_b) * np.sin(dlon / 2) ** 2
+    d = np.sin(dlat / 2) ** 2 + np.cos(lat_a) * np.cos(lat_b) * np.sin(dlon / 2) ** 2
     h = 2 * AVG_EARTH_RADIUS * np.arcsin(np.sqrt(d))
 
     return h
@@ -27,19 +26,19 @@ def haversine(lat_a, lon_a, lat_b, lon_b):
 def speed(data):
     """
     """
-    assert ('timeS' in data.keys()), \
-            "Missing timeS in input data"
-    assert ('LATITUDE' in data.keys()), \
-            "Missing LATITUDE in input data"
-    assert ('LONGITUDE' in data.keys()), \
-            "Missing LONGITUDE in input data"
+    assert "timeS" in data.keys(), "Missing timeS in input data"
+    assert "LATITUDE" in data.keys(), "Missing LATITUDE in input data"
+    assert "LONGITUDE" in data.keys(), "Missing LONGITUDE in input data"
 
-    dL = haversine(data['LATITUDE'][:-1], data['LONGITUDE'][:-1],
-            data['LATITUDE'][1:], data['LONGITUDE'][1:])
-    dt = ma.diff(data['timeS'])
+    dL = haversine(
+        data["LATITUDE"][:-1],
+        data["LONGITUDE"][:-1],
+        data["LATITUDE"][1:],
+        data["LONGITUDE"][1:],
+    )
+    dt = ma.diff(data["timeS"])
 
-    speed = ma.append(ma.masked_array([0], [True]),
-            dL/dt)
+    speed = ma.append(ma.masked_array([0], [True]), dL / dt)
 
     return speed
 
@@ -51,10 +50,10 @@ def possible_speed(data, cfg):
     """
     s = speed(data)
 
-    flag = np.zeros(s.shape, dtype='i1')
+    flag = np.zeros(s.shape, dtype="i1")
 
-    flag[s <= cfg['threshold']] = cfg['flag_good']
-    flag[s > cfg['threshold']] = cfg['flag_bad']
+    flag[s <= cfg["threshold"]] = cfg["flag_good"]
+    flag[s > cfg["threshold"]] = cfg["flag_bad"]
 
     # Flag as 9 any masked input value
     # for v in ['LATITUDE', 'LONGITUDE']:

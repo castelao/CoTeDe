@@ -14,6 +14,7 @@ try:
 except ImportError:
     module_logger.debug("OceansDB package is not available")
 
+
 def location_at_sea(data, cfg=None):
     """ Evaluate if location is at sea.
 
@@ -27,15 +28,15 @@ def location_at_sea(data, cfg=None):
             this before.
     """
     try:
-        flag_good = cfg['flag_good']
+        flag_good = cfg["flag_good"]
     except:
         flag_good = 1
     try:
-        flag_bad = cfg['flag_bad']
+        flag_bad = cfg["flag_bad"]
     except:
         flag_bad = 3
 
-    assert hasattr(data, 'attrs'), "Missing attributes"
+    assert hasattr(data, "attrs"), "Missing attributes"
 
     # Temporary solution while migrating to OceanSites variables syntax
     if ('LATITUDE' not in data.attrs) and ('latitude' in data.attrs):
@@ -60,13 +61,12 @@ def location_at_sea(data, cfg=None):
 
     try:
         ETOPO = oceansdb.ETOPO()
-        etopo = ETOPO['topography'].extract(
-                var='height',
-                lat=data.attrs['LATITUDE'],
-                lon=data.attrs['LONGITUDE'])
-        h = etopo['height']
+        etopo = ETOPO["topography"].extract(
+            var="height", lat=data.attrs["LATITUDE"], lon=data.attrs["LONGITUDE"]
+        )
+        h = etopo["height"]
 
-        flag = np.zeros(h.shape, dtype='i1')
+        flag = np.zeros(h.shape, dtype="i1")
         flag[np.nonzero(h <= 0)] = flag_good
         flag[np.nonzero(h > 0)] = flag_bad
 
@@ -76,7 +76,7 @@ def location_at_sea(data, cfg=None):
         return 0
 
 
-def get_bathymetry(lat, lon, resolution='5min'):
+def get_bathymetry(lat, lon, resolution="5min"):
     """Interpolate bathymetry from ETOPO
 
        For a given (lat, lon), interpolates the bathymetry from ETOPO
@@ -86,7 +86,7 @@ def get_bathymetry(lat, lon, resolution='5min'):
     db = oceansdb.ETOPO(resolution=resolution)
 
     etopo = db["topography"].track(var="height", lat=lat, lon=lon)
-    return {"bathymetry": -etopo["height"].astype('i')}
+    return {"bathymetry": -etopo["height"].astype("i")}
 
 
 class LocationAtSea(QCCheck):

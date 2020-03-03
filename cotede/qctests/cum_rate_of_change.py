@@ -33,8 +33,8 @@ def cum_rate_of_change(x, memory):
     y[1:] = ma.absolute(ma.diff(x))
 
     for i in range(2, y.size):
-        if y[i] < y[i-1]:
-            y[i] = (1 - memory) * y[i] + memory * y[i-1]
+        if y[i] < y[i - 1]:
+            y[i] = (1 - memory) * y[i] + memory * y[i - 1]
 
     return y
 
@@ -42,24 +42,28 @@ def cum_rate_of_change(x, memory):
 class CumRateOfChange(QCCheckVar):
     def set_features(self):
         self.features = {
-                'cum_rate_of_change': cum_rate_of_change(
-                    self.data[self.varname], self.cfg['memory'])}
+            "cum_rate_of_change": cum_rate_of_change(
+                self.data[self.varname], self.cfg["memory"]
+            )
+        }
 
     def test(self):
         self.flags = {}
         try:
-            threshold = self.cfg['threshold']
+            threshold = self.cfg["threshold"]
         except:
             print("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
-        assert (np.size(threshold) == 1) \
-            and (threshold is not None) \
+        assert (
+            (np.size(threshold) == 1)
+            and (threshold is not None)
             and (np.isfinite(threshold))
+        )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype='i1')
+        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
         feature = ma.absolute(self.features["cum_rate_of_change"])
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['cum_rate_of_change'] = flag
+        self.flags["cum_rate_of_change"] = flag

@@ -20,20 +20,20 @@ def tukey53H(x):
     N = len(x)
 
     u1 = ma.masked_all(N)
-    for n in range(N-4):
-        if x[n:n+5].any():
-            u1[n+2] = ma.median(x[n:n+5])
+    for n in range(N - 4):
+        if x[n : n + 5].any():
+            u1[n + 2] = ma.median(x[n : n + 5])
 
     u2 = ma.masked_all(N)
-    for n in range(N-2):
-        if u1[n:n+3].any():
-            u2[n+1] = ma.median(u1[n:n+3])
+    for n in range(N - 2):
+        if u1[n : n + 3].any():
+            u2[n + 1] = ma.median(u1[n : n + 3])
 
     u3 = ma.masked_all(N)
-    u3[1:-1] = 0.25*(u2[:-2] + 2*u2[1:-1] + u2[2:])
+    u3[1:-1] = 0.25 * (u2[:-2] + 2 * u2[1:-1] + u2[2:])
 
     Delta = ma.fix_invalid(np.ones_like(x) * np.nan)
-    Delta[1:-1] = ma.absolute(x[1:-1]-u3[1:-1])
+    Delta[1:-1] = ma.absolute(x[1:-1] - u3[1:-1])
 
     return Delta
 
@@ -48,18 +48,17 @@ def tukey53H_norm(x, l=12):
     Delta = tukey53H(x)
 
     w = np.hamming(l)
-    sigma = (np.convolve(x, w, mode='same') / w.sum()).std()
+    sigma = (np.convolve(x, w, mode="same") / w.sum()).std()
 
-    return Delta/sigma
+    return Delta / sigma
 
 
 class Tukey53H(QCCheckVar):
     def set_features(self):
         self.features = {
-                'tukey53H': tukey53H(self.data[self.varname]),
-                'tukey53H_norm': tukey53H_norm(self.data[self.varname],
-                    l=self.cfg['l']),
-                }
+            "tukey53H": tukey53H(self.data[self.varname]),
+            "tukey53H_norm": tukey53H_norm(self.data[self.varname], l=self.cfg["l"]),
+        }
 
     def test(self):
         """
@@ -70,19 +69,19 @@ class Tukey53H(QCCheckVar):
         """
         self.flags = {}
         try:
-            threshold = self.cfg['threshold']
+            threshold = self.cfg["threshold"]
         except KeyError:
             print("Deprecated cfg format. It should contain a threshold item.")
-            threshold = self.cfg['k']
+            threshold = self.cfg["k"]
 
-        assert (np.size(threshold) == 1) and \
-                (threshold is not None) and \
-                (np.isfinite(threshold))
+        assert (
+            (np.size(threshold) == 1)
+            and (threshold is not None)
+            and (np.isfinite(threshold))
+        )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        flag[np.nonzero(self.features['tukey53H_norm'] > threshold)] = \
-                self.flag_bad
-        flag[np.nonzero(self.features['tukey53H_norm'] <= threshold)] = \
-                self.flag_good
+        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag[np.nonzero(self.features["tukey53H_norm"] > threshold)] = self.flag_bad
+        flag[np.nonzero(self.features["tukey53H_norm"] <= threshold)] = self.flag_good
         flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['tukey53H_norm'] = flag
+        self.flags["tukey53H_norm"] = flag

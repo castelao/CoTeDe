@@ -36,19 +36,15 @@ def densitystep(S, T, P):
         print("Package gsw is required and is not available.")
 
     rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
-    ds = ma.concatenate([ma.masked_all(1),
-        np.sign(np.diff(P))*np.diff(rho0)])
+    ds = ma.concatenate([ma.masked_all(1), np.sign(np.diff(P)) * np.diff(rho0)])
     return ma.fix_invalid(ds)
 
 
 class DensityInversion(QCCheck):
     def __init__(self, data, cfg, autoflag=True):
-        assert ('TEMP' in data.keys()), \
-                "Missing TEMP"
-        assert ('PSAL' in data.keys()), \
-                "Missing PSAL"
-        assert ('PRES' in data.keys()), \
-                "Missing PRES"
+        assert "TEMP" in data.keys(), "Missing TEMP"
+        assert "PSAL" in data.keys(), "Missing PSAL"
+        assert "PRES" in data.keys(), "Missing PRES"
 
         self.data = data
         self.cfg = cfg
@@ -58,23 +54,28 @@ class DensityInversion(QCCheck):
             self.test()
 
     def set_features(self):
-        self.features = {'densitystep': densitystep(self.data['PSAL'],
-                                                    self.data['TEMP'],
-                                                    self.data['PRES'])}
+        self.features = {
+            "densitystep": densitystep(
+                self.data["PSAL"], self.data["TEMP"], self.data["PRES"]
+            )
+        }
 
     def test(self):
         self.flags = {}
 
-        assert (np.size(threshold) == 1) and \
-                (threshold is not None) and \
-                (np.isfinite(threshold))
+        assert (
+            (np.size(threshold) == 1)
+            and (threshold is not None)
+            and (np.isfinite(threshold))
+        )
 
-        flag = np.zeros(self.data['TEMP'].shape, dtype="i1")
-        threshold = self.cfg['threshold']
-        feature = self.features['densitystep']
+        flag = np.zeros(self.data["TEMP"].shape, dtype="i1")
+        threshold = self.cfg["threshold"]
+        feature = self.features["densitystep"]
         flag[np.nonzero(feature < threshold)] = self.flag_bad
         flag[np.nonzero(feature >= threshold)] = self.flag_good
-        mask = np.any([ma.getmaskarray(self.data[v]) for v in
-            ['PRES', 'TEMP', 'PSAL']], axis=0)
+        mask = np.any(
+            [ma.getmaskarray(self.data[v]) for v in ["PRES", "TEMP", "PSAL"]], axis=0
+        )
         flag[mask] = 9
-        self.flags['density_inversion'] = flag
+        self.flags["density_inversion"] = flag
