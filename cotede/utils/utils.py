@@ -16,6 +16,7 @@ def cotederc(subdir=None):
         path = os.path.join(path, subdir)
     return path
 
+
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save
@@ -31,6 +32,7 @@ def savePQCCollection_pandas(db, filename):
     import tarfile
     import shutil
     import hashlib
+
     # tar = tarfile.open("%s.tar.bz2" % filename, "w:bz2")
     tar = tarfile.open(filename, "w:bz2")
     tmpdir = tempfile.mkdtemp()
@@ -38,23 +40,23 @@ def savePQCCollection_pandas(db, filename):
     try:
         # Data
         f = "%s/data.hdf" % (tmpdir)
-        db.data.to_hdf(f, 'df')
-        tar.add(f, arcname='data.hdf')
+        db.data.to_hdf(f, "df")
+        tar.add(f, arcname="data.hdf")
         # hashlib.md5(open(f, 'rb').read()).digest()
         # hashlib.sha256(open(f, 'rb').read()).digest()
         # Flags
-        p = os.path.join(tmpdir, 'flags')
+        p = os.path.join(tmpdir, "flags")
         os.mkdir(p)
         for k in db.flags.keys():
             f = os.path.join(p, "flags_%s.hdf" % k)
-            db.flags[k].to_hdf(f, 'df')
+            db.flags[k].to_hdf(f, "df")
             tar.add(f, arcname="flags/flags_%s.hdf" % k)
-        if hasattr(db, 'auxiliary'):
-            p = os.path.join(tmpdir, 'aux')
+        if hasattr(db, "auxiliary"):
+            p = os.path.join(tmpdir, "aux")
             os.mkdir(p)
             for k in db.auxiliary.keys():
                 f = os.path.join(p, "aux_%s.hdf" % k)
-                db.auxiliary[k].to_hdf(f, 'df')
+                db.auxiliary[k].to_hdf(f, "df")
                 tar.add(f, arcname="aux/aux_%s.hdf" % k)
         tar.close()
     except:
@@ -71,6 +73,7 @@ def loadPQCCollection_pandas(filename):
     import tempfile
     import tarfile
     import shutil
+
     tmpdir = tempfile.mkdtemp()
     tar = tarfile.open(filename, "r:*")
     tar.extractall(path=tmpdir)

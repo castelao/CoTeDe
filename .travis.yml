@@ -25,7 +25,9 @@ install:
 before_script:
   # Download the required climatology files.
   - python -c "import oceansdb; oceansdb.CARS()['sea_water_temperature']"
+  - python -c "import oceansdb; oceansdb.CARS()['sea_water_salinity']"
   - python -c "import oceansdb; oceansdb.WOA()['sea_water_temperature']"
+  - python -c "import oceansdb; oceansdb.WOA()['sea_water_salinity']"
   - python -c "import oceansdb; oceansdb.ETOPO()['topography']"
 
 script:
