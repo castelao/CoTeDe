@@ -6,7 +6,8 @@ dependencies:
 - netcdf4
 - scipy
 - matplotlib
+- xarray
 - pip
 - pip:
     - oceansdb
-    - cotede>=0.20.3
+    - cotede>=0.21
