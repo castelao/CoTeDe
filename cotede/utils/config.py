@@ -7,6 +7,26 @@ import pkg_resources
 from .utils import cotederc
 
 
+def list_cfgs():
+    """List the available QC procedures, builtin + local
+
+    Full QC procedures, defining which tests and respective parameters to be
+    used, can be saved to be re-used later. Several procedures are built-in
+    CoTeDe, but the user can create its own collection. This function returns
+    a list of all procedures available, built-in + the local user collection.
+    """
+    cfg = pkg_resources.resource_listdir('cotede', "qc_cfg")
+    cfg = sorted([c[:-5] for c in cfg if c[-5:] == ".json"])
+
+    ucfg = os.listdir(cotederc("cfg"))
+    ucfg = [c[:-5] for c in ucfg if c[-5:] == ".json"]
+    ucfg = [c for c in ucfg if c not in cfg]
+
+    cfg.extend(sorted(ucfg))
+
+    return cfg
+
+
 def inheritance(child, parent):
     """Aggregate into child what is missing from parent
     """
