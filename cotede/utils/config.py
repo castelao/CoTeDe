@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+
+"""Resources related to QC configuration
+"""
+
 from collections import OrderedDict
 import copy
 import json
@@ -14,6 +19,10 @@ def list_cfgs():
     used, can be saved to be re-used later. Several procedures are built-in
     CoTeDe, but the user can create its own collection. This function returns
     a list of all procedures available, built-in + the local user collection.
+
+    See also
+    --------
+    utils.load_cfg
     """
     cfg = pkg_resources.resource_listdir('cotede', "qc_cfg")
     cfg = sorted([c[:-5] for c in cfg if c[-5:] == ".json"])
@@ -39,29 +48,49 @@ def inheritance(child, parent):
 
 
 def load_cfg(cfgname="cotede"):
-    """ Load the QC configurations
+    """Load a QC configuration
 
-        The possible inputs are:
-            - None: Will use the CoTeDe's default configuration
+    A QC procedure is a sequence of tests, and respective tuning parameters
+    used to quality control a dataset. This is how the user controls the
+    QC steps to apply.
 
-            - Config name [string]: A string with the name of a json file
-                describing the QC procedure. It will first search among
-                the build in pre-set (cotede, eurogoos, gtspp or argo),
-                otherwise it will search in ~/.cotederc/cfg
+    Parameters
+    ----------
+    cfgname : string or dict-list, optional
 
-            - User configs [dict]: a dictionary composed by the variables
-                to be evaluated as keys, and inside it another dictionary
-                with the tests to perform as keys. example
-                {'main':{
-                    'valid_datetime': None,
-                    },
-                'temperature':{
-                    'global_range':{
-                        'minval': -2.5,
-                        'maxval': 45,
-                        },
-                    },
-                }
+        - None: If not given, it will use the CoTeDe's default configuration,
+          which is equivalent to use cfgname='cotede'.
+
+        - A config name [string]: A string with the name of a json file
+          describing the QC procedure. It will first search among the build
+          in pre-set (ex.: cotede, eurogoos, gtspp, argo, ...). If can't find
+          a config with that name, it will search at ~/.config/cotederc/cfg/,
+          or the path defined by the local variable $COTEDE_DIR.
+
+        - Inline config [dict-like]: A dictionary describing the variables to
+          process and which tests to use on each one. A minimalist example to
+          apply the gradient test in the sea water temperature could be:
+
+              >>> {"sea_water_temperature": {"gradient": 3}}
+
+        If inherit is used, it should be a string or a list of other
+        procedures to inherit, where each item has higher priority than the
+        following ones. For example:
+
+        >>> {"inherit": "eurogoos", "sea_water_temperature": {"gradient": 2}}
+
+        will use all the setup from eurogoos, and include/overwrite the
+        gradient test for sea_water_temperature with a threshold of 2.
+
+    Returns
+    -------
+    cfg : OrderedDict
+        A dictionary defining a full QC procedure that defines which tests to
+        run on which variables.
+
+    See also
+    --------
+    utils.list_cfgs
     """
     if cfgname is None:
         cfgname = "cotede"

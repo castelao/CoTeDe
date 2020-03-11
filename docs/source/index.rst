@@ -6,9 +6,9 @@
 
 :tocdepth: 2
 
-####################
-CoTeDe Documentation
-####################
+#############################################
+CoTeDe: Quality Control of Oceanographic Data
+#############################################
 
 .. _user-docs:
 
@@ -26,7 +26,12 @@ User Documentation
    data_model
    getting_started
    qctests
-   history
+
+
+**Help & reference**
+
+* :doc:`api`
+* :doc:`history`
 
 Indices and tables
 ==================

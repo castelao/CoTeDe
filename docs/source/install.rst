@@ -55,7 +55,7 @@ To install multiple extras::
     pip install cotede[GSW,OceansDB,Shapely]
 
 Last night's version
-------------------
+--------------------
 
 It is possible to install the latest version directly from the oven but, like a good bread, it might not taste as good as if you wait it to cool down::
 

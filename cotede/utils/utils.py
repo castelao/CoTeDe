@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+"""Utilities for CoTeDe
+
+Miscelaneous resources to support CoTeDe.
+"""
+
 import os
 from os.path import expanduser
 import re
@@ -8,7 +13,43 @@ import json
 
 
 def cotederc(subdir=None):
-    """Returns the directory with custom config for CoTeDe
+    """Directory with custom configuration for CoTeDe
+
+    To keep the local environment tight, CoTeDe expects to find all local files,
+    like pre-set QC procedures, in one single place. This function returns the
+    path to that directory.
+
+    Parameters
+    ----------
+    subdir : str, optional
+        Sub-directory inside the base custom directory.
+
+    Returns
+    -------
+    str
+        A path to the local custom files.
+
+        The default path is a directory at the user's home like::
+
+            ~/.config/cotederc/
+
+    Note
+    ----
+    That default path can be modified by defining the environment variable
+    COTEDE_DIR. On bash that could be done like::
+
+        export COTEDE_DIR='/my/other/awesome/path/'
+
+    Note
+    ----
+    For windows users the path is automatically adjusted to reflect its
+    syntax.
+
+    Example
+    -------
+    A sub-directory for configuration files, named 'cfg', can be determined by::
+
+    >>> cotederc('cfg')
     """
     path = os.getenv("COTEDE_DIR", os.path.join("~", ".config", "cotederc"))
     path = os.path.expanduser(path)

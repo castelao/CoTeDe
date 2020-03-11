@@ -20,24 +20,40 @@ module_logger = logging.getLogger(__name__)
 
 
 class ProfileQC(object):
-    """ Quality Control of a CTD profile
+    """Quality Control a CTD profile
     """
+
     def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True,
-            attributes=None, logger=None):
-        """
-            Input: dictionary with data.
-                - pressure[\d]:
-                - temperature[\d]:
-                - salinity[\d]:
+            attributes=None):
+        """A procedure to QC a hydrographic profile
 
-            cfg: Check cotede.utils.load_cfg() for the possible input formats
-                   for cfg.
+        Parameters
+        ----------
+        input: dict-like
+            An object with the data to be evaluated that responds like a
+            dictionary. For instance, a variable pressure should be acessible
+            as input['pressure'], or temperature as input['temperature'].
+            This input object could have attrs, with global attributes for
+            the whole dataset. For instance, input.attrs['lat'] would give the
+            nominal latitude of the dataset input.
 
-            =======================
-            - Must have a log system
-            - Probably accept incomplete cfg. If some threshold is
-                not defined, take the default value.
-            - Is the best return another dictionary?
+        cfg: dict-like or str
+            The QC configuration to be used in the current profile. If a
+            string, it should be the name of a JSON QC configuration. Check
+            the manual for the available options.
+
+        saveauxiliary: bool
+            Save features as .features
+
+        verbose: bool
+            Show extra information
+
+        attributes: dict-like, optional
+            If given, append/overwirte the input.attrs
+
+        Methods
+        -------
+        keys(self): List of input contents
         """
         # self.logger = logging.getLogger(logger or 'cotede.ProfileQC')
 

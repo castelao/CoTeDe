@@ -5,12 +5,13 @@ Tests for Quality Control
 An automatic quality control is typically a composition of checks, each one looking for a different aspect to identify bad measurements.
 This section covers the concept of the available checks and some ways how those could be combined.
 
-A description and references for each test are available in `Tests`_.
-The result of each test is a flag ranking the quality of the data as described in `Flags`_.
+A description and references for each test are available in :ref:`qctests`.
+The result of each test is a flag ranking the quality of the data as described in :ref:`flags`.
 Finally, most of the users will probably follow one of the recommended procedures (GTSPP, Argo, QARTOD ...) described in `Quality Control Procedures`_.
 If you are not sure what to do, start with one of those QC procedures and later fine tune it for your needs.
 The default procedure for CoTeDe is the result of my experience with the World Ocean Database.
 
+.. _flags:
 
 =====
 Flags
@@ -54,7 +55,7 @@ Quality Control Procedures
 
 Although I slightly modified the names of some Q.C. test, the concept behind is still the same.
 The goal was to normalize all tests to return True if the data is good and False if the data is bad. 
-For example, Argo's manual define "Impossible Date Test", while here I call it "`Valid Date`_".
+For example, Argo's manual define "Impossible Date Test", while here I call it ":ref:`test-valid-date`".
 
 
 Profile
@@ -147,11 +148,11 @@ Argo (Incomplete)
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | :ref:`test-gradient`                                  |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Digit Rollover`_                                     |            |        |                        |
+| :ref:`test-digit-rollover`                            |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | :ref:`Stuck value test <Argo_stuck>`                  |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
-| `Density Inversion`_                                  |            |        |                        |
+| :ref:`test-density-inversion`                         |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
 | Grey list                                             |            |        |                        |
 +-------------------------------------------------------+------------+--------+-------------+----------+
