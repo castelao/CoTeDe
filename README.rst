@@ -6,7 +6,7 @@ CoTeDe
    :target: https://zenodo.org/badge/latestdoi/10284681
 
 .. image:: https://readthedocs.org/projects/cotede/badge/?version=latest
-   :target: https://readthedocs.org/projects/cotede/?badge=latest
+   :target: https://cotede.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
 .. image:: https://img.shields.io/travis/castelao/CoTeDe.svg
