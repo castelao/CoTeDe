@@ -31,6 +31,7 @@ User Documentation
 **Help & reference**
 
 * :doc:`api`
+* :doc:`usedby`
 * :doc:`history`
 
 Indices and tables
