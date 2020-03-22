@@ -35,7 +35,6 @@ from numpy import ma
 from scipy.stats import exponweib
 # from scipy.stats import kstest
 
-from cotede.utils import ProfilesQCPandasCollection
 from cotede.misc import combined_flag
 from cotede.humanqc import HumanQC
 
