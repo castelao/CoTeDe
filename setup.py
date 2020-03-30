@@ -56,6 +56,7 @@ setup(
     zip_safe=False,
     extras_require = {
         'GSW': ["gsw>=3.0.6"],
+        'OceansDB': ["oceansdb>=0.8.6"],
         'manualqc': ["matplotlib"],
         'regional': ["Shapely>=1.6.4"]
     }
