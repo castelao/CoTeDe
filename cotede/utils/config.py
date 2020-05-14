@@ -181,8 +181,20 @@ def convert_pre_to_021(cfg):
         output['common'] = cfg['common']
         keys.remove('common')
 
+    def fix_profile_envelop(cfg):
+        """Explicit layers
+
+        Note
+        ----
+        Should I confirm that cfg['profile_envelop'] is a list?
+        """
+        if "profile_envelop" in cfg:
+            cfg["profile_envelop"] = {"layers": cfg["profile_envelop"]}
+        return cfg
+
     output['variables'] = OrderedDict()
     for k in keys:
+        cfg[k] = fix_profile_envelop(cfg[k])
         output['variables'][label(k)] = cfg[k]
         # output[k] = cfg[k]
 

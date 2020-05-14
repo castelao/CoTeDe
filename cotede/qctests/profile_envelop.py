@@ -26,7 +26,7 @@ def profile_envelop(data, cfg, varname):
 
     flag = np.zeros(z.shape, dtype="i1")
 
-    for layer in cfg:
+    for layer in cfg["layers"]:
         ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
         f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
 
@@ -49,7 +49,9 @@ class ProfileEnvelop(QCCheckVar):
 
         flag = np.zeros(x.shape, dtype="i1")
 
-        for layer in self.cfg:
+        assert "layers" in self.cfg, "Profile envelop cfg requires layers"
+
+        for layer in self.cfg['layers']:
             ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
             f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
 
