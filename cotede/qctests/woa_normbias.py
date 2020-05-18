@@ -171,21 +171,25 @@ class WOA_NormBias(QCCheckVar):
         else:
             vtype = self.varname
 
+        woa_vars = ['mean', 'standard_deviation', 'standard_error',
+                    'number_of_observations']
+
         idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
-        if mode == 'track':
-            woa = db[vtype].track(
-                var=['mean', 'standard_deviation', 'standard_error',
-                    'number_of_observations'],
-                doy=doy,
-                depth=depth[idx],
-                **kwargs)
+        if idx.any():
+            if mode == 'track':
+                woa = db[vtype].track(
+                        var=woa_vars,
+                        doy=doy,
+                        depth=depth[idx],
+                        **kwargs)
+            else:
+                woa = db[vtype].extract(
+                        var=woa_vars,
+                        doy=doy,
+                        depth=depth[idx],
+                        **kwargs)
         else:
-            woa = db[vtype].extract(
-                var=['mean', 'standard_deviation', 'standard_error',
-                    'number_of_observations'],
-                doy=doy,
-                depth=depth[idx],
-                **kwargs)
+            woa = {v: ma.masked_all(1) for v in woa_vars}
 
         if idx.all() is not True:
             for v in woa.keys():
