@@ -61,11 +61,10 @@ class RegionalRange(QCCheckVar):
             self.flags["regional_range"] = np.zeros(feature.shape, dtype="i1")
             return
 
-        if not isinstance(self.cfg, list):
-            self.cfg = [self.cfg]
+        assert "regions" in self.cfg
 
         flag = np.zeros(feature.shape, dtype="i1")
-        for cfg in self.cfg:
+        for cfg in self.cfg['regions']:
 
             assert "name" in cfg, "Regional Range must have a name"
 

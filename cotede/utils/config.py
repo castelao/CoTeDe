@@ -181,6 +181,13 @@ def convert_pre_to_021(cfg):
         output['common'] = cfg['common']
         keys.remove('common')
 
+    def fix_regional_range(cfg):
+        """Explicit regions
+        """
+        if "regional_range" in cfg:
+            cfg["regional_range"] = {"regions": cfg["regional_range"]}
+        return cfg
+
     def fix_profile_envelop(cfg):
         """Explicit layers
 
@@ -194,6 +201,7 @@ def convert_pre_to_021(cfg):
 
     output['variables'] = OrderedDict()
     for k in keys:
+        cfg[k] = fix_regional_range(cfg[k])
         cfg[k] = fix_profile_envelop(cfg[k])
         output['variables'][label(k)] = cfg[k]
         # output[k] = cfg[k]

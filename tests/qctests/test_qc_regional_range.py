@@ -18,11 +18,15 @@ def test_default():
        Must recognize flags 1, 4, and 9.
     """
     profile = DummyData()
-    cfg = {'name': 'PIRATA',
+    cfg = {'regions': [
+        {
+            'name': 'PIRATA',
             'region': 'POLYGON ((-40 10, -40 20, -30 20, -30 10, -40 10))',
             'minval': 15.0,
             'maxval': 40
             }
+        ]
+        }
     y = RegionalRange(profile, 'TEMP', cfg)
 
     assert 'regional_range' in y.flags
@@ -39,11 +43,12 @@ def test_default():
         return
 
     x = profile['TEMP'][y.flags['regional_range'] == 1]
-    idx = (x >= cfg['minval']) & (x <= cfg['maxval'])
+    c = cfg['regions'][0]
+    idx = (x >= c['minval']) & (x <= c['maxval'])
     assert idx.any(), "Redefine cfg to have at least one valid value"
     assert idx.all()
     x = profile['TEMP'][y.flags['regional_range'] == 4]
-    idx = (x < cfg['minval']) | (x > cfg['maxval'])
+    idx = (x < c['minval']) | (x > c['maxval'])
     assert idx.any(), "Redefine cfg to have at least one non-valid value"
     assert idx.all()
 
@@ -51,11 +56,15 @@ def test_default():
 def test_nolatlon():
     """If missing lat or lon, return flag 0 for everything
     """
-    cfg = {'name': 'PIRATA',
+    cfg = {'regions': [
+        {
+            'name': 'PIRATA',
             'region': 'POLYGON ((-40 10, -40 20, -30 20, -30 10, -40 10))',
             'minval': 2.0,
             'maxval': 40
             }
+        ]
+        }
 
     profile = DummyData()
     del(profile.attrs['LATITUDE'])
@@ -80,11 +89,15 @@ def test_nocoverage():
        Returns flag 9 for invalid measurements and 0 for everything else.
     """
     profile = DummyData()
-    cfg = {'name': 'red_sea',
+    cfg = {'regions': [
+        {
+            'name': 'red_sea',
             'region': 'POLYGON ((10 40, 20 50, 30 30, 10 40))',
             'minval': 21.7,
             'maxval': 40
             }
+        ]
+        }
     y = RegionalRange(profile, 'TEMP', cfg)
 
     assert 'regional_range' in y.flags
