@@ -181,6 +181,13 @@ def convert_pre_to_021(cfg):
         output['common'] = cfg['common']
         keys.remove('common')
 
+    def fix_threshold(cfg):
+        """Explicit threshold"""
+        for t in cfg:
+            if isinstance(cfg[t], (int, float)):
+                cfg[t] = {"threshold": cfg[t]}
+        return cfg
+
     def fix_regional_range(cfg):
         """Explicit regions
         """
@@ -201,6 +208,7 @@ def convert_pre_to_021(cfg):
 
     output['variables'] = OrderedDict()
     for k in keys:
+        cfg[k] = fix_threshold(cfg[k])
         cfg[k] = fix_regional_range(cfg[k])
         cfg[k] = fix_profile_envelop(cfg[k])
         output['variables'][label(k)] = cfg[k]
