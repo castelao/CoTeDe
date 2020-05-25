@@ -5,18 +5,25 @@
     Based on Argo's density inversion test. Test 14 @ Argo QC 2.9.1
 """
 
+import logging
+
 import numpy as np
 from numpy import ma
 
 from .qctests import QCCheck
 
+module_logger = logging.getLogger(__name__)
+
 try:
     import gsw
-except:
-    pass
+
+    nogsw = False
+except ImportError:
+    module_logger.info("Missing package GSW, used to estimate density when needed.")
+    nogsw = True
 
 
-def densitystep(S, T, P):
+def densitystep(S, T, P, auto_rotate=False):
     """Estimates the potential density step of successive mesurements
 
        Expects the data to be recorded along the time, i.e. first measurement
@@ -30,9 +37,7 @@ def densitystep(S, T, P):
     assert T.shape == S.shape
     assert T.ndim == 1, "Not ready to densitystep an array ndim > 1"
 
-    try:
-        import gsw
-    except ImportError:
+    if nogsw:
         print("Package gsw is required and is not available.")
 
     rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
@@ -64,9 +69,9 @@ class DensityInversion(QCCheck):
         self.flags = {}
 
         assert (
-            (np.size(threshold) == 1)
-            and (threshold is not None)
-            and (np.isfinite(threshold))
+            (np.size(self.cfg["threshold"]) == 1)
+            and (self.cfg["threshold"] is not None)
+            and (np.isfinite(self.cfg["threshold"]))
         )
 
         flag = np.zeros(self.data["TEMP"].shape, dtype="i1")

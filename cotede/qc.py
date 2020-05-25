@@ -265,19 +265,6 @@ class ProfileQC(object):
         #        w = wfunc(z[ind]-z[i], cfg_tmp['dzwindow'])
         #        smooth[i] = (T[ind]*w).sum()/w.sum()
 
-        if 'density_inversion' in cfg:
-            try:
-                y = DensityInversion(self.input,
-                                     cfg=cfg['density_inversion'],
-                                     autoflag=True)
-
-                if self.saveauxiliary:
-                    for f in y.features.keys():
-                        self.features[v][f] = y.features[f]
-                for f in y.flags:
-                    self.flags[v][f] = y.flags[f]
-            except:
-                module_logger.warning("Fail on density_inversion")
 
         #if 'pstep' in cfg:
         #    ind = np.isfinite(self.input[v])
