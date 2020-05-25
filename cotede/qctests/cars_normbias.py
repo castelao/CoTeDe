@@ -8,26 +8,34 @@ import logging
 
 import numpy as np
 from numpy import ma
-
 from oceansdb import CARS
+
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
 
-class CARS_NormBias(object):
-    def __init__(self, data, varname, cfg, autoflag=True):
-        self.data = data
-        self.varname = varname
-        self.cfg = cfg
 
-        # Default is to do not use standard error to estimate the bias,
-        #   because that is the traditional approach.
-        if "use_standard_error" not in self.cfg:
-            self.cfg["use_standard_error"] = False
+class CARS_NormBias(QCCheckVar):
+    """Compares measuremnts with CARS climatology
 
-        self.set_features()
-        if autoflag:
-            self.test()
+    Notes
+    -----
+    * Although using standard error is a good idea, the default is to not use
+      standard error to estimate the bias to follow the traaditional approach.
+      This can have a signifcant impact in the deep oceans and regions lacking
+      extensive sampling.
+    """
+
+    flag_bad = 3
+    use_standard_error = False
+
+    def __init__(self, data, varname, cfg=None, autoflag=True):
+        try:
+            self.use_standard_error = cfg["use_standard_error"]
+        except (KeyError, TypeError):
+            module_logger.debug("use_standard_error undefined. Using default value")
+        super().__init__(data, varname, cfg, autoflag)
 
     def keys(self):
         return self.features.keys() + ["flag_%s" % f for f in self.flags.keys()]
@@ -91,8 +99,8 @@ class CARS_NormBias(object):
         # if use_standard_error = True, the comparison with the climatology
         #   considers the standard error, i.e. the bias will be only the
         #   ammount above the standard error range.
-        assert not self.cfg["use_standard_error"]
-        if self.cfg["use_standard_error"] is True:
+        assert not self.use_standard_error, "Sorry, I'm not ready for that"
+        if self.use_standard_error is True:
             standard_error = (
                 self.features["cars_std"] / self.features["cars_nsamples"] ** 0.5
             )
@@ -117,26 +125,16 @@ class CARS_NormBias(object):
 
         self.flags = {}
 
-        try:
-            flag_good = self.cfg['flag_good']
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg['flag_bad']
-        except KeyError:
-            flag_bad = 3
-
-        threshold = self.cfg['threshold']
-        assert (np.size(threshold) == 1) and \
-                (threshold is not None)
+        threshold = self.cfg["threshold"]
+        assert (np.size(threshold) == 1) and (threshold is not None)
 
         flag = np.zeros(self.data[self.varname].shape, dtype="i1")
 
         normbias_abs = np.absolute(self.features["cars_normbias"])
         ind = np.nonzero(normbias_abs <= threshold)
-        flag[ind] = flag_good
+        flag[ind] = self.flag_good
         ind = np.nonzero(normbias_abs > threshold)
-        flag[ind] = flag_bad
+        flag[ind] = self.flag_bad
 
         # Flag as 9 any masked input value
         flag[ma.getmaskarray(self.data[self.varname])] = 9

@@ -137,16 +137,44 @@ The default behavior in CoTeDe is to flag 4 if the test yields values higher tha
 .. _test-climatology:
 
 Climatology
-~~~~~~~~~~~
+===========
+
+Compares the measurement with the climatology. The difference can be scaled with the standard deviation of the measurements used to create the climatology, thus normalizing by the expected local variance. For instance, the deep ocean is usually more stable, thus the measurements tend to be more similar, resulting in a smaller standard deviation, so small differences are amplified. In comparison, near the surface the high variability and standard deviation minimizes the differences.
+
+I believe that the oldest reference for this test is from GTSPP, but I need to confirm that.
+
+CoTeDe allows to use the standard error to compensate for regions with few measurements. Some regions in the oceans, mostly in deep layers, the available measuremnts are scarce. To distinguish a climatology estimate based on hunderds of measurements versus another with 5 or less measuremnts, the standard error can be used as a tolerance for that estimate. This compensation was first proposed here, in CoTeDe.
 
 .. math::
 
     X_i = \frac{V_{it} - <V_t>}{\sigma}
 
 
+.. _GTSPP_Clim:
+
+GTSPP refer to 4 different climatologies to test, which are not implemente in CoTeDe::
+  - Levitus Seasonal
+  - Emery and Dewar
+  - Asheville
+  - Leviturs Monthly
+
 .. _QARTOD_Clim:
 
 QARTOD climatological test is based on range
+
+.. _WOA_Clim:
+
+World Ocean Atlas (WOA)
+--------------------------
+
+Use the `World Ocean Atlas <https://www.nodc.noaa.gov/OC5/woa18/>`_ as reference.
+
+.. _CARS_Clim:
+
+CSIRO Atlas of Regional Seas (CARS)
+-----------------------------------
+
+Use `CSIRO Atlas of Regional Seas <http://www.marine.csiro.au/atla>`_ as reference.
 
 .. _test-rate-of-change:
 

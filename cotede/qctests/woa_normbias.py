@@ -23,7 +23,6 @@ import logging
 
 import numpy as np
 from numpy import ma
-
 from oceansdb import WOA
 
 from .qctests import QCCheckVar
@@ -118,22 +117,26 @@ def woa_normbias(data, v, cfg):
 
 
 class WOA_NormBias(QCCheckVar):
+    """Compares measurements with WOA climatology
+
+    Notes
+    -----
+    * Although using standard error is a good idea, the default is to not use
+      standard error to estimate the bias to follow the traaditional approach.
+      This can have a signifcant impact in the deep oceans and regions lacking
+      extensive sampling.
+    """
+
     flag_bad = 3
+    use_standard_error = False
 
-    def __init__(self, data, varname, cfg, autoflag=True):
-        self.data = data
-        self.varname = varname
-        self.cfg = cfg
+    def __init__(self, data, varname, cfg=None, autoflag=True):
+        try:
+            self.use_standard_error = cfg["use_standard_error"]
+        except (KeyError, TypeError):
+            module_logger.debug("use_standard_error undefined. Using default value")
+        super().__init__(data, varname, cfg, autoflag)
 
-        # Default is to do not use standard error to estimate the bias,
-        #   because that is the traditional approach.
-        if 'use_standard_error' not in self.cfg:
-            self.cfg['use_standard_error'] = False
-
-        self.set_flags()
-        self.set_features()
-        if autoflag:
-            self.test()
 
     def set_features(self):
         try:
@@ -209,7 +212,7 @@ class WOA_NormBias(QCCheckVar):
         # if use_standard_error = True, the comparison with the climatology
         #   considers the standard error, i.e. the bias will be only the
         #   ammount above the standard error range.
-        if self.cfg['use_standard_error'] is True:
+        if self.use_standard_error is True:
             standard_error = self.features['woa_std'] / \
                     self.features['woa_nsamples'] ** 0.5
             idx = np.absolute(self.features['woa_bias']) <= \
