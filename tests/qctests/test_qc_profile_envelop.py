@@ -13,7 +13,7 @@ from data import DummyData
 def test():
     profile = DummyData()
 
-    cfg = [["> 0", "<= 25", -2, 37], ["> 25", "<= 50", -2, 36]]
+    cfg = {"layers": [["> 0", "<= 25", -2, 37], ["> 25", "<= 50", -2, 36]]}
 
     flags = profile_envelop(profile, cfg, "TEMP")
 
@@ -27,11 +27,13 @@ def test_class():
        ATTENTION, unrealistic limits used just for testing purposes.
     """
     data = DummyData()
-    cfg = [
-        ["> 0", "<= 149", -2, 37],
-        ["> 150", "<= 999", -2, 33],
-        ["> 999", "<= 12000", -1.5, 4],
-    ]
+    cfg = {
+        "layers": [
+            ["> 0", "<= 149", -2, 37],
+            ["> 150", "<= 999", -2, 33],
+            ["> 999", "<= 12000", -1.5, 4],
+        ]
+    }
     y = ProfileEnvelop(data, varname="TEMP", cfg=cfg)
 
     assert hasattr(y, "features")
