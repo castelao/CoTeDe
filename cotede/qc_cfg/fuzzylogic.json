@@ -1,81 +1,68 @@
-{"main": {
-    "valid_datetime": null,
-    "location_at_sea": {
-        "bad_flag": 3
-        }
-    },
-"TEMP": {
-    "spike": {
-    	"threshold": 6.0
-    	},
-    "woa_normbias": {
-        "threshold": 10
-        },
-    "gradient": {
-    	"threshold": 9.0
-    	},
-    "fuzzylogic": {
-	"output": {
-            "low": [0.0, 0.225, 0.45],
-            "medium": [0.275, 0.5, 0.725],
-            "high": [0.55, 0.775]
-	    },
-	"features": {
-            "spike": {
-                "weight": 1,
-                "low": [0.07, 0.2],
-                "medium": [0.07, 0.2, 2, 6],
-                "high": [2, 6]
+{
+    "revision": "0.21",
+    "common": {"valid_datetime": null, "location_at_sea": {"bad_flag": 3}},
+    "variables": {
+        "sea_water_temperature": {
+            "spike": {"threshold": 6.0},
+            "woa_normbias": {"threshold": 10},
+            "gradient": {"threshold": 9.0},
+            "fuzzylogic": {
+                "output": {
+                    "low": [0.0, 0.225, 0.45],
+                    "medium": [0.275, 0.5, 0.725],
+                    "high": [0.55, 0.775]
                 },
-            "woa_normbias": {
-                "weight": 1,
-                "low": [3, 4],
-                "medium": [3, 4, 5, 6],
-                "high": [5, 6]
-                },
-            "gradient": {
-                "weight": 1,
-                "low": [0.5, 1.5],
-                "medium": [0.5, 1.5, 3, 4],
-                "high": [3, 4]
+                "features": {
+                    "spike": {
+                        "weight": 1,
+                        "low": [0.07, 0.2],
+                        "medium": [0.07, 0.2, 2, 6],
+                        "high": [2, 6]
+                    },
+                    "woa_normbias": {
+                        "weight": 1,
+                        "low": [3, 4],
+                        "medium": [3, 4, 5, 6],
+                        "high": [5, 6]
+                    },
+                    "gradient": {
+                        "weight": 1,
+                        "low": [0.5, 1.5],
+                        "medium": [0.5, 1.5, 3, 4],
+                        "high": [3, 4]
+                    }
                 }
             }
-        }
-    },
-"PSAL": {
-    "spike": {
-    	"threshold": 0.9
-    	},
-    "woa_normbias": {
-        "threshold": 10
         },
-    "gradient": {
-    	"threshold": 4
-    	},
-    "fuzzylogic": {
-	"output": {
-            "low": [0.0, 0.225, 0.45],
-            "medium": [0.275, 0.5, 0.725],
-            "high": [0.55, 0.775]
-	    },
-	"features": {
-            "spike": {
-                "weight": 1,
-                "low": [0.05, 0.15],
-                "medium": [0.05, 0.15, 0.5, 0.9],
-                "high": [0.5, 0.9]
+        "sea_water_salinity": {
+            "spike": {"threshold": 0.9},
+            "woa_normbias": {"threshold": 10},
+            "gradient": {"threshold": 4},
+            "fuzzylogic": {
+                "output": {
+                    "low": [0.0, 0.225, 0.45],
+                    "medium": [0.275, 0.5, 0.725],
+                    "high": [0.55, 0.775]
                 },
-            "woa_normbias": {
-                "weight": 1,
-                "low": [3, 4],
-                "medium": [3, 4, 5, 6],
-                "high": [5, 6]
-                },
-            "gradient": {
-                "weight": 1,
-                "low": [1, 2],
-                "medium": [1, 2, 3, 4],
-                "high": [3, 4]
+                "features": {
+                    "spike": {
+                        "weight": 1,
+                        "low": [0.05, 0.15],
+                        "medium": [0.05, 0.15, 0.5, 0.9],
+                        "high": [0.5, 0.9]
+                    },
+                    "woa_normbias": {
+                        "weight": 1,
+                        "low": [3, 4],
+                        "medium": [3, 4, 5, 6],
+                        "high": [5, 6]
+                    },
+                    "gradient": {
+                        "weight": 1,
+                        "low": [1, 2],
+                        "medium": [1, 2, 3, 4],
+                        "high": [3, 4]
+                    }
                 }
             }
         }

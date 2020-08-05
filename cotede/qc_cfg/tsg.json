@@ -1,47 +1,18 @@
-{"main": {
-    "platform_identification": null,
-    "valid_datetime": null,
-    "valid_position": null,
-    "location_at_sea": {
-        "bad_flag": 3
-        }
-    },
-"TEMP": {
-    "valid_geolocation": null,
-    "valid_speed": {
-	    "threshold": 60,
-	    "flag_good": 1,
-	    "flag_bad": 3
-    },
-    "global_range": {
-        "minval": -2.5,
-        "maxval": 45
+{
+    "revision": "0.21",
+    "variables": {
+        "sea_water_temperature": {
+            "global_range": {"minval": -2.5, "maxval": 45},
+            "gradient": {"threshold": 9.0},
+            "spike": {"threshold": 6.0},
+            "rate_of_change": {"threshold": 10},
+            "woa_normbias": {"threshold": 10}
         },
-    "regional_range": null,
-    "spike": 6.0,
-    "constant_value": null,
-    "gradient": 9.0,
-    "woa_normbias": {
-        "threshold": 6
-        }
-    },
-"PSAL": {
-    "valid_geolocation": null,
-    "valid_speed": {
-	    "threshold": 60,
-	    "flag_good": 1,
-	    "flag_bad": 3
-    },
-    "global_range": {
-        "minval": 2.0,
-        "maxval": 41.0
-        },
-    "regional_range": null,
-    "spike": 0.9,
-    "constant_value": null,
-    "gradient": 1.5,
-    "woa_normbias": {
-        "threshold": 6
+        "sea_water_salinity": {
+            "global_range": {"minval": 2.0, "maxval": 41.0},
+            "gradient": {"threshold": 1.5},
+            "spike": {"threshold": 0.9},
+            "rate_of_change": {"threshold": 6}
         }
     }
 }
