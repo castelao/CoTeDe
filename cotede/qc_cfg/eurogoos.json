@@ -1,11 +1,12 @@
-{"main": {
-    "valid_datetime": null,
-    "valid_position": null,
-    "location_at_sea": {
-        "bad_flag": 3
-        }
+{
+    "revision": "0.21",
+    "common": {
+        "valid_datetime": null,
+        "valid_geolocation": null,
+        "location_at_sea": {"resolution": "1min", "bad_flag": 3}
     },
-"TEMP": {
+    "variables": {
+        "sea_water_temperature": {
     "global_range": {
         "minval": -2.5,
         "maxval": 40
@@ -27,7 +28,7 @@
         "threshold": 6
         }
     },
-"PSAL": {
+        "sea_water_salinity": {
     "global_range": {
         "minval": 2,
         "maxval": 41
@@ -48,5 +49,6 @@
     "woa_normbias": {
         "threshold": 6
         }
+	}
     }
 }

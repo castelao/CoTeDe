@@ -1,152 +1,132 @@
-{"main": {
-    "valid_datetime": null,
-    "valid_geolocation": null,
-    "location_at_sea": {
-	    "bad_flag": 3
-        }
+{
+    "revision": "0.21",
+    "common": {
+        "valid_datetime": null,
+        "valid_geolocation": null,
+        "location_at_sea": {"bad_flag": 3}
     },
-"TEMP": {
-    "pstep": null,
-    "woa_normbias": {
-        "threshold": 10
-        },
-    "cars_normbias": {
-        "threshold": 10
-        },
-    "global_range": {
-        "minval": -2.5,
-        "maxval": 45
-        },
-    "regional_range": [
-        {"name": "red_sea",
-            "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
-            "minval": 21.7,
-            "maxval": 40
+    "variables": {
+        "sea_water_temperature": {
+            "woa_normbias": {"threshold": 10},
+            "global_range": {"minval": -2.5, "maxval": 45},
+            "regional_range": {
+                "regions": [
+                    {
+                        "name": "red_sea",
+                        "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
+                        "minval": 21.7,
+                        "maxval": 40
+                    },
+                    {
+                        "name": "mediterranean",
+                        "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
+                        "minval": 10,
+                        "maxval": 40
+                    }
+                ]
             },
-        {"name": "mediterranean",
-            "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
-            "minval": 10,
-            "maxval": 40
-            }
-        ],
-    "spike": {
-	"threshold": 6.0
-        },
-    "spike_depthconditional": {
-        "pressure_threshold": 500,
-        "shallow_max": 6.0,
-        "deep_max": 2.0
-        },
-    "tukey53H_norm": {
-        "threshold": 1.5,
-        "l": 12
-        },
-    "gradient": {
-	"threshold": 9.0
-        },
-    "gradient_depthconditional": {
-        "pressure_threshold": 500,
-        "shallow_max": 9.0,
-        "deep_max": 3.0
-        },
-    "digit_roll_over": {
-        "threshold": 10
-        },
-    "stuck_value": null,
-    "rate_of_change": {
-	    "threshold": 4
-    },
-    "cum_rate_of_change": {
-        "memory": 0.8,
-        "threshold": 4
-    },
-    "profile_envelop": [
-        ["> 0", "<= 25", -2, 37],
-        ["> 25", "<= 50", -2, 36],
-        ["> 50", "<= 100", -2, 36],
-        ["> 100", "<= 150", -2, 34],
-        ["> 150", "<= 200", -2, 33],
-        ["> 200", "<= 300", -2, 29],
-        ["> 300", "<= 400", -2, 27],
-        ["> 400", "<= 1100", -2, 27],
-        ["> 1100", "<= 3000", -1.5, 18],
-        ["> 3000", "<= 5500", -1.5, 7],
-        ["> 5500", "<= 12000", -1.5, 4]
-        ],
-    "anomaly_detection": {
-        "threshold": -20.0,
-        "features": {
-            "gradient": {
-                "model": "exponweib",
-                "qlimit": 0.013500,
-                "param": [1.431385, 0.605537, 0.013500, 0.015567]
-                },
-            "spike": {
-                "model": "exponweib",
-                "qlimit": 0.000400,
-                "param": [1.078231, 0.512053, 0.000400, 0.002574]
-                },
-            "tukey53H_norm": {
-                "model": "exponweib",
-                "qlimit": 0.001614,
-                "param": [4.497367, 0.351177, 0.001612, 0.000236]
-                },
-            "rate_of_change": {
-                "model": "exponweib",
-                "qlimit": 0.041700,
-                "param": [2.668970, 0.469459, 0.041696, 0.017221]
-                },
-            "woa_normbias": {
-                "model": "exponweib",
-                "qlimit": 1.615422,
-                "param": [0.899871, 0.987157, 1.615428, 0.662358]
+            "spike": {"threshold": 6.0},
+            "spike_depthconditional": {
+                "pressure_threshold": 500,
+                "shallow_max": 6.0,
+                "deep_max": 2.0
+            },
+            "tukey53H_norm": {"threshold": 1.5, "l": 12},
+            "gradient": {"threshold": 9.0},
+            "gradient_depthconditional": {
+                "pressure_threshold": 500,
+                "shallow_max": 9.0,
+                "deep_max": 3.0
+            },
+            "digit_roll_over": {"threshold": 10},
+            "stuck_value": null,
+            "rate_of_change": {"threshold": 4},
+            "cum_rate_of_change": {"memory": 0.8, "threshold": 4},
+	    "profile_envelop": {
+                "layers": [
+                ["> 0", "<= 25", -2, 37],
+                ["> 25", "<= 50", -2, 36],
+                ["> 50", "<= 100", -2, 36],
+                ["> 100", "<= 150", -2, 34],
+                ["> 150", "<= 200", -2, 33],
+                ["> 200", "<= 300", -2, 29],
+                ["> 300", "<= 400", -2, 27],
+                ["> 400", "<= 1100", -2, 27],
+                ["> 1100", "<= 3000", -1.5, 18],
+                ["> 3000", "<= 5500", -1.5, 7],
+                ["> 5500", "<= 12000", -1.5, 4]
+                ]
+            },
+            "anomaly_detection": {
+                "threshold": -20.0,
+                "features": {
+                    "gradient": {
+                        "model": "exponweib",
+                        "qlimit": 0.0135,
+                        "param": [1.431385, 0.605537, 0.0135, 0.015567]
+                    },
+                    "spike": {
+                        "model": "exponweib",
+                        "qlimit": 0.0004,
+                        "param": [1.078231, 0.512053, 0.0004, 0.002574]
+                    },
+                    "tukey53H_norm": {
+                        "model": "exponweib",
+                        "qlimit": 0.001614,
+                        "param": [4.497367, 0.351177, 0.001612, 0.000236]
+                    },
+                    "rate_of_change": {
+                        "model": "exponweib",
+                        "qlimit": 0.0417,
+                        "param": [2.66897, 0.469459, 0.041696, 0.017221]
+                    },
+                    "woa_normbias": {
+                        "model": "exponweib",
+                        "qlimit": 1.615422,
+                        "param": [0.899871, 0.987157, 1.615428, 0.662358]
+                    },
+                    "constant_cluster_size": {
+                        "model": "exponweib",
+                        "qlimit": 4.0,
+                        "param": [2.819822, 0.234766, 4.0, 0.702378]
+                    }
                 }
             }
-        }
-    },
-"PSAL": {
-    "woa_normbias": {
-        "threshold": 10
         },
-    "global_range": {
-        "minval": 0,
-        "maxval": 60
-        },
-    "regional_range": [
-        {"name": "red_sea",
-            "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
-            "minval": 2,
-            "maxval": 41
+        "sea_water_salinity": {
+            "woa_normbias": {"threshold": 10},
+            "global_range": {"minval": 0, "maxval": 60},
+            "regional_range": {
+                "regions": [
+                    {
+                        "name": "red_sea",
+                        "region": "POLYGON ((40 10, 50 20, 30 30, 40 10))",
+                        "minval": 2,
+                        "maxval": 41
+                    },
+                    {
+                        "name": "mediterranean",
+                        "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
+                        "minval": 2,
+                        "maxval": 40
+                    }
+                ]
             },
-        {"name": "mediterranean",
-            "region": "POLYGON ((-6 30, 40 30, 35 40, 20 42, 15 50, 5 40, -6 30))",
-            "minval": 2,
-            "maxval": 40
-            }
-        ],
-    "spike": {
-        "threshold": 0.9
-        },
-    "spike_depthconditional": {
-        "pressure_threshold": 500,
-        "shallow_max": 0.9,
-        "deep_max": 0.3
-        },
-    "tukey53H_norm": {
-        "threshold": 1.5,
-        "l": 12
-        },
-    "gradient": {
-        "threshold": 1.5
-        },
-    "gradient_depthconditional": {
-        "pressure_threshold": 500,
-        "shallow_max": 1.5,
-        "deep_max": 0.5
-        },
-    "digit_roll_over": {
-        "threshold": 5
-        },
-    "stuck_value": null
+            "spike": {"threshold": 0.9},
+            "spike_depthconditional": {
+                "pressure_threshold": 500,
+                "shallow_max": 0.9,
+                "deep_max": 0.3
+            },
+            "tukey53H_norm": {"threshold": 1.5, "l": 12},
+            "gradient": {"threshold": 1.5},
+            "gradient_depthconditional": {
+                "pressure_threshold": 500,
+                "shallow_max": 1.5,
+                "deep_max": 0.5
+            },
+            "digit_roll_over": {"threshold": 5},
+            "stuck_value": null
+        }
     }
 }
