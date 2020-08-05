@@ -37,7 +37,7 @@ def test_cfg_json():
 
 
 def test_cfg_existentprocedure():
-    """ Check if all procedures requested by the cfg are available.
+    """Check if all procedures requested by the cfg actually exist.
     """
     cfgfiles = [f for f in
             pkg_resources.resource_listdir('cotede', 'qc_cfg')
@@ -47,8 +47,9 @@ def test_cfg_existentprocedure():
         cfg = json.loads(pkg_resources.resource_string('cotede',
                         "qc_cfg/%s" % cfgfile))
         assert type(cfg) is dict
-        for v in cfg.keys():
-            for c in cfg[v]:
+        assert 'variables' in cfg, "Missing variables in {}".format(cfgfile)
+        for v in cfg['variables'].keys():
+            for c in cfg['variables'][v]:
                 assert c in QCTESTS, \
                         "Test %s.%s.%s is not available at cotede.qctests" % \
                         (cfgfile[:-5], v, c)
