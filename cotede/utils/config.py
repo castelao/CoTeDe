@@ -95,8 +95,9 @@ def load_cfg(cfgname="cotede"):
     if cfgname is None:
         cfgname = "cotede"
 
-    assert type(cfgname) in (dict, str), \
-            'load_cfg() input must be a dictionary or a str'
+    assert isinstance(
+        cfgname, (dict, str)
+    ), "load_cfg() input must be a dictionary or a str"
 
     # A given manual configuration has priority
     if isinstance(cfgname, dict):
