@@ -126,6 +126,8 @@ def load_cfg(cfgname="cotede"):
         for parent in cfg["inherit"]:
             cfg = inheritance(cfg, load_cfg(parent))
 
+    cfg = fix_procedure(cfg)
+
     return cfg
 
 
@@ -216,3 +218,74 @@ def convert_pre_to_021(cfg):
         # output[k] = cfg[k]
 
     return output
+
+
+def guess_procedure(name, cfg=None):
+    catalog = {
+        "anomaly_detection": None,
+        "bin_spike": "Bin_Spike",
+        "cars_normbias": "CARS_NormBias",
+        "constant_cluster_size": "ConstantClusterSize",
+        "cum_rate_of_change": "CumRateOfChange",
+        "deepest_pressure": "DeepestPressure",
+        "density_inversion": "DensityInversion",
+        "digit_roll_over": "DigitRollOver",
+        "fuzzylogic": None,
+        "frozen_profile": None,
+        "global_range": "GlobalRange",
+        "gradient": "Gradient",
+        "gradient_depthconditional": "GradientDepthConditional",
+        "grey_list": None,
+        "gross_sensor_drift": None,
+        "monotonic_z": "MonotonicZ",
+        "morello2014": None,
+        "platform_identification": None,
+        "pressure_increasing": None,
+        "profile_envelop": "ProfileEnvelop",
+        "pstep": None,
+        "rate_of_change": "RateOfChange",
+        "regional_range": "RegionalRange",
+        "spike": "Spike",
+        "spike_depthconditional": "SpikeDepthConditional",
+        "stuck_value": "StuckValue",
+        "tukey53H": "Tukey53H",
+        "tukey53H_norm": "Tukey53H",
+        "valid_speed": None,
+        "woa_normbias": "WOA_NormBias",
+        # 'valid_geolocation': ValidGeolocation,
+        "valid_geolocation": None,
+    }
+
+    if name in catalog:
+        return catalog[name]
+
+
+def fix_procedure(cfg):
+    """If a test procedure is not defined, guess it from the name
+
+    For each variable it is defined a sequence of tests to apply. And each
+    test is based in one procedure, but multiple tests could be based on the
+    same procedure.
+
+    For instance, one could apply the GlobalRange with two different
+    thresholds, a lower one for flag 3 and a higher one for flag 4.
+    """
+
+    def fix_each_one(cfg):
+        for c in cfg:
+            procedure = guess_procedure(c, cfg[c])
+            if procedure is not None:
+                if cfg[c] is None:
+                    cfg[c] = {"procedure": procedure}
+                elif "procedure" not in cfg[c]:
+                    cfg[c]["procedure"] = procedure
+        return cfg
+
+    if "common" in cfg:
+        cfg["common"] = fix_each_one(cfg["common"])
+
+    if "variables" in cfg:
+        for v in cfg["variables"]:
+            cfg["variables"][v] = fix_each_one(cfg["variables"][v])
+
+    return cfg
