@@ -47,12 +47,20 @@ def test_cfg_existentprocedure():
         cfg = json.loads(pkg_resources.resource_string('cotede',
                         "qc_cfg/%s" % cfgfile))
         assert type(cfg) is dict
-        assert 'variables' in cfg, "Missing variables in {}".format(cfgfile)
-        for v in cfg['variables'].keys():
-            for c in cfg['variables'][v]:
-                assert c in QCTESTS, \
-                        "Test %s.%s.%s is not available at cotede.qctests" % \
-                        (cfgfile[:-5], v, c)
+        assert "variables" in cfg, "Missing variables in {}".format(cfgfile)
+        for v in cfg["variables"].keys():
+            for c in cfg["variables"][v]:
+                try:
+                    procedure = cfg["variables"][v][c]["procedure"]
+                except KeyError:
+                    procedure = c
+                except TypeError:
+                    assert cfg["variables"][v][c] is None
+                    procedure = c
+                assert procedure in QCTESTS, (
+                    "Test %s.%s.%s is not available at cotede.qctests"
+                    % (cfgfile[:-5], v, c)
+                )
 
 
 def test_multiple_cfg():
