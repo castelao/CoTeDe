@@ -94,7 +94,8 @@ class QCCheck(object):
 
     def __init__(self, data, cfg=None, autoflag=True):
         self.data = data
-        self.cfg = cfg
+        if (cfg is not None) or not hasattr(self, 'cfg'):
+            self.cfg = cfg
 
         self.set_flags()
         self.set_features()
