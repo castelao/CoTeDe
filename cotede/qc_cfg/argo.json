@@ -28,7 +28,7 @@
                     }
                 ]
             },
-            "monotonic_z": {"coord": "pressure"},
+            "pressure_increasing": {"procedure": "MonotonicZ", "coord": "pressure"},
             "spike_depthconditional": {
                 "pressure_threshold": 500,
                 "shallow_max": 6.0,
@@ -68,7 +68,7 @@
                     }
                 ]
             },
-            "pressure_increasing": null,
+            "pressure_increasing": {"procedure": "MonotonicZ", "coord": "pressure"},
             "spike_depthconditional": {
                 "pressure_threshold": 500,
                 "shallow_max": 0.9,

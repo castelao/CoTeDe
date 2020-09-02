@@ -257,4 +257,4 @@ GTSPP evaluates depth.
 
 .. _Argo_increasing-pressure:
 
-Argo evaluates pressure.
+Argo evaluates pressure and is named 'pressure increasing'.
