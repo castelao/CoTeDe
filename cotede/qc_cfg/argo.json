@@ -34,11 +34,6 @@
                 "shallow_max": 6.0,
                 "deep_max": 2.0
             },
-            "gradient_depthconditional": {
-                "pressure_threshold": 500,
-                "shallow_max": 9.0,
-                "deep_max": 3.0
-            },
             "digit_roll_over": {"threshold": 10},
             "stuck_value": null,
             "density_inversion": {"threshold": -0.03, "flag_good": 1, "flag_bad": 4},
@@ -73,11 +68,6 @@
                 "pressure_threshold": 500,
                 "shallow_max": 0.9,
                 "deep_max": 0.3
-            },
-            "gradient_depthconditional": {
-                "pressure_threshold": 500,
-                "shallow_max": 1.5,
-                "deep_max": 0.5
             },
             "digit_roll_over": {"threshold": 5},
             "stuck_value": null,
