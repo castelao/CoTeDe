@@ -20,7 +20,7 @@ def test():
 
     features = {
             'tukey53H': ma.masked_array([0, 0, 0.3525000000000009,
-                0.35249999999999915, 0, 0],
+                -0.35249999999999915, 0, 0],
                 mask=[True, True, False, False, True, True]),
             'tukey53H_norm': ma.masked_array([0, 0, 0.07388721803621254,
                 0.07388721803621218, 0, 0],
