@@ -54,5 +54,7 @@ class SpikeDepthConditional(QCCheckVar):
             )
         ] = self.flag_good
 
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        # Flag as 9 any masked input value
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["spike_depthconditional"] = flag

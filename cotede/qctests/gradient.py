@@ -52,5 +52,6 @@ class Gradient(QCCheckVar):
         feature = self.features["gradient"]
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["gradient"] = flag

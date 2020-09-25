@@ -44,5 +44,6 @@ class GlobalRange(QCCheckVar):
         flag[np.nonzero(feature > maxval)] = self.flag_bad
         idx = (feature >= minval) & (feature <= maxval)
         flag[np.nonzero(idx)] = self.flag_good
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
-        self.flags['global_range'] = flag
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
+        self.flags["global_range"] = flag

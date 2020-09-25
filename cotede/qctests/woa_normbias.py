@@ -251,6 +251,7 @@ class WOA_NormBias(QCCheckVar):
         flag[ind] = self.flag_bad
 
         # Flag as 9 any masked input value
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
 
         self.flags['woa_normbias'] = flag

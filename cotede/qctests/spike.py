@@ -49,5 +49,7 @@ class Spike(QCCheckVar):
         feature = self.features["spike"]
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        # Flag as 9 any masked input value
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["spike"] = flag
