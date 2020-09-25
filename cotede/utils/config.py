@@ -6,10 +6,13 @@
 from collections import OrderedDict
 import copy
 import json
+import logging
 import os.path
 import pkg_resources
 
 from .utils import cotederc
+
+module_logger = logging.getLogger(__name__)
 
 
 def list_cfgs():
@@ -101,7 +104,7 @@ def load_cfg(cfgname="cotede"):
 
     # A given manual configuration has priority
     if isinstance(cfgname, dict):
-        # self.logger.debug("%s - User's QC cfg." % self.name)
+        module_logger.debug("User's QC cfg: %s" % cfgname)
         cfg = OrderedDict(copy.deepcopy(cfgname))
     elif isinstance(cfgname, str):
         try:
@@ -110,14 +113,13 @@ def load_cfg(cfgname="cotede"):
                 "cotede", os.path.join("qc_cfg", "{}.json".format(cfgname))
             )
             cfg = json.loads(p, object_pairs_hook=OrderedDict)
-            # self.logger.debug("%s - QC cfg: %s" % (self.name, cfg))
+            module_logger.debug("Builtin config - %s" % cfgname)
         except:
             # Otherwise, try to load from user's directory
             p = os.path.join(cotederc(), "cfg", "{}.json".format(cfgname))
             with open(p, 'r') as f:
                 cfg = json.load(f, object_pairs_hook=OrderedDict)
-        # self.logger.debug("%s - QC cfg: ~/.cotederc/%s" %
-        #            (self.name, cfg))
+            module_logger.debug("User collection cfg - %s" % cfgname)
 
     cfg = fix_config(cfg)
     if "inherit" in cfg:
