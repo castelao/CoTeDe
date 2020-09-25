@@ -27,7 +27,7 @@ def list_cfgs():
     --------
     utils.load_cfg
     """
-    cfg = pkg_resources.resource_listdir('cotede', "qc_cfg")
+    cfg = pkg_resources.resource_listdir("cotede", "qc_cfg")
     cfg = sorted([c[:-5] for c in cfg if c[-5:] == ".json"])
 
     ucfg = os.listdir(cotederc("cfg"))
@@ -108,7 +108,7 @@ def load_cfg(cfgname="cotede"):
         cfg = OrderedDict(copy.deepcopy(cfgname))
     elif isinstance(cfgname, str):
         try:
-            # If cfg is available in qc_cfg, use it
+            # If cfg is available in builtin options, use it
             p = pkg_resources.resource_string(
                 "cotede", os.path.join("qc_cfg", "{}.json".format(cfgname))
             )
@@ -116,8 +116,8 @@ def load_cfg(cfgname="cotede"):
             module_logger.debug("Builtin config - %s" % cfgname)
         except:
             # Otherwise, try to load from user's directory
-            p = os.path.join(cotederc(), "cfg", "{}.json".format(cfgname))
-            with open(p, 'r') as f:
+            p = os.path.join(cotederc("cfg"), "{}.json".format(cfgname))
+            with open(p, "r") as f:
                 cfg = json.load(f, object_pairs_hook=OrderedDict)
             module_logger.debug("User collection cfg - %s" % cfgname)
 
@@ -139,10 +139,10 @@ def fix_config(cfg):
        This function allows backward compatibility with old config descriptos
        updating them to the current standard.
     """
-    if ('revision' in cfg) and (cfg['revision'] == '0.21'):
+    if ("revision" in cfg) and (cfg["revision"] == "0.21"):
         return cfg
 
-    if 'revision' not in cfg:
+    if "revision" not in cfg:
         cfg = convert_pre_to_021(cfg)
 
     return cfg
@@ -158,33 +158,34 @@ def convert_pre_to_021(cfg):
          - TEMP -> sea_water_temperature
          - PSAL -> sea_water_salinity
     """
+
     def label(v):
         """Convert Ocean Sites vocabulary to CF standard names
         """
-        if v == 'PRES':
-            return 'sea_water_pressure'
-        if v == 'TEMP':
-            return 'sea_water_temperature'
-        elif v == 'PSAL':
-            return 'sea_water_salinity'
+        if v == "PRES":
+            return "sea_water_pressure"
+        if v == "TEMP":
+            return "sea_water_temperature"
+        elif v == "PSAL":
+            return "sea_water_salinity"
         else:
             return v
 
     keys = list(cfg.keys())
 
     output = OrderedDict()
-    output['revision'] = '0.21'
+    output["revision"] = "0.21"
 
-    if 'inherit' in keys:
-        output['inherit'] = cfg['inherit']
-        keys.remove('inherit')
+    if "inherit" in keys:
+        output["inherit"] = cfg["inherit"]
+        keys.remove("inherit")
 
-    if 'main' in cfg:
-        output['common'] = cfg['main']
-        keys.remove('main')
-    elif 'common' in cfg:
-        output['common'] = cfg['common']
-        keys.remove('common')
+    if "main" in cfg:
+        output["common"] = cfg["main"]
+        keys.remove("main")
+    elif "common" in cfg:
+        output["common"] = cfg["common"]
+        keys.remove("common")
 
     def fix_threshold(cfg):
         """Explicit threshold"""
@@ -211,13 +212,12 @@ def convert_pre_to_021(cfg):
             cfg["profile_envelop"] = {"layers": cfg["profile_envelop"]}
         return cfg
 
-    output['variables'] = OrderedDict()
+    output["variables"] = OrderedDict()
     for k in keys:
         cfg[k] = fix_threshold(cfg[k])
         cfg[k] = fix_regional_range(cfg[k])
         cfg[k] = fix_profile_envelop(cfg[k])
-        output['variables'][label(k)] = cfg[k]
-        # output[k] = cfg[k]
+        output["variables"][label(k)] = cfg[k]
 
     return output
 
