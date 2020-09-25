@@ -5,7 +5,6 @@
 """
 
 import numpy as np
-from numpy import ma
 
 from cotede.qctests import SpikeDepthConditional
 from data import DummyData
@@ -26,7 +25,7 @@ def test():
 
     assert isinstance(y.features, dict)
     assert "spike" in y.features
-    assert ma.allclose(
+    assert np.allclose(
         y.flags["spike_depthconditional"],
         np.array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 1, 0, 9], dtype="i1"),
     )

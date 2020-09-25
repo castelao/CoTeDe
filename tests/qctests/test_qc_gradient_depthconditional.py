@@ -26,7 +26,7 @@ def test():
 
     assert isinstance(y.features, dict)
     assert "gradient" in y.features
-    assert ma.allclose(
+    assert np.allclose(
         y.flags["gradient_depthconditional"],
-        np.array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 0, 9], dtype="i1"),
+        np.array([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 0, 9], dtype="i1")
     )
