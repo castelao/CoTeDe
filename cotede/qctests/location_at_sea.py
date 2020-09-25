@@ -39,25 +39,33 @@ def location_at_sea(data, cfg=None):
     assert hasattr(data, "attrs"), "Missing attributes"
 
     # Temporary solution while migrating to OceanSites variables syntax
-    if ('LATITUDE' not in data.attrs) and ('latitude' in data.attrs):
-                module_logger.debug("Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE")
-                data.attrs['LATITUDE'] = data.attrs['latitude']
-    if ('LONGITUDE' not in data.attrs) and ('longitude' in data.attrs):
-                module_logger.debug("Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE")
-                data.attrs['LONGITUDE'] = data.attrs['longitude']
+    if ("LATITUDE" not in data.attrs) and ("latitude" in data.attrs):
+        module_logger.debug(
+            "Deprecated. In the future it will not accept latitude anymore. It'll must be LATITUDE"
+        )
+        data.attrs["LATITUDE"] = data.attrs["latitude"]
+    if ("LONGITUDE" not in data.attrs) and ("longitude" in data.attrs):
+        module_logger.debug(
+            "Deprecated. In the future it will not accept longitude anymore. It'll must be LONGITUDE"
+        )
+        data.attrs["LONGITUDE"] = data.attrs["longitude"]
 
-    if ('LATITUDE' not in data.attrs) or \
-            (data.attrs['LATITUDE'] == None) or \
-            ('LONGITUDE' not in data.attrs) or \
-            (data.attrs['LONGITUDE'] == None):
-                module_logger.debug("Missing geolocation (lat/lon)")
-                return 0
+    if (
+        ("LATITUDE" not in data.attrs)
+        or (data.attrs["LATITUDE"] == None)
+        or ("LONGITUDE" not in data.attrs)
+        or (data.attrs["LONGITUDE"] == None)
+    ):
+        module_logger.debug("Missing geolocation (lat/lon)")
+        return 0
 
-    if (data.attrs['LATITUDE'] > 90) or \
-            (data.attrs['LATITUDE'] < -90) or \
-            (data.attrs['LONGITUDE'] > 360) or \
-            (data.attrs['LONGITUDE'] < -180):
-                return flag_bad
+    if (
+        (data.attrs["LATITUDE"] > 90)
+        or (data.attrs["LATITUDE"] < -90)
+        or (data.attrs["LONGITUDE"] > 360)
+        or (data.attrs["LONGITUDE"] < -180)
+    ):
+        return flag_bad
 
     try:
         ETOPO = oceansdb.ETOPO()
@@ -91,6 +99,9 @@ def get_bathymetry(lat, lon, resolution="5min"):
 
 class LocationAtSea(QCCheck):
     def set_features(self):
+        # if ("latitude" in self.data.keys()) and ("longitude" in self.data.keys()):
+        #     lat = self.data["latitude"]
+        #     lon = self.data["longitude"]
         if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
             lat = self.data["LATITUDE"]
             lon = self.data["LONGITUDE"]
@@ -104,6 +115,8 @@ class LocationAtSea(QCCheck):
 
         try:
             self.features = get_bathymetry(lat=lat, lon=lon)
+            # idx = np.isfinite(lat) & np.isfinite(lon)
+            # self.features = get_bathymetry(lat=lat[idx], lon=lon[idx])
         except:
             self.features = {
                 "bathymetry": ma.fix_invalid([np.nan]),
@@ -117,7 +130,6 @@ class LocationAtSea(QCCheck):
             or ("LONGITUDE" not in self.data.attrs)
             or (self.data.attrs["LONGITUDE"] is None)
         ):
-            module_logger.debug("Missing geolocation (lat/lon)")
             self.features = {
                 "bathymetry": ma.fix_invalid([np.nan]),
                 "bathymetry_std": ma.fix_invalid([np.nan]),
