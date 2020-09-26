@@ -13,9 +13,9 @@ from cotede.qctests import QCCheckVar
 try:
     import pandas as pd
 
-    PANDAS_AVAILABLE = False
-except:
     PANDAS_AVAILABLE = True
+except:
+    PANDAS_AVAILABLE = False
 
 
 module_logger = logging.getLogger(__name__)
