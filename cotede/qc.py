@@ -2,6 +2,7 @@
 """
 
 import pkg_resources
+from copy import deepcopy
 from datetime import datetime
 from os.path import basename
 import re
@@ -70,7 +71,7 @@ class ProfileQC(object):
         self.cfg = load_cfg(cfg)
         module_logger.debug("Using cfg: {}".format(self.cfg))
 
-        self.input = input
+        self.input = deepcopy(input)
         if attributes is None:
             self.attrs = input.attributes
         else:
