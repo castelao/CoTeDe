@@ -76,11 +76,22 @@ def test_factory_cfgs():
 def test_dict_input():
     """Test a dictionary input, i.e. manually defined config
 
-       It should return the same dictionary
+       The output configuration can't miss anything given in the input but
+       can have extra content.
     """
-    cfg = {'temperature': {'global_range': 'test'}}
+    # Scalar argument
+    cfg = {'temperature': {'spike': 1234}}
     cfg_out = load_cfg(cfg)
-    assert cfg_out['variables']['temperature'] == cfg['temperature']
+    assert cfg_out['variables']['temperature']['spike']['threshold'] == 1234
+
+    # Dictionary argument
+    cfg = {'temperature': {'global_range': {'minvalue': 0, 'maxvalue': 60}}}
+    cfg_out = load_cfg(cfg)
+    assert 'global_range' in cfg_out['variables']['temperature']
+    tmp = cfg_out['variables']['temperature']['global_range']
+    for v in cfg['temperature']['global_range']:
+        assert v in tmp
+        assert cfg['temperature']['global_range'][v] == tmp[v]
 
 
 def test_inheritance():
