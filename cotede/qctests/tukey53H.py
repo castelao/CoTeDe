@@ -47,12 +47,11 @@ def tukey53H(x, normalize=False):
     u3 = 0.25 * (u2.shift(-1) + 2 * u2 + u2.shift(1))
 
     delta = x - u3
-    delta = np.array(delta)
 
     if not normalize:
-        return delta
+        return np.array(delta)
 
-    sigma = u1.dropna().std()
+    sigma = u1.dropna().std(ddof=1)
     return np.array(delta / sigma)
 
 
@@ -87,10 +86,10 @@ def _tukey53H_numpy(x, normalize=False):
     if not normalize:
         return delta
 
-    idx = np.isnan(u1)
+    idx = ~np.isnan(u1)
     if idx.all():
         return np.nan * delta
-    sigma = np.std(u1[~idx])
+    sigma = np.std(u1[idx], ddof=1)
     return delta / sigma
 
 
