@@ -11,26 +11,78 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheckVar
+from cotede.qctests import QCCheckVar
 
+try:
+    import pandas as pd
+
+    PANDAS_AVAILABLE = True
+except:
+    PANDAS_AVAILABLE = False
 
 module_logger = logging.getLogger(__name__)
 
-def gradient(x):
-    """ Gradient QC
 
-        This is different the mathematical gradient:
-        d/dx + d/dy + d/dz,
-        but as defined by GTSPP, EuroGOOS and others.
+def gradient(x):
+    return curvature(x)
+
+
+def _curvature_pandas(x):
+    """Equivalent to curvature() but using pandas
+
+    It looks like the numpy implementation is faster even for larger datasets,
+    so the default is with numpy.
+
+    Note
+    ----
+    - In the future this will be useful to handle specific window widths.
     """
-    y = ma.fix_invalid(np.ones_like(x) * np.nan)
-    y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:]) / 2.0)
+    if isinstance(x, ma.MaskedArray):
+        x[x.mask] = np.nan
+        x = x.data
+
+    if not PANDAS_AVAILABLE:
+        return _curvature_numpy(x)
+
+    if hasattr(x, "to_series"):
+        x = x.to_series()
+    elif not isinstance(x, pd.Series):
+        x = pd.Series(x)
+
+    y = np.nan * x
+    y = x - (x.shift(1) + x.shift(-1)) / 2.0
+    return np.array(y)
+
+
+def curvature(x):
+    """Curvature of a timeseries
+
+    This test is commonly known as gradient for historical reasons, but that
+    is a bad name choice since it is not the actual gradient, like:
+    d/dx + d/dy + d/dz,
+    but as defined by GTSPP, EuroGOOS and others, which is actually the
+    curvature of the timeseries..
+
+    Note
+    ----
+    - Pandas.Series operates with indexes, so it should be done different. In
+      that case, call for _curcature_pandas.
+    """
+    if isinstance(x, ma.MaskedArray):
+        x[x.mask] = np.nan
+        x = x.data
+
+    if isinstance(x, pd.Series):
+        return _curvature_pandas(x)
+
+    y = np.nan * np.ones_like(x)
+    y[1:-1] = x[1:-1] - (x[:-2] + x[2:]) / 2.0
     return y
 
 
 class Gradient(QCCheckVar):
     def set_features(self):
-        self.features = {"gradient": gradient(self.data[self.varname])}
+        self.features = {"gradient": curvature(self.data[self.varname])}
 
     def test(self):
         self.flags = {}
@@ -49,7 +101,7 @@ class Gradient(QCCheckVar):
         )
 
         flag = np.zeros(self.data[self.varname].shape, dtype="i1")
-        feature = self.features["gradient"]
+        feature = np.absolute(self.features["gradient"])
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
         x = self.data[self.varname]
