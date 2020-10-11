@@ -62,15 +62,17 @@ If you use CoTeDe, or replicated part of it, in your work/package, please consid
 
 Castelao, G. P., (2020). A Framework to Quality Control Oceanographic Data. Journal of Open Source Software, 5(48), 2063, https://doi.org/10.21105/joss.02063
 
-@article{Castelao2020,
-  doi = {10.21105/joss.02063},
-  url = {https://doi.org/10.21105/joss.02063},
-  year = {2020},
-  publisher = {The Open Journal},
-  volume = {5},
-  number = {48},
-  pages = {2063},
-  author = {Guilherme Castelao},
-  title = {A Framework to Quality Control Oceanographic Data},
-  journal = {Journal of Open Source Software}
-}
+::
+
+  @article{Castelao2020,
+    doi = {10.21105/joss.02063},
+    url = {https://doi.org/10.21105/joss.02063},
+    year = {2020},
+    publisher = {The Open Journal},
+    volume = {5},
+    number = {48},
+    pages = {2063},
+    author = {Guilherme Castelao},
+    title = {A Framework to Quality Control Oceanographic Data},
+    journal = {Journal of Open Source Software}
+  }
