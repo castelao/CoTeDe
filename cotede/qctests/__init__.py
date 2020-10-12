@@ -28,3 +28,32 @@ from .tukey53H import Tukey53H, tukey53H, tukey53H_norm
 from .woa_normbias import WOA_NormBias, woa_normbias
 from .stuck_value import StuckValue
 from .valid_geolocation import ValidGeolocation
+
+
+QCTESTS = {
+    "Bin_Spike": Bin_Spike,
+    "CARS_NormBias": CARS_NormBias,
+    "ConstantClusterSize": ConstantClusterSize,
+    "CumRateOfChange": CumRateOfChange,
+    "DeepestPressure": DeepestPressure,
+    "DensityInversion": DensityInversion,
+    "DigitRollOver": DigitRollOver,
+    "GlobalRange": GlobalRange,
+    "Gradient": Gradient,
+    "GradientDepthConditional": GradientDepthConditional,
+    "LocationAtSea": LocationAtSea,
+    "MonotonicZ": MonotonicZ,
+    "ProfileEnvelop": ProfileEnvelop,
+    "RateOfChange": RateOfChange,
+    "RegionalRange": RegionalRange,
+    "Spike": Spike,
+    "SpikeDepthConditional": SpikeDepthConditional,
+    "StuckValue": StuckValue,
+    "Tukey53H": Tukey53H,
+    "ValidGeolocation": ValidGeolocation,
+    "WOA_NormBias": WOA_NormBias,
+}
+
+
+def catalog(klass):
+    return QCTESTS.get(klass, klass)
