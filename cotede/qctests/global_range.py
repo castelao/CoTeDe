@@ -37,7 +37,7 @@ class GlobalRange(QCCheckVar):
         minval = self.cfg["minval"]
         maxval = self.cfg["maxval"]
 
-        feature = self.data[self.varname]
+        feature = ma.fix_invalid(self.data[self.varname])
 
         flag = np.zeros(feature.shape, dtype="i1")
         flag[np.nonzero(feature < minval)] = self.flag_bad

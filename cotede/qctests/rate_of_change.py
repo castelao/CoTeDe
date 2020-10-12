@@ -15,23 +15,27 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheckVar
+from cotede.qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
 
 
 def rate_of_change(x):
-    y = ma.fix_invalid(np.ones_like(x) * np.nan)
-    y[1:] = ma.diff(x)
+    if isinstance(x, ma.MaskedArray):
+        x[x.mask] = np.nan
+        x = x.data
+
+    y = x * np.nan
+    y[1:] = np.diff(x)
 
     return y
 
 
 class RateOfChange(QCCheckVar):
     def set_features(self):
-        self.features = {
-                'rate_of_change': rate_of_change(self.data[self.varname])}
+        x = ma.fix_invalid(self.data[self.varname])
+        self.features = {'rate_of_change': rate_of_change(x)}
 
     def test(self):
         self.flags = {}
@@ -45,8 +49,11 @@ class RateOfChange(QCCheckVar):
             and (threshold is not None) \
             and (np.isfinite(threshold))
 
+        feature = np.absolute(self.features['rate_of_change'])
+        if ('sd_scale' in self.cfg) and self.cfg['sd_scale']:
+            feature /= feature.std()
+
         flag = np.zeros(self.data[self.varname].shape, dtype='i1')
-        feature = ma.absolute(self.features['rate_of_change'])
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
         x = self.data[self.varname]
