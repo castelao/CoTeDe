@@ -149,6 +149,21 @@ class WOA_NormBias(QCCheckVar):
             module_logger.debug("use_standard_error undefined. Using default value")
         super().__init__(data, varname, cfg, autoflag)
 
+    def get_doy(self):
+        if 'time' in self.data:
+            d = self.data['time']
+        elif 'date' in self.data:
+            d = self.data['date']
+        elif 'datetime' in self.data:
+            d = self.data['datetime']
+        else:
+            d = None
+
+        if t is not None:
+            doy = ma.fix_invalid([t.dayofyear for t in d.to_series()])
+            return doy
+
+
     def set_features(self):
         try:
             doy = int(self.data.attrs["date"].strftime("%j"))
@@ -242,7 +257,6 @@ class WOA_NormBias(QCCheckVar):
 
 
     def test(self):
-
         # 3 is the possible minimum to estimate the std, but I shold use higher.
         try:
             min_samples = self.cfg["min_samples"]
