@@ -15,7 +15,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from cotede.qctests import QCCheckVar
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)

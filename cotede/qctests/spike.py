@@ -16,7 +16,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from cotede.qctests import QCCheckVar
+from .qctests import QCCheckVar
 
 
 module_logger = logging.getLogger(__name__)
@@ -25,16 +25,19 @@ module_logger = logging.getLogger(__name__)
 def spike(x):
     """ Spike
     """
-    y = ma.fix_invalid(np.ones_like(x) * np.nan)
+    if isinstance(x, ma.MaskedArray):
+        mask = x.mask
+        x = x.data
+        x[mask] = np.nan
+
+    y = np.nan * x
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:]) / 2.0) - np.abs((x[2:] - x[:-2]) / 2.0)
-    y[y.mask] = np.nan
     return y
 
 
 class Spike(QCCheckVar):
     def set_features(self):
-        x = ma.fix_invalid(self.data[self.varname])
-        self.features = {"spike": spike(x).data}
+        self.features = {"spike": spike(self.data[self.varname])}
 
     def test(self):
         self.flags = {}
