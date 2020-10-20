@@ -7,7 +7,7 @@
 
 import numpy as np
 from numpy import ma
-from .fuzzy import fuzzyfy
+from ..fuzzy import fuzzyfy
 
 
 def morello2014(features, cfg):
