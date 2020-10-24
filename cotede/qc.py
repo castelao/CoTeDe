@@ -241,6 +241,7 @@ class ProfileQC(object):
                 'stuck_value': StuckValue,
                 'tukey53H_norm': Tukey53H,
                 'woa_normbias': WOA_NormBias,
+                'density_inversion': DensityInversion,
                 }
 
         for criterion in [c for c in catalog if c in cfg]:
