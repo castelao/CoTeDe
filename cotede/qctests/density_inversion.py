@@ -51,12 +51,7 @@ class DensityInversion(QCCheck):
         assert "PSAL" in data.keys(), "Missing PSAL"
         assert "PRES" in data.keys(), "Missing PRES"
 
-        self.data = data
-        self.cfg = cfg
-
-        self.set_features()
-        if autoflag:
-            self.test()
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag)
 
     def set_features(self):
         self.features = {
