@@ -10,7 +10,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheckVar
+from .qctests import QCCheck
 
 module_logger = logging.getLogger(__name__)
 
@@ -45,7 +45,13 @@ def densitystep(S, T, P, auto_rotate=False):
     return ma.fix_invalid(ds)
 
 
-class DensityInversion(QCCheckVar):
+class DensityInversion(QCCheck):
+    def __init__(self, data, cfg, autoflag=True):
+        assert "TEMP" in data.keys(), "Missing TEMP"
+        assert "PSAL" in data.keys(), "Missing PSAL"
+        assert "PRES" in data.keys(), "Missing PRES"
+
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag)
 
     def set_features(self):
         self.features = {

@@ -246,7 +246,11 @@ class ProfileQC(object):
 
         for criterion in [c for c in catalog if c in cfg]:
             Procedure = catalog[criterion]
-            y = Procedure(self.input, v, cfg[criterion], autoflag=True)
+            try:
+                y = Procedure(self.input, v, cfg[criterion], autoflag=True)
+            except:
+                # currently accommodates catalog['density_inversion']
+                y = Procedure(self.input, cfg[criterion], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
