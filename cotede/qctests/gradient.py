@@ -72,7 +72,7 @@ def curvature(x):
         x[x.mask] = np.nan
         x = x.data
 
-    if isinstance(x, pd.Series):
+    if PANDAS_AVAILABLE and isinstance(x, pd.Series):
         return _curvature_pandas(x)
 
     y = np.nan * np.ones_like(x)
