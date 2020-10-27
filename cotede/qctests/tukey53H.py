@@ -1,6 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """
+
+
+Shall I use a decorator??
+
+DATA = [25.32, 25.34, 25.34, 25.31, 24.99, 23.46, 21.85, 17.95, 15.39, 11.08, 6.93, 7.93, 5.71, 3.58, np.nan, 1, 1]
+
+
+tukey53H(np.array, np.maskedArray, pd.Series, xr.DataArray)
+
+
+    delta = tukey53H(x)
+
+    w = np.hamming(l)
+    sigma = (ma.convolve(x, w, mode="same") / w.sum()).std()
+
+    return delta / sigma
 """
 
 import logging

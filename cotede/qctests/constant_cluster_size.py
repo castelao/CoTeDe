@@ -19,7 +19,7 @@ def constant_cluster_size(x, tol=0):
     tol = tol + 1e-5 * tol
 
     ivalid = np.nonzero(~ma.getmaskarray(ma.fix_invalid(x)))[0]
-    dx = np.diff(x[ivalid])
+    dx = np.diff(np.atleast_1d(x)[ivalid])
 
     cluster_size = np.zeros(np.shape(x), dtype='i')
     for i, iv in enumerate(ivalid):
@@ -37,6 +37,9 @@ def constant_cluster_size(x, tol=0):
 
 
 class ConstantClusterSize(QCCheckVar):
+    """
+       Need to implement a check on time. TSG specifies constant value during 6 hrs.
+    """
     def set_features(self):
         cluster_size = constant_cluster_size(self.data[self.varname])
         N = ma.compressed(self.data[self.varname]).size

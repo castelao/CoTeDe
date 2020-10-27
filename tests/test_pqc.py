@@ -29,9 +29,9 @@ def test():
         assert v in pqc.keys()
         assert np.allclose(profile[v], pqc[v])
 
-    for a in profile.attributes:
-        assert a in pqc.attributes
-        assert profile.attributes[a] == pqc.attributes[a]
+    for a in profile.attrs:
+        assert a in pqc.attrs
+        assert profile.attrs[a] == pqc.attrs[a]
 
     assert hasattr(pqc, 'flags')
     assert type(pqc.flags) is dict

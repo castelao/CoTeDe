@@ -6,7 +6,8 @@
 
 
 import numpy as np
-from cotede.fuzzy import fuzzyfy
+from numpy import ma
+from ..fuzzy import fuzzyfy
 
 
 def morello2014(features, cfg):
@@ -33,6 +34,12 @@ def morello2014(features, cfg):
             return 0
 
     f = fuzzyfy(features, cfg)
+
+    for level in f:
+        if isinstance(f[level], ma.MaskedArray):
+            mask = f[level].mask
+            f[level] = f[level].data
+            f[level][mask] = np.nan
 
     # This is how Timms and Morello defined the Fuzzy Logic approach
     # flag = np.zeros(N, dtype='i1')

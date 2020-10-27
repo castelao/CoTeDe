@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
 
 """
 
@@ -23,14 +25,21 @@ i = small, medium, large
 
 import numpy as np
 from numpy import ma
+import logging
 
 from .qctests import QCCheckVar
 
+module_logger = logging.getLogger(__name__)
 
 def cum_rate_of_change(x, memory):
+    """Cummulative rate of change
+    """
+    if isinstance(x, ma.MaskedArray):
+        x[x.mask] = np.nan
+        x = x.data
 
-    y = ma.fix_invalid(np.ones_like(x) * np.nan)
-    y[1:] = ma.absolute(ma.diff(x))
+    y = np.nan * np.ones_like(x)
+    y[1:] = np.absolute(np.diff(x))
 
     for i in range(2, y.size):
         if y[i] < y[i - 1]:
@@ -41,6 +50,7 @@ def cum_rate_of_change(x, memory):
 
 class CumRateOfChange(QCCheckVar):
     def set_features(self):
+        module_logger.debug("Feature: cummulative rate of change")
         self.features = {
             "cum_rate_of_change": cum_rate_of_change(
                 self.data[self.varname], self.cfg["memory"]
@@ -51,19 +61,18 @@ class CumRateOfChange(QCCheckVar):
         self.flags = {}
         try:
             threshold = self.cfg["threshold"]
-        except:
+        except KeyError:
             print("Deprecated cfg format. It should contain a threshold item.")
             threshold = self.cfg
 
-        assert (
-            (np.size(threshold) == 1)
-            and (threshold is not None)
-            and (np.isfinite(threshold))
-        )
+        assert np.size(threshold) == 1, "Threshold should be a single value"
+        assert threshold is not None, "Threshold can't be None"
+        assert np.isfinite(threshold), "Threshold must be a valid number"
 
         flag = np.zeros(self.data[self.varname].shape, dtype="i1")
-        feature = ma.absolute(self.features["cum_rate_of_change"])
+        feature = np.absolute(self.features["cum_rate_of_change"])
         flag[np.nonzero(feature > threshold)] = self.flag_bad
         flag[np.nonzero(feature <= threshold)] = self.flag_good
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        x = self.data[self.varname]
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["cum_rate_of_change"] = flag
