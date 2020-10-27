@@ -209,7 +209,7 @@ def convert_pre_to_021(cfg):
         Should I confirm that cfg['profile_envelop'] is a list?
         """
         if "profile_envelop" in cfg:
-            cfg["profile_envelop"] = {"layers": cfg["profile_envelop"]}
+            cfg["profile_envelop"] = {"layers": cfg["profile_envelop"]["layers"]}
         return cfg
 
     output["variables"] = OrderedDict()
