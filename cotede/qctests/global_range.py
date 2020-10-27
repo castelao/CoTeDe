@@ -37,7 +37,10 @@ class GlobalRange(QCCheckVar):
         minval = self.cfg["minval"]
         maxval = self.cfg["maxval"]
 
-        feature = ma.fix_invalid(self.data[self.varname])
+        feature = self.data[self.varname]
+        if isinstance(feature, ma.MaskedArray):
+            feature[feature.mask] = np.nan
+            feature = feature.data
 
         flag = np.zeros(feature.shape, dtype="i1")
         flag[np.nonzero(feature < minval)] = self.flag_bad
