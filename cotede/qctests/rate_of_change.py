@@ -34,8 +34,7 @@ def rate_of_change(x):
 
 class RateOfChange(QCCheckVar):
     def set_features(self):
-        x = ma.fix_invalid(self.data[self.varname])
-        self.features = {"rate_of_change": rate_of_change(x)}
+        self.features = {"rate_of_change": rate_of_change(self.data[self.varname])}
 
     def test(self):
         self.flags = {}
