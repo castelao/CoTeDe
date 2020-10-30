@@ -30,7 +30,7 @@ try:
     import pandas as pd
 
     PANDAS_AVAILABLE = True
-except:
+except ImportError:
     PANDAS_AVAILABLE = False
 
 
