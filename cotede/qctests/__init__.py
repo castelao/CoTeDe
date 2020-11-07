@@ -19,7 +19,7 @@ from .gradient import Gradient, gradient
 from .gradient_depthconditional import GradientDepthConditional
 from .location_at_sea import LocationAtSea, location_at_sea
 from .monotonic_z import MonotonicZ
-from .profile_envelop import ProfileEnvelop, profile_envelop
+from .profile_envelop import ProfileEnvelop
 from .regional_range import RegionalRange
 from .rate_of_change import RateOfChange, rate_of_change
 from .spike import Spike, spike
