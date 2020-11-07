@@ -24,19 +24,20 @@ class GradientDepthConditional(QCCheckVar):
     def test(self):
         self.flags = {}
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag = np.zeros_like(self.data[self.varname], dtype="i1")
         feature = np.absolute(self.features["gradient"])
 
         # ---- Shallow zone -----------------
         threshold = self.cfg["shallow_max"]
-        flag[np.nonzero(
-                (self["PRES"] <= self.cfg["pressure_threshold"])
+        flag[
+            np.nonzero(
+                (np.atleast_1d(self["PRES"]) <= self.cfg["pressure_threshold"])
                 & (feature > threshold)
             )
         ] = self.flag_bad
         flag[
             np.nonzero(
-                (self["PRES"] <= self.cfg["pressure_threshold"])
+                (np.atleast_1d(self["PRES"]) <= self.cfg["pressure_threshold"])
                 & (feature <= threshold)
             )
         ] = self.flag_good
@@ -44,17 +45,17 @@ class GradientDepthConditional(QCCheckVar):
         threshold = self.cfg["deep_max"]
         flag[
             np.nonzero(
-                (self["PRES"] > self.cfg["pressure_threshold"])
+                (np.atleast_1d(self["PRES"]) > self.cfg["pressure_threshold"])
                 & (feature > threshold)
             )
         ] = self.flag_bad
         flag[
             np.nonzero(
-                (self["PRES"] > self.cfg["pressure_threshold"])
+                (np.atleast_1d(self["PRES"]) > self.cfg["pressure_threshold"])
                 & (feature <= threshold)
             )
         ] = self.flag_good
 
-        x = self.data[self.varname]
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["gradient_depthconditional"] = flag
