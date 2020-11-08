@@ -9,19 +9,7 @@ from numpy import ma
 from cotede.qctests import RateOfChange, rate_of_change
 from data import DummyData
 
-try:
-    import pandas as pd
-
-    PANDAS_AVAILABLE = True
-except ImportError:
-    PANDAS_AVAILABLE = False
-
-try:
-    import xarray as xr
-
-    XARRAY_AVAILABLE = True
-except ImportError:
-    XARRAY_AVAILABLE = False
+from .compare import compare_feature_input_types, compare_input_types
 
 
 def test_rate_of_change():
@@ -34,6 +22,11 @@ def test_rate_of_change():
 
     assert isinstance(y, np.ndarray)
     assert np.allclose(y, output, equal_nan=True)
+
+
+def test_feature_input_types():
+    x = np.array([1, -1, 2, 2, 3, 2, 4])
+    compare_feature_input_types(rate_of_change, x)
 
 
 def test_standard_dataset():
@@ -72,63 +65,6 @@ def test_standard_dataset():
         assert np.allclose(y.flags[f], flags[f], equal_nan=True)
 
 
-def test_tuple():
-    """Test RateOfChange with a dictionary of tuples
-    """
+def test_input_types():
     cfg = {"threshold": 4}
-
-    profile = DummyData()
-    tp = {}
-    for v in profile.keys():
-        if isinstance(profile[v], ma.MaskedArray) and profile[v].mask.any():
-            profile[v][profile[v].mask] = np.nan
-            profile.data[v] = profile[v].data
-        tp[v] = tuple(profile.data[v])
-
-    y = RateOfChange(profile, "TEMP", cfg)
-    y2 = RateOfChange(tp, "TEMP", cfg)
-
-    for f in y.features:
-        assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
-    for f in y.flags:
-        assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
-
-
-def test_pandas():
-    """Test RateOfChange with pandas.DataFrame
-    """
-    if not PANDAS_AVAILABLE:
-        return
-
-    cfg = {"threshold": 4}
-
-    profile = DummyData()
-    df = pd.DataFrame(profile.data)
-
-    y = RateOfChange(profile, "TEMP", cfg)
-    y2 = RateOfChange(df, "TEMP", cfg)
-
-    for f in y.features:
-        assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
-    for f in y.flags:
-        assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
-
-
-def test_xarray():
-    """Test RateOfChange with xarray.Dataset
-    """
-    if not XARRAY_AVAILABLE:
-        return
-
-    cfg = {"threshold": 4}
-
-    profile = DummyData()
-    ds = pd.DataFrame(profile.data).to_xarray()
-
-    y = RateOfChange(profile, "TEMP", cfg)
-    y2 = RateOfChange(ds, "TEMP", cfg)
-
-    for f in y.features:
-        assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
-    for f in y.flags:
-        assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
+    compare_input_types(RateOfChange, cfg)

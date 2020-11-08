@@ -13,20 +13,6 @@ from data import DummyData
 
 from .compare import compare_feature_input_types, compare_input_types
 
-try:
-    import pandas as pd
-
-    PANDAS_AVAILABLE = True
-except ImportError:
-    PANDAS_AVAILABLE = False
-
-try:
-    import xarray as xr
-
-    XARRAY_AVAILABLE = True
-except ImportError:
-    XARRAY_AVAILABLE = False
-
 
 def test_curvature():
     """Basic test on feature curvature
@@ -43,11 +29,6 @@ def test_curvature():
 def test_feature_input_types():
     x = np.array([1, -1, 2, 2, 3, 2, 4])
     compare_feature_input_types(curvature, x)
-
-
-def test_input_types():
-    cfg = {"threshold": 4}
-    compare_input_types(Gradient, cfg)
 
 
 def test_standard_dataset():
@@ -84,3 +65,8 @@ def test_standard_dataset():
         assert np.allclose(y.features[f], features[f], equal_nan=True)
     for f in flags:
         assert np.allclose(y.flags[f], flags[f], equal_nan=True)
+
+
+def test_input_types():
+    cfg = {"threshold": 4}
+    compare_input_types(Gradient, cfg)

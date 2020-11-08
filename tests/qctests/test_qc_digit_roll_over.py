@@ -12,20 +12,6 @@ from data import DummyData
 
 from .compare import compare_input_types
 
-try:
-    import pandas as pd
-
-    PANDAS_AVAILABLE = True
-except ImportError:
-    PANDAS_AVAILABLE = False
-
-try:
-    import xarray as xr
-
-    XARRAY_AVAILABLE = True
-except ImportError:
-    XARRAY_AVAILABLE = False
-
 
 def test_input_types():
     cfg = {"threshold": 3}
