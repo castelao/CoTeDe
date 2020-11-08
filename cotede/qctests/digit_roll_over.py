@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
@@ -34,24 +33,17 @@ class DigitRollOver(QCCheckVar):
             )
             threshold = self.cfg
 
-        try:
-            flag_good = self.cfg["flag_good"]
-        except KeyError:
-            flag_good = 1
-        try:
-            flag_bad = self.cfg["flag_bad"]
-        except KeyError:
-            flag_bad = 4
-
         assert (
             (np.size(threshold) == 1)
             and (threshold is not None)
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
         feature = ma.absolute(self.features["rate_of_change"])
-        flag[np.nonzero(feature > threshold)] = self.flag_bad
-        flag[np.nonzero(feature <= threshold)] = self.flag_good
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
+        flag[feature > threshold] = self.flag_bad
+        flag[feature <= threshold] = self.flag_good
+        x = np.atleast_1d(self.data[self.varname])
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["digit_roll_over"] = flag
