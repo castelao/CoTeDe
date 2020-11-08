@@ -93,8 +93,9 @@ def compare_tuple(Procedure, cfg):
         assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
         assert y.features[f].dtype == y2.features[f].dtype
     for f in y.flags:
-        assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
+        assert type(y.flags[f]) == type(y2.flags[f])
         assert y.flags[f].dtype == y2.flags[f].dtype
+        assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
 
 
 def compare_pandas(Procedure, cfg):
@@ -112,6 +113,8 @@ def compare_pandas(Procedure, cfg):
     for f in y.features:
         assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
     for f in y.flags:
+        assert type(y.flags[f]) == type(y2.flags[f])
+        assert y.flags[f].dtype == y2.flags[f].dtype
         assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
 
 
@@ -130,6 +133,8 @@ def compare_xarray(Procedure, cfg):
     for f in y.features:
         assert np.allclose(y.features[f], y2.features[f], equal_nan=True)
     for f in y.flags:
+        assert type(y.flags[f]) == type(y2.flags[f])
+        assert y.flags[f].dtype == y2.flags[f].dtype
         assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
 
 
