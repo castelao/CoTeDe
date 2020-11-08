@@ -50,19 +50,22 @@ def woa_normbias(data, v, cfg):
         vtype = v
 
     # Temporary solution while I'm not ready to handle tracks.
-    if ('LATITUDE' in data) and ('LONGITUDE' in data) \
-            and ('LATITUDE' not in data.attributes) \
-            and ('LONGITUDE' not in data.attributes):
-        if 'datetime' in data.keys():
-            d = data['datetime']
-        elif ('datetime' in data.attributes):
-            d0 = data.attributes['datetime']
-            if ('timeS' in data.keys()):
-                d = [d0 + timedelta(seconds=s) for s in data['timeS']]
+    if (
+        ("LATITUDE" in data)
+        and ("LONGITUDE" in data)
+        and ("LATITUDE" not in data.attributes)
+        and ("LONGITUDE" not in data.attributes)
+    ):
+        if "datetime" in data.keys():
+            d = data["datetime"]
+        elif "datetime" in data.attributes:
+            d0 = data.attributes["datetime"]
+            if "timeS" in data.keys():
+                d = [d0 + timedelta(seconds=s) for s in data["timeS"]]
             else:
-                d = [data.attributes['datetime']]*len(data['LATITUDE']),
+                d = ([data.attributes["datetime"]] * len(data["LATITUDE"]),)
 
-        #woa = woa_track_from_file(
+        # woa = woa_track_from_file(
         #        d,
         #        data['LATITUDE'],
         #        data['LONGITUDE'],
@@ -70,45 +73,54 @@ def woa_normbias(data, v, cfg):
         #        varnames=cfg['vars'])
 
         module_logger.error("Sorry, I'm temporary not ready to handle tracks.")
-        #woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
+        # woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
         #        doy=d,
         #        depth=[0],
         #        lat=data['LATITUDE'],
         #        lon=data['LONGITUDE'])
 
-    elif ('LATITUDE' in data.attributes.keys()) and \
-            ('LONGITUDE' in data.attributes.keys()) and \
-            ('PRES' in data.keys()):
+    elif (
+        ("LATITUDE" in data.attributes.keys())
+        and ("LONGITUDE" in data.attributes.keys())
+        and ("PRES" in data.keys())
+    ):
 
-                woa = db[vtype].track(
-                        var=['mean', 'standard_deviation',
-                            'number_of_observations'],
-                        doy=int(data.attributes['datetime'].strftime('%j')),
-                        depth=data['PRES'],
-                        lat=data.attributes['LATITUDE'],
-                        lon=data.attributes['LONGITUDE'])
+        woa = db[vtype].track(
+            var=["mean", "standard_deviation", "number_of_observations"],
+            doy=int(data.attributes["datetime"].strftime("%j")),
+            depth=data["PRES"],
+            lat=data.attributes["LATITUDE"],
+            lon=data.attributes["LONGITUDE"],
+        )
 
-    flag = np.zeros(data[v].shape, dtype='i1')
+    flag = np.zeros(data[v].shape, dtype="i1")
     features = {}
 
     try:
-        woa_bias = data[v] - woa['mean']
-        woa_normbias = woa_bias / woa['standard_deviation']
+        woa_bias = data[v] - woa["mean"]
+        woa_normbias = woa_bias / woa["standard_deviation"]
 
-        ind = np.nonzero((woa['number_of_observations'] >= min_samples) &
-                (np.absolute(woa_normbias) <= cfg['sigma_threshold']))
-        flag[ind] = 1   # cfg['flag_good']
-        ind = np.nonzero((woa['number_of_observations'] >= min_samples) &
-                (np.absolute(woa_normbias) > cfg['sigma_threshold']))
-        flag[ind] = 3   # cfg['flag_bad']
+        ind = np.nonzero(
+            (woa["number_of_observations"] >= min_samples)
+            & (np.absolute(woa_normbias) <= cfg["sigma_threshold"])
+        )
+        flag[ind] = 1  # cfg['flag_good']
+        ind = np.nonzero(
+            (woa["number_of_observations"] >= min_samples)
+            & (np.absolute(woa_normbias) > cfg["sigma_threshold"])
+        )
+        flag[ind] = 3  # cfg['flag_bad']
 
         # Flag as 9 any masked input value
         flag[ma.getmaskarray(data[v])] = 9
 
-        features = {'woa_bias': woa_bias, 'woa_normbias': woa_normbias,
-                'woa_std': woa['standard_deviation'],
-                'woa_nsamples': woa['number_of_observations'],
-                'woa_mean': woa['mean']}
+        features = {
+            "woa_bias": woa_bias,
+            "woa_normbias": woa_normbias,
+            "woa_std": woa["standard_deviation"],
+            "woa_nsamples": woa["number_of_observations"],
+            "woa_mean": woa["mean"],
+        }
 
     finally:
         # self.logger.warnning("%s - WOA is not available at this site" %
@@ -137,60 +149,61 @@ class WOA_NormBias(QCCheckVar):
             module_logger.debug("use_standard_error undefined. Using default value")
         super().__init__(data, varname, cfg, autoflag)
 
-
     def set_features(self):
         try:
-            doy = int(self.data.attrs['date'].strftime('%j'))
+            doy = int(self.data.attrs["date"].strftime("%j"))
         except:
-            doy = int(self.data.attrs['datetime'].strftime('%j'))
+            doy = int(self.data.attrs["datetime"].strftime("%j"))
 
-        if ('LATITUDE' in self.data.attrs.keys()) and \
-                ('LONGITUDE' in self.data.attrs.keys()):
-                    mode = 'profile'
-                    kwargs = {
-                            'lat': self.data.attrs['LATITUDE'],
-                            'lon': self.data.attrs['LONGITUDE']}
+        if ("LATITUDE" in self.data.attrs.keys()) and (
+            "LONGITUDE" in self.data.attrs.keys()
+        ):
+            mode = "profile"
+            kwargs = {
+                "lat": self.data.attrs["LATITUDE"],
+                "lon": self.data.attrs["LONGITUDE"],
+            }
 
-        if ('LATITUDE' in self.data.keys()) and \
-                ('LONGITUDE' in self.data.keys()):
-                    mode = 'track'
-                    dLmax = max(
-                            self.data['LATITUDE'].max() - self.data['LATITUDE'].min(),
-                            self.data['LONGITUDE'].max() - self.data['LONGITUDE'].min())
-                    # Only use each measurement coordinate if it is spread.
-                    if dLmax >= 0.01:
-                        kwargs = {
-                            'lat': self.data['LATITUDE'],
-                            'lon': self.data['LONGITUDE']}
+        if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
+            mode = "track"
+            dLmax = max(
+                self.data["LATITUDE"].max() - self.data["LATITUDE"].min(),
+                self.data["LONGITUDE"].max() - self.data["LONGITUDE"].min(),
+            )
+            # Only use each measurement coordinate if it is spread.
+            if dLmax >= 0.01:
+                kwargs = {"lat": self.data["LATITUDE"], "lon": self.data["LONGITUDE"]}
 
-        if ('DEPTH' in self.data.keys()):
-            depth = self.data['DEPTH']
-        elif ('PRES' in self.data.keys()):
-            depth = self.data['PRES']
+        if "DEPTH" in self.data.keys():
+            depth = self.data["DEPTH"]
+        elif "PRES" in self.data.keys():
+            depth = self.data["PRES"]
 
         db = WOA()
-        if self.varname[-1] == '2':
+        # This must go away. This was a trick to handle Seabird CTDs, but
+        # now that seabird is a different package it should be handled there.
+        if isinstance(self.varname, str) and (self.varname[-1] == "2"):
             vtype = self.varname[:-1]
         else:
             vtype = self.varname
 
-        woa_vars = ['mean', 'standard_deviation', 'standard_error',
-                    'number_of_observations']
+        woa_vars = [
+            "mean",
+            "standard_deviation",
+            "standard_error",
+            "number_of_observations",
+        ]
 
         idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
         if idx.any():
-            if mode == 'track':
+            if mode == "track":
                 woa = db[vtype].track(
-                        var=woa_vars,
-                        doy=doy,
-                        depth=depth[idx],
-                        **kwargs)
+                    var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
+                )
             else:
                 woa = db[vtype].extract(
-                        var=woa_vars,
-                        doy=doy,
-                        depth=depth[idx],
-                        **kwargs)
+                    var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
+                )
         else:
             woa = {v: ma.masked_all(1) for v in woa_vars}
 
@@ -201,57 +214,62 @@ class WOA_NormBias(QCCheckVar):
                 woa[v] = tmp
 
         self.features = {
-                'woa_mean': woa['mean'],
-                'woa_std': woa['standard_deviation'],
-                'woa_nsamples': woa['number_of_observations'],
-                'woa_se': woa['standard_error']}
+            "woa_mean": woa["mean"],
+            "woa_std": woa["standard_deviation"],
+            "woa_nsamples": woa["number_of_observations"],
+            "woa_se": woa["standard_error"],
+        }
 
-        self.features['woa_bias'] = self.data[self.varname] - \
-                self.features['woa_mean']
+        self.features["woa_bias"] = self.data[self.varname] - self.features["woa_mean"]
 
         # if use_standard_error = True, the comparison with the climatology
         #   considers the standard error, i.e. the bias will be only the
         #   ammount above the standard error range.
         if self.use_standard_error is True:
-            standard_error = self.features['woa_std'] / \
-                    self.features['woa_nsamples'] ** 0.5
-            idx = np.absolute(self.features['woa_bias']) <= \
-                    standard_error
-            self.features['woa_bias'][idx] = 0
-            idx = np.absolute(self.features['woa_bias']) > standard_error
-            self.features['woa_bias'][idx] -= \
-                    np.sign(self.features['woa_bias'][idx]) * \
-                    standard_error[idx]
+            standard_error = (
+                self.features["woa_std"] / self.features["woa_nsamples"] ** 0.5
+            )
+            idx = np.absolute(self.features["woa_bias"]) <= standard_error
+            self.features["woa_bias"][idx] = 0
+            idx = np.absolute(self.features["woa_bias"]) > standard_error
+            self.features["woa_bias"][idx] -= (
+                np.sign(self.features["woa_bias"][idx]) * standard_error[idx]
+            )
 
-        self.features['woa_normbias'] = self.features['woa_bias'] / \
-                self.features['woa_std']
+        self.features["woa_normbias"] = (
+            self.features["woa_bias"] / self.features["woa_std"]
+        )
+
 
     def test(self):
 
         # 3 is the possible minimum to estimate the std, but I shold use higher.
         try:
-            min_samples = self.cfg['min_samples']
+            min_samples = self.cfg["min_samples"]
         except KeyError:
             min_samples = 3
 
         self.flags = {}
 
-        threshold = self.cfg['threshold']
-        assert (np.size(threshold) == 1) and \
-                (threshold is not None)
+        threshold = self.cfg["threshold"]
+        assert (np.size(threshold) == 1) and (threshold is not None)
 
-        flag = np.zeros(self.data[self.varname].shape, dtype='i1')
+        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
 
-        normbias_abs = np.absolute(self.features['woa_normbias'])
-        ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
-                (normbias_abs <= threshold))
+        normbias_abs = np.absolute(self.features["woa_normbias"])
+        ind = np.nonzero(
+            (self.features["woa_nsamples"] >= min_samples)
+            & np.array(normbias_abs <= threshold)
+        )
         flag[ind] = self.flag_good
-        ind = np.nonzero((self.features['woa_nsamples'] >= min_samples) &
-                (normbias_abs > threshold))
+        ind = np.nonzero(
+            (self.features["woa_nsamples"] >= min_samples)
+            & np.array(normbias_abs > threshold)
+        )
         flag[ind] = self.flag_bad
 
         # Flag as 9 any masked input value
         x = self.data[self.varname]
-        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
+        flag[ma.getmaskarray(x) | ~np.isfinite(np.array(x))] = 9
 
-        self.flags['woa_normbias'] = flag
+        self.flags["woa_normbias"] = flag
