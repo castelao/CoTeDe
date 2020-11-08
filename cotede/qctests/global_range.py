@@ -42,7 +42,7 @@ class GlobalRange(QCCheckVar):
             feature[feature.mask] = np.nan
             feature = feature.data
 
-        flag = np.zeros_like(feature, dtype="i1")
+        flag = np.zeros(np.shape(feature), dtype="i1")
         flag[feature < minval] = self.flag_bad
         flag[feature > maxval] = self.flag_bad
         idx = (feature >= minval) & (feature <= maxval)

@@ -24,7 +24,7 @@ class GradientDepthConditional(QCCheckVar):
     def test(self):
         self.flags = {}
 
-        flag = np.zeros_like(self.data[self.varname], dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = np.absolute(self.features["gradient"])
 
         # ---- Shallow zone -----------------

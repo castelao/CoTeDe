@@ -54,7 +54,7 @@ class RateOfChange(QCCheckVar):
         if ("sd_scale" in self.cfg) and self.cfg["sd_scale"]:
             feature /= feature.std()
 
-        flag = np.zeros_like(self.data[self.varname], dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         flag[feature > threshold] = self.flag_bad
         flag[feature <= threshold] = self.flag_good
         x = np.atleast_1d(self.data[self.varname])

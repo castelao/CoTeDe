@@ -148,10 +148,10 @@ class Tukey53H(QCCheckVar):
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = np.absolute(self.features["tukey53H"])
         flag[feature > threshold] = self.flag_bad
         flag[feature <= threshold] = self.flag_good
-        x = self.data[self.varname]
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["tukey53H"] = flag

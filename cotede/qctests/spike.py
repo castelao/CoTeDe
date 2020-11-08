@@ -57,7 +57,7 @@ class Spike(QCCheckVar):
 
         feature = np.absolute(self.features["spike"])
 
-        flag = np.zeros_like(self.data[self.varname], dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         flag[feature > threshold] = self.flag_bad
         flag[feature <= threshold] = self.flag_good
         # Flag as 9 any masked input value

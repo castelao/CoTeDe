@@ -101,7 +101,7 @@ class Gradient(QCCheckVar):
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros_like(self.data[self.varname], dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = np.absolute(self.features["gradient"])
         flag[feature > threshold] = self.flag_bad
         flag[feature <= threshold] = self.flag_good
