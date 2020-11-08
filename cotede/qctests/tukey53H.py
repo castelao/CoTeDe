@@ -123,10 +123,10 @@ def tukey53H_norm(x, l=12):
 
 class Tukey53H(QCCheckVar):
     def set_features(self):
-        self.features = {
-            "tukey53H": tukey53H(self.data[self.varname]),
-            "tukey53H_norm": tukey53H_norm(self.data[self.varname], l=self.cfg["l"]),
-        }
+        self.features = {"tukey53H": tukey53H(self.data[self.varname])}
+        if "l" in self.cfg:
+            self.features["tukey53H_norm"] = tukey53H_norm(self.data[self.varname], l=self.cfg["l"])
+
 
     def test(self):
         """
