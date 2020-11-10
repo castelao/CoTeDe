@@ -77,3 +77,7 @@ jobs:
       run: |
         python -c "import oceansdb; oceansdb.CARS()['sea_water_temperature']"
         python -c "import oceansdb; oceansdb.CARS()['sea_water_salinity']"
+
+    - name: Test with pytest
+      run: |
+        pytest tests
