@@ -8,7 +8,7 @@ import numpy as np
 from numpy import ma
 
 from cotede.qctests import DigitRollOver
-from data import DummyData
+from ..data import DummyData
 
 from .compare import compare_input_types
 

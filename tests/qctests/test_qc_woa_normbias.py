@@ -10,7 +10,7 @@ from numpy import ma
 
 from cotede.qctests import WOA_NormBias, woa_normbias
 from cotede.qc import ProfileQC
-from data import DummyData
+from ..data import DummyData
 
 
 def test_basic():

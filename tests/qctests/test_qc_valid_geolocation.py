@@ -5,7 +5,7 @@
 """
 
 from cotede.qctests.valid_geolocation import *
-from data import DummyData
+from ..data import DummyData
 
 
 """

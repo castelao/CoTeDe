@@ -14,7 +14,7 @@ import numpy as np
 import cotede.qc
 from cotede.qc import ProfileQC
 from cotede.misc import combined_flag
-from data import DummyData
+from ..data import DummyData
 
 
 def test():
