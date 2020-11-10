@@ -42,7 +42,7 @@ def _curvature_pandas(x):
         x = x.data
 
     if not PANDAS_AVAILABLE:
-        return _curvature_numpy(x)
+        return curvature(x)
 
     if hasattr(x, "to_series"):
         x = x.to_series()
