@@ -10,22 +10,70 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         pip install -e .
-    - name: Test with pytest
+
+    - name: Cache ETOPO
+      id: cache-etopo
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.config/oceansdb/etopo5.nc
+        key: ${{ runner.os }}-ETOPO
+
+    - name: Download ETOPO database
+      if: steps.cache-etopo.outputs.cache-hit != 'true'
+      run: python -c "import oceansdb; oceansdb.ETOPO()['topography']"
+
+    - name: Cache WOA
+      id: cache-woa
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.config/oceansdb/woa18_decav_t13_5d.nc
+          ~/.config/oceansdb/woa18_decav_t14_5d.nc
+          ~/.config/oceansdb/woa18_decav_t15_5d.nc
+          ~/.config/oceansdb/woa18_decav_t16_5d.nc
+          ~/.config/oceansdb/woa18_decav_s13_5d.nc
+          ~/.config/oceansdb/woa18_decav_s14_5d.nc
+          ~/.config/oceansdb/woa18_decav_s15_5d.nc
+          ~/.config/oceansdb/woa18_decav_s16_5d.nc
+        key: ${{ runner.os }}-WOA
+
+    - name: Download WOA database
+      if: steps.cache-woa.outputs.cache-hit != 'true'
       run: |
-        pytest tests
+        python -c "import oceansdb; oceansdb.WOA()['sea_water_temperature']"
+        python -c "import oceansdb; oceansdb.WOA()['sea_water_salinity']"
+
+    - name: Cache CARS
+      id: cache-cars
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.config/oceansdb/temperature_cars2009a.nc
+          ~/.config/oceansdb/salinity_cars2009a.nc
+        key: ${{ runner.os }}-CARS
+
+    - name: Download CARS database
+      if: steps.cache-cars.outputs.cache-hit != 'true'
+      run: |
+        python -c "import oceansdb; oceansdb.CARS()['sea_water_temperature']"
+        python -c "import oceansdb; oceansdb.CARS()['sea_water_salinity']"
