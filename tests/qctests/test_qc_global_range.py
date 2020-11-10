@@ -7,7 +7,7 @@
 import numpy as np
 from numpy import ma
 from cotede.qctests import GlobalRange
-from data import DummyData
+from ..data import DummyData
 
 from .compare import compare_feature_input_types, compare_input_types
 
