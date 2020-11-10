@@ -10,7 +10,7 @@ from datetime import datetime, date
 from numpy import ma
 
 from cotede.qc import ProfileQC
-from ..data import DummyData
+from .data import DummyData
 
 
 def test_single_measurement():
