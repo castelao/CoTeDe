@@ -2,7 +2,7 @@
 import numpy as np
 from numpy import ma
 
-from data import DummyData
+from ..data import DummyData
 
 try:
     import pandas as pd
