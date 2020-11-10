@@ -7,7 +7,7 @@
 import numpy as np
 
 from cotede.qctests import tukey53H, Tukey53H
-from data import DummyData
+from ..data import DummyData
 
 from .compare import compare_feature_input_types, compare_input_types
 

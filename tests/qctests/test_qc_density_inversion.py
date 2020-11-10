@@ -7,7 +7,7 @@
 from numpy import ma
 from cotede.qc import ProfileQC
 from cotede.qctests import DensityInversion
-from data import DummyData
+from ..data import DummyData
 
 try:
     import gsw

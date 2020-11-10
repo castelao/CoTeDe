@@ -6,7 +6,7 @@
 
 import numpy as np
 from cotede.qctests import CumRateOfChange, cum_rate_of_change
-from data import DummyData
+from ..data import DummyData
 
 
 def test_cum_rate_of_change():

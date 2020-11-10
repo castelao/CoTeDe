@@ -9,7 +9,7 @@ from numpy import ma
 
 from cotede.qctests.gradient import curvature, _curvature_pandas
 from cotede.qctests import Gradient
-from data import DummyData
+from ..data import DummyData
 
 from .compare import compare_feature_input_types, compare_input_types
 

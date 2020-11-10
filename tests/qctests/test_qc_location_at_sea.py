@@ -11,7 +11,7 @@ from cotede.qctests.location_at_sea import (
     location_at_sea,
     get_bathymetry,
 )
-from data import DummyData
+from ..data import DummyData
 
 
 def test_bathymetry_point():

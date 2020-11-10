@@ -7,7 +7,7 @@
 import numpy as np
 
 from cotede.qctests.profile_envelop import ProfileEnvelop
-from data import DummyData
+from ..data import DummyData
 
 from .compare import compare_input_types
 
