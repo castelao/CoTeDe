@@ -17,13 +17,13 @@ module_logger = logging.getLogger(__name__)
 try:
     import gsw
 
-    nogsw = False
+    GSW_AVAILABLE = True
 except ImportError:
     module_logger.info("Missing package GSW, used to estimate density when needed.")
-    nogsw = True
+    GSW_AVAILABLE = False
 
 
-def densitystep(S, T, P, auto_rotate=False):
+def densitystep(SA, t, p, auto_rotate=False):
     """Estimates the potential density step of successive mesurements
 
        Expects the data to be recorded along the time, i.e. first measurement
@@ -33,16 +33,22 @@ def densitystep(S, T, P, auto_rotate=False):
          always measured surface to bottom, CTDs are expected the same, but
          Spray underwater gliders measure bottom to surface.
     """
-    assert T.shape == P.shape
-    assert T.shape == S.shape
-    assert T.ndim == 1, "Not ready to densitystep an array ndim > 1"
+    assert np.shape(t) == np.shape(p)
+    assert np.shape(t) == np.shape(SA)
+    assert np.ndim(t) == 1, "Not ready to densitystep an array ndim > 1"
 
-    if nogsw:
+    if not GSW_AVAILABLE:
         print("Package gsw is required and is not available.")
 
-    rho0 = gsw.pot_rho_t_exact(S, T, P, 0)
-    ds = ma.concatenate([ma.masked_all(1), np.sign(np.diff(P)) * np.diff(rho0)])
-    return ma.fix_invalid(ds)
+    rho0 = gsw.pot_rho_t_exact(SA, t, p, 0)
+    y = np.nan * np.atleast_1d(t)
+    y[1:] = np.sign(np.diff(p)) * np.diff(rho0)
+
+    if isinstance(y, ma.MaskedArray):
+        y[y.mask] = np.nan
+        y = y.data
+
+    return y
 
 
 class DensityInversion(QCCheck):
@@ -62,20 +68,22 @@ class DensityInversion(QCCheck):
 
     def test(self):
         self.flags = {}
+        try:
+            threshold = self.cfg["threshold"]
+        except KeyError:
+            module_logger.warning(
+                "Deprecated cfg format. It should contain a threshold item."
+            )
+            threshold = self.cfg
 
-        assert (
-            (np.size(self.cfg["threshold"]) == 1)
-            and (self.cfg["threshold"] is not None)
-            and (np.isfinite(self.cfg["threshold"]))
-        )
+        assert np.size(self.cfg["threshold"]) == 1
+        assert self.cfg["threshold"] is not None
+        assert np.isfinite(self.cfg["threshold"])
 
-        flag = np.zeros(self.data["TEMP"].shape, dtype="i1")
-        threshold = self.cfg["threshold"]
+        flag = np.zeros(np.shape(self.data["TEMP"]), dtype="i1")
+
         feature = self.features["densitystep"]
-        flag[np.nonzero(feature < threshold)] = self.flag_bad
-        flag[np.nonzero(feature >= threshold)] = self.flag_good
-        mask = np.any(
-            [ma.getmaskarray(self.data[v]) for v in ["PRES", "TEMP", "PSAL"]], axis=0
-        )
-        flag[mask] = 9
+        # Note the comparison is opposite of the usual (good if >=)
+        flag[feature < threshold] = self.flag_bad
+        flag[feature >= threshold] = self.flag_good
         self.flags["density_inversion"] = flag
