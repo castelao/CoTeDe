@@ -1,4 +1,3 @@
-
 import numpy as np
 from numpy import ma
 
@@ -19,21 +18,25 @@ except ImportError:
     XARRAY_AVAILABLE = False
 
 
-def compare_feature_tuple(feature, x):
+def compare_feature_tuple(feature, *args, **kwargs):
     """Validate a feature from a tuple
 
     Compare a feature defined from a numpy.array versus the same
     feature from a tuple
     """
-    tp = tuple(x)
-    y = feature(x)
-    y2 = feature(tp)
+    tp_args = [tuple(x) for x in args]
+    tp_kwargs = {}
+    for v in kwargs:
+        tp_kwargs[v] = tuple(kwargs[v])
+
+    y = feature(*args, **kwargs)
+    y2 = feature(*tp_args, **tp_kwargs)
 
     assert isinstance(y, np.ndarray)
     assert np.allclose(y, y2, equal_nan=True)
 
 
-def compare_feature_series(feature, x):
+def compare_feature_series(feature, *args, **kwargs):
     """Validate a feature from a pandas.Series
 
     Compare a feature defined from a numpy.array versus the same
@@ -41,16 +44,24 @@ def compare_feature_series(feature, x):
     """
     if not PANDAS_AVAILABLE:
         return
-    ds = pd.Series(x)
-    y = feature(x)
-    y2 = feature(ds)
 
-    assert type(x) != type(ds)
+    ds_args = [pd.Series(x) for x in args]
+    ds_kwargs = {}
+    for v in kwargs:
+        ds_kwargs[v] = pd.Series(kwargs[v])
+
+    y = feature(*args, **kwargs)
+    y2 = feature(*ds_args, **ds_kwargs)
+
+    for x, ds in zip(args, ds_args):
+        assert type(x) != type(ds)
+    for x, ds in zip(kwargs, ds_kwargs):
+        assert type(kwargs[x]) != type(ds_kwargs[ds])
     assert isinstance(y, np.ndarray)
     assert np.allclose(y, y2, equal_nan=True)
 
 
-def compare_feature_dataarray(feature, x):
+def compare_feature_dataarray(feature, *args, **kwargs):
     """Validate a feature from a xarray.DataArray
 
     Compare a feature defined from a numpy.array versus the same
@@ -58,19 +69,27 @@ def compare_feature_dataarray(feature, x):
     """
     if not XARRAY_AVAILABLE:
         return
-    da = xr.DataArray(x)
-    y = feature(x)
-    y2 = feature(da)
 
-    assert type(x) != type(da)
+    da_args = [xr.DataArray(x) for x in args]
+    da_kwargs = {}
+    for v in kwargs:
+        da_kwargs[v] = xr.DataArray(kwargs[v])
+
+    y = feature(*args, **kwargs)
+    y2 = feature(*da_args, **da_kwargs)
+
+    for x, da in zip(args, da_args):
+        assert type(x) != type(da)
+    for x, da in zip(kwargs, da_kwargs):
+        assert type(kwargs[x]) != type(da_kwargs[da])
     assert isinstance(y, np.ndarray)
     assert np.allclose(y, y2, equal_nan=True)
 
 
-def compare_feature_input_types(feature, x):
-    compare_feature_tuple(feature, x)
-    compare_feature_series(feature, x)
-    compare_feature_dataarray(feature, x)
+def compare_feature_input_types(feature, *args, **kwargs):
+    compare_feature_tuple(feature, *args, **kwargs)
+    compare_feature_series(feature, *args, **kwargs)
+    compare_feature_dataarray(feature, *args, **kwargs)
 
 
 def compare_tuple(Procedure, cfg):
