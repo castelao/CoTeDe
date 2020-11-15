@@ -19,7 +19,7 @@ try:
 
     GSW_AVAILABLE = True
 except ImportError:
-    module_logger.info("Missing package GSW, used to estimate density when needed.")
+    module_logger.debug("Missing package GSW, used to estimate density when needed.")
     GSW_AVAILABLE = False
 
 
@@ -36,9 +36,6 @@ def densitystep(SA, t, p, auto_rotate=False):
     assert np.shape(t) == np.shape(p)
     assert np.shape(t) == np.shape(SA)
     assert np.ndim(t) == 1, "Not ready to densitystep an array ndim > 1"
-
-    if not GSW_AVAILABLE:
-        print("Package gsw is required and is not available.")
 
     rho0 = gsw.pot_rho_t_exact(SA, t, p, 0)
     y = np.nan * np.atleast_1d(t)
@@ -60,6 +57,11 @@ class DensityInversion(QCCheck):
         super().__init__(data=data, cfg=cfg, autoflag=autoflag)
 
     def set_features(self):
+        if not GSW_AVAILABLE:
+            module_logger.warning("DensityInversion requires gsw!")
+            self.features = {}
+            return
+
         self.features = {
             "densitystep": densitystep(
                 self.data["PSAL"], self.data["TEMP"], self.data["PRES"]
