@@ -5,11 +5,15 @@
 Miscelaneous resources to support CoTeDe.
 """
 
+import json
+import logging
+import numpy as np
 import os
 from os.path import expanduser
 import re
 import pkg_resources
-import json
+
+module_logger = logging.getLogger(__name__)
 
 
 def cotederc(subdir=None):
@@ -58,6 +62,108 @@ def cotederc(subdir=None):
     return path
 
 
+def _coordinate_flex_vocabulary(obj, latname=None, lonname=None):
+    """Extract the coordinates from the input object
+
+    The coordinates latitude and longitude can have different names according
+    to the vocabulary used. This function will try a sequence of possibilities
+    and return the first one it finds.
+
+    If custom names are given, those are the only ones considered. Otherwise,
+    search for latitude and longitude coordinates in the following order:
+    - LATITUDE/LONGITUDE
+    - latitude/longitude
+    - LAT/LON
+    - lat/lon
+
+    Parameters
+    ----------
+    obj :
+        Input object. Typically a dictionary, pandas.DataFrame, or
+        xarray.Dataset
+
+    Returns
+    -------
+    lat : int, array_like
+        Latitude coordinate(s)
+    lon : int, array_like
+        Longitude coordinate(s)
+
+    Notes
+    -----
+    - If latname or lonname is defined, the other must be defiined as well. Both coordinates
+      should be consistent, thus if the user will overwrite the most common vocabularies, it
+      should be consistent between lat and lon.
+    """
+    if (latname is not None) or (lonname is not None):
+        try:
+            lat = obj[latname]
+            lon = obj[lonname]
+        except KeyError:
+            raise LookupError
+
+        if (np.size(lat) > 1) and (np.size(lon) > 1):
+            lat = np.atleast_1d(lat)
+            lon = np.atleast_1d(lon)
+        return lat, lon
+
+    vocab = [
+        {"lat": "LATITUDE", "lon": "LONGITUDE"},
+        {"lat": "latitude", "lon": "longitude"},
+        {"lat": "lat", "lon": "lon"},
+        {"lat": "LAT", "lon": "LON"},
+    ]
+    for v in vocab:
+        try:
+            lat = obj[v["lat"]]
+            lon = obj[v["lon"]]
+            if (np.size(lat) > 1) and (np.size(lon) > 1):
+                lat = np.atleast_1d(lat)
+                lon = np.atleast_1d(lon)
+            return lat, lon
+        except KeyError:
+            pass
+    raise LookupError
+
+
+def extract_coordinates(obj, attrs=None, latname=None, lonname=None):
+    """Extract the coordinates from a given object or explicitly given attrs
+
+    The coordinates, latitude and longitude, are usually one point for the
+    dataset, such as a mooring or a CTD cast, or a sequence of coordinates
+    such as the alongtrack of a TSG. This function searches for the
+    coordinates associated with a dataset.
+
+    It will return the first found followin the priority:
+    - Latitude and longitude items contained in the object (ex.: alongtrack).
+    - Latitude and longitude as items of the given attr.
+    - Latitude and longitude as items of the obj.attrs (ex.: xr.Dataset of a mooring).
+
+    Parameters
+    ----------
+    obj :
+    attrs :
+    latname : str
+        Name of the latitude variable
+    lonname : str
+        Name of the longitude variable
+    """
+    try:
+        return _coordinate_flex_vocabulary(obj, latname, lonname)
+    except LookupError:
+        pass
+    if attrs is not None:
+        try:
+            return _coordinate_flex_vocabulary(attrs, latname, lonname)
+        except LookupError:
+            pass
+    if hasattr(obj, "attrs"):
+        try:
+            return _coordinate_flex_vocabulary(obj.attrs, latname, lonname)
+        except LookupError:
+            pass
+
+    raise LookupError
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save

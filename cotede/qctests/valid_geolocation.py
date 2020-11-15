@@ -11,7 +11,8 @@ import numpy as np
 from numpy import ma
 
 from .qctests import QCCheck
-from .location_at_sea import extract_coordinates
+from ..utils import extract_coordinates
+
 
 module_logger = logging.getLogger(__name__)
 
