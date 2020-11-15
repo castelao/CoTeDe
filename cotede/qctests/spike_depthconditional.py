@@ -25,19 +25,20 @@ class SpikeDepthConditional(QCCheckVar):
     def test(self):
         self.flags = {}
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = self.features["spike"]
 
         # ---- Shallow zone -----------------
         threshold = self.cfg["shallow_max"]
         flag[
             np.nonzero(
-                (self["PRES"] <= self.cfg["pressure_threshold"]) & (feature > threshold)
+                (np.atleast_1d(self["PRES"]) <= self.cfg["pressure_threshold"])
+                & (feature > threshold)
             )
         ] = self.flag_bad
         flag[
             np.nonzero(
-                (self["PRES"] <= self.cfg["pressure_threshold"])
+                (np.atleast_1d(self["PRES"]) <= self.cfg["pressure_threshold"])
                 & (feature <= threshold)
             )
         ] = self.flag_good
@@ -45,16 +46,18 @@ class SpikeDepthConditional(QCCheckVar):
         threshold = self.cfg["deep_max"]
         flag[
             np.nonzero(
-                (self["PRES"] > self.cfg["pressure_threshold"]) & (feature > threshold)
+                (np.atleast_1d(self["PRES"]) > self.cfg["pressure_threshold"])
+                & (feature > threshold)
             )
         ] = self.flag_bad
         flag[
             np.nonzero(
-                (self["PRES"] > self.cfg["pressure_threshold"]) & (feature <= threshold)
+                (np.atleast_1d(self["PRES"]) > self.cfg["pressure_threshold"])
+                & (feature <= threshold)
             )
         ] = self.flag_good
 
         # Flag as 9 any masked input value
-        x = self.data[self.varname]
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["spike_depthconditional"] = flag

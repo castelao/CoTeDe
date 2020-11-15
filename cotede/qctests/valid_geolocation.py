@@ -1,8 +1,7 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-"""
+"""Evaluates if the coordinates are valid
 
 """
 
@@ -11,35 +10,38 @@ import logging
 import numpy as np
 from numpy import ma
 
-from .qctests import QCCheckVar
+from .qctests import QCCheck
+from ..utils import extract_coordinates
+
 
 module_logger = logging.getLogger(__name__)
 
 
 def valid_geolocation(lat, lon):
     if np.shape(lat) != np.shape(lon):
+        module_logger.warning("Coordinates lat & lon have inconsistent shapes")
         return False
 
-    idx = (
-        ma.greater_equal(lat, -90)
-        & ma.less_equal(lat, 90)
-        & ma.greater_equal(lon, -180)
-        & ma.less_equal(lon, 360)
-    )
+    lat = np.atleast_1d(lat)
+    lon = np.atleast_1d(lon)
+    idx = (lat >= -90) & (lat <= 90) & (lon >= -180) & (lon <= 360)
     return idx
 
 
-class ValidGeolocation(QCCheckVar):
+class ValidGeolocation(QCCheck):
+    flag_bad = 3
+
     def test(self):
         self.flags = {}
 
-        if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
-            lat = self.data["LATITUDE"]
-            lon = self.data["LONGITUDE"]
-        elif ("LATITUDE" in self.data.attrs) and ("LONGITUDE" in self.data.attrs):
-            lat = self.data.attrs["LATITUDE"]
-            lon = self.data.attrs["LONGITUDE"]
-        else:
+        try:
+            # Note that QCCheck fallback to self.data.attrs if attrs not given
+            if hasattr(self, "attrs"):
+                lat, lon = extract_coordinates(self.data, self.attrs)
+            else:
+                lat, lon = extract_coordinates(self.data)
+        except LookupError:
+            module_logger.warning("Missing geolocation (lat/lon)")
             self.flags["valid_position"] = self.flag_bad
             return
 
@@ -47,5 +49,4 @@ class ValidGeolocation(QCCheckVar):
         flag = np.zeros(np.shape(idx), dtype="i1")
         flag[~idx] = self.flag_bad
         flag[idx] = self.flag_good
-        flag[ma.getmaskarray(idx)] = 9
         self.flags["valid_geolocation"] = flag

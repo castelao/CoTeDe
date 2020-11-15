@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
+
+"""Evaluates if the coordinates of the measurements are at sea
+
+The heavy lift of this procedure is done by an external package OceansDB, which
+interpolates the elevation for given coordinates.
+"""
 
 import logging
 
@@ -6,13 +13,17 @@ import numpy as np
 from numpy import ma
 
 from .qctests import QCCheck
+from ..utils import extract_coordinates
 
 module_logger = logging.getLogger(__name__)
 
 try:
     import oceansdb
+
+    OCEANSDB_AVAILABLE = True
 except ImportError:
     module_logger.debug("OceansDB package is not available")
+    OCEANSDB_AVAILABLE = False
 
 
 def location_at_sea(data, cfg=None):
@@ -26,6 +37,9 @@ def location_at_sea(data, cfg=None):
           TSGs, i.e. one location for each measurement.
           Double check other branches, I thought I had already done
             this before.
+
+    ATTENTION: This is old code that was completely replaced by LocationAtSea
+    and it will be removed.
     """
     try:
         flag_good = cfg["flag_good"]
@@ -98,18 +112,30 @@ def get_bathymetry(lat, lon, resolution="5min"):
 
 
 class LocationAtSea(QCCheck):
+    flag_bad = 3
+    resolution = "5min"
+    threshold = 0
+
+    def __init__(self, data, cfg=None, attrs=None):
+        if cfg is None:
+            cfg = {}
+
+        if "threshold" not in cfg:
+            cfg["threshold"] = self.threshold
+        if "resolution" not in cfg:
+            cfg["resolution"] = self.resolution
+
+        super().__init__(data, cfg=cfg, attrs=attrs)
+
     def set_features(self):
-        # if ("latitude" in self.data.keys()) and ("longitude" in self.data.keys()):
-        #     lat = self.data["latitude"]
-        #     lon = self.data["longitude"]
-        if ("LATITUDE" in self.data.keys()) and ("LONGITUDE" in self.data.keys()):
-            lat = self.data["LATITUDE"]
-            lon = self.data["LONGITUDE"]
-        elif ("LATITUDE" in self.data.attrs) and ("LONGITUDE" in self.data.attrs):
-            lat = self.data.attrs["LATITUDE"]
-            lon = self.data.attrs["LONGITUDE"]
-        else:
-            module_logger.debug("Missing geolocation (lat/lon)")
+        if not OCEANSDB_AVAILABLE:
+            module_logger.warning("LocationAtSea requires OceansDB!")
+
+        try:
+            # Note that QCCheck fallback to self.data.attrs if attrs not given
+            lat, lon = extract_coordinates(self.data, self.attrs)
+        except LookupError:
+            module_logger.warning("Missing geolocation (lat/lon)")
             self.features = {}
             return
 
@@ -119,44 +145,8 @@ class LocationAtSea(QCCheck):
             # self.features = get_bathymetry(lat=lat[idx], lon=lon[idx])
         except:
             self.features = {
-                "bathymetry": ma.fix_invalid([np.nan]),
-                "bathymetry_std": ma.fix_invalid([np.nan]),
-            }
-        return
-
-        if (
-            ("LATITUDE" not in self.data.attrs)
-            or (self.data.attrs["LATITUDE"] is None)
-            or ("LONGITUDE" not in self.data.attrs)
-            or (self.data.attrs["LONGITUDE"] is None)
-        ):
-            self.features = {
-                "bathymetry": ma.fix_invalid([np.nan]),
-                "bathymetry_std": ma.fix_invalid([np.nan]),
-            }
-            self.flags["valid_position"] = self.flag_bad
-            return
-
-        if (
-            (self.data.attrs["LATITUDE"] > 90)
-            or (self.data.attrs["LATITUDE"] < -90)
-            or (self.data.attrs["LONGITUDE"] > 360)
-            or (self.data.attrs["LONGITUDE"] < -180)
-        ):
-            self.features = {
-                "bathymetry": ma.fix_invalid([np.nan]),
-                "bathymetry_std": ma.fix_invalid([np.nan]),
-            }
-            return
-
-        lat = self.data.attrs["LATITUDE"]
-        lon = self.data.attrs["LONGITUDE"]
-        try:
-            self.features = get_bathymetry(lat=lat, lon=lon)
-        except:
-            self.features = {
-                "bathymetry": ma.fix_invalid([np.nan]),
-                "bathymetry_std": ma.fix_invalid([np.nan]),
+                "bathymetry": np.nan * lat,
+                "bathymetry_std": np.nan * lat,
             }
 
     def test(self):
@@ -164,11 +154,16 @@ class LocationAtSea(QCCheck):
         try:
             threshold = self.cfg["threshold"]
         except KeyError:
-            module_logger.debug("No threshold for location at sea. I'll use 0")
+            module_logger.info("No threshold for location at sea. I'll use 0")
             threshold = 0
 
-        flag = np.zeros(self.features["bathymetry"].shape, dtype="i1")
-        flag[np.nonzero(self.features["bathymetry"] < threshold)] = self.flag_bad
-        flag[np.nonzero(self.features["bathymetry"] >= threshold)] = self.flag_good
-        flag[ma.getmaskarray(self.features["bathymetry"])] = 9
+        if "bathymetry" not in self.features:
+            self.flags["location_at_sea"] = 0
+            return
+
+        feature = np.atleast_1d(self.features["bathymetry"])
+
+        flag = np.zeros(np.shape(feature), dtype="i1")
+        flag[feature < threshold] = self.flag_bad
+        flag[feature >= threshold] = self.flag_good
         self.flags["location_at_sea"] = flag

@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 
-"""
-    Quality Control based on anomaly detection
+"""A hybrid fuzzy logic method
+
+This method applies a fuzzy logic classification with a modified deffuzification in the end, and it was proposed in the following sequence of papers:
+
+- Timms, G.P., de Souza, P.a., Reznik, L., Smith, D.V., 2011. Auto- mated data quality assessment of marine sensors. Sensors 11, 9589–9602. doi:10.3390/s111009589.
+- Morello, E., Lynch, T., Slawinski, D., Howell, B., Hughes, D., Timms, G., 2011. Quantitative quality control (qc) procedures for the australian national reference stations: Sensor data, in: OCEANS 2011, IEEE, Waikoloa, HI. pp. 1–7.
+- Morello, E.B., Galibert, G., Smith, D., Ridgway, K.R., Howell, B., Slawin- ski, D., Timms, G.P., Evans, K., Lynch, T.P., 2014. Quality Control (QC) procedures for Australias National Reference Stations sensor dataComparing semi-autonomous systems to an expert oceanographer. Methods Oceanogr. 9, 17–33. doi:10.1016/j.mio.2014.09.001.
 """
 
 

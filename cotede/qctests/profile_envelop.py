@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+"""Provile Envelop QC test
+
+I believe that this test was first described by GTSPP, which define minimum
+and maximum ranges for different depth layers. The concept is that near the
+surface one should expect more variability, thus a wider range.
 """
 
-    Where is this test from? GTSPP?
-"""
 import logging
 
 import numpy as np
@@ -14,51 +18,36 @@ from .qctests import QCCheckVar
 module_logger = logging.getLogger(__name__)
 
 
-def profile_envelop(data, cfg, varname):
-    """
-
-        Probably not the best way to do this, but works for now.
-    """
-    # assert varname in data.keys()
-
-    z = data["PRES"]
-    x = data[varname]
-
-    flag = np.zeros(z.shape, dtype="i1")
-
-    for layer in cfg["layers"]:
-        ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
-        f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
-
-        flag[ind[f == True]] = 1
-        flag[ind[f == False]] = 4
-
-    flag[ma.getmaskarray(x)] = 9
-
-    return flag
-
-
 class ProfileEnvelop(QCCheckVar):
     def test(self):
         self.flags = {}
 
-        z = self.data["PRES"]
         x = self.data[self.varname]
+        if isinstance(x, ma.MaskedArray):
+            x[x.mask] = np.nan
+            x = x.data
+        x = np.atleast_1d(x)
 
-        assert z.shape == x.shape
+        z = self.data["PRES"]
+        if isinstance(z, ma.MaskedArray):
+            if z.mask.any():
+                mask = np.ones_like(z, dtype="float32")
+                mask[z.mask] = np.nan
+                z = z * mask
+            z = z.data
+        z = np.atleast_1d(z)
 
-        flag = np.zeros(x.shape, dtype="i1")
+        assert np.shape(z) == np.shape(x)
 
         assert "layers" in self.cfg, "Profile envelop cfg requires layers"
 
-        for layer in self.cfg['layers']:
+        flag = np.zeros(np.shape(x), dtype="i1")
+        for layer in self.cfg["layers"]:
             ind = np.nonzero(eval("(z %s) & (z %s)" % (layer[0], layer[1])))[0]
             f = eval("(x[ind] > %s) & (x[ind] < %s)" % (layer[2], layer[3]))
 
             flag[ind[f == True]] = self.flag_good
             flag[ind[f == False]] = self.flag_bad
 
-        flag[ma.getmaskarray(self.data[self.varname])] = 9
+        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["profile_envelop"] = flag
-
-        return

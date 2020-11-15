@@ -26,10 +26,10 @@ def spike(x):
     """ Spike
     """
     if isinstance(x, ma.MaskedArray):
-        mask = x.mask
+        x[x.mask] = np.nan
         x = x.data
-        x[mask] = np.nan
 
+    x = np.atleast_1d(x)
     y = np.nan * x
     y[1:-1] = np.abs(x[1:-1] - (x[:-2] + x[2:]) / 2.0) - np.abs((x[2:] - x[:-2]) / 2.0)
     return y
@@ -55,11 +55,12 @@ class Spike(QCCheckVar):
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
         feature = np.absolute(self.features["spike"])
-        flag[np.nonzero(feature > threshold)] = self.flag_bad
-        flag[np.nonzero(feature <= threshold)] = self.flag_good
+
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
+        flag[feature > threshold] = self.flag_bad
+        flag[feature <= threshold] = self.flag_good
         # Flag as 9 any masked input value
-        x = self.data[self.varname]
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["spike"] = flag

@@ -39,10 +39,15 @@ class QCCheck(object):
     flag_good = 1
     flag_bad = 4
 
-    def __init__(self, data, cfg=None, autoflag=True):
+    def __init__(self, data, cfg=None, autoflag=True, attrs=None):
         self.data = data
-        if (cfg is not None) or not hasattr(self, 'cfg'):
+        if (cfg is not None):
             self.cfg = cfg
+        elif not hasattr(self, 'cfg'):
+            self.cfg = {}
+
+        if attrs is not None:
+            self._attrs = attrs
 
         self.set_flags()
         self.set_features()
@@ -54,6 +59,8 @@ class QCCheck(object):
 
     @property
     def attrs(self):
+        if hasattr(self, '_attrs'):
+            return self._attrs
         return self.data.attrs
 
     def set_features(self):

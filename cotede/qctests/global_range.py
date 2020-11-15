@@ -31,22 +31,21 @@ class GlobalRange(QCCheckVar):
         assert self.cfg["minval"] < self.cfg["maxval"], (
             "Global Range(%s): "
             + "minval (%s) must be smaller than maxval(%s)"
-            % (v, self.cfg["minval"], self.cfg["maxval"])
+            % (self.varname, self.cfg["minval"], self.cfg["maxval"])
         )
 
         minval = self.cfg["minval"]
         maxval = self.cfg["maxval"]
 
-        feature = self.data[self.varname]
+        feature = np.atleast_1d(self.data[self.varname])
         if isinstance(feature, ma.MaskedArray):
             feature[feature.mask] = np.nan
             feature = feature.data
 
-        flag = np.zeros(feature.shape, dtype="i1")
-        flag[np.nonzero(feature < minval)] = self.flag_bad
-        flag[np.nonzero(feature > maxval)] = self.flag_bad
+        flag = np.zeros(np.shape(feature), dtype="i1")
+        flag[feature < minval] = self.flag_bad
+        flag[feature > maxval] = self.flag_bad
         idx = (feature >= minval) & (feature <= maxval)
-        flag[np.nonzero(idx)] = self.flag_good
-        x = self.data[self.varname]
-        flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
+        flag[idx] = self.flag_good
+        flag[~np.isfinite(feature)] = 9
         self.flags["global_range"] = flag

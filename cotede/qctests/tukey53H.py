@@ -30,7 +30,7 @@ try:
     import pandas as pd
 
     PANDAS_AVAILABLE = True
-except:
+except ImportError:
     PANDAS_AVAILABLE = False
 
 
@@ -123,10 +123,10 @@ def tukey53H_norm(x, l=12):
 
 class Tukey53H(QCCheckVar):
     def set_features(self):
-        self.features = {
-            "tukey53H": tukey53H(self.data[self.varname]),
-            "tukey53H_norm": tukey53H_norm(self.data[self.varname], l=self.cfg["l"]),
-        }
+        self.features = {"tukey53H": tukey53H(self.data[self.varname])}
+        if "l" in self.cfg:
+            self.features["tukey53H_norm"] = tukey53H_norm(self.data[self.varname], l=self.cfg["l"])
+
 
     def test(self):
         """
@@ -148,10 +148,10 @@ class Tukey53H(QCCheckVar):
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = np.absolute(self.features["tukey53H"])
         flag[feature > threshold] = self.flag_bad
         flag[feature <= threshold] = self.flag_good
-        x = self.data[self.varname]
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["tukey53H"] = flag

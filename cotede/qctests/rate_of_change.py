@@ -26,7 +26,7 @@ def rate_of_change(x):
         x[x.mask] = np.nan
         x = x.data
 
-    y = x * np.nan
+    y = np.nan * np.atleast_1d(x)
     y[1:] = np.diff(x)
 
     return y
@@ -54,9 +54,9 @@ class RateOfChange(QCCheckVar):
         if ("sd_scale" in self.cfg) and self.cfg["sd_scale"]:
             feature /= feature.std()
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
-        flag[np.nonzero(feature > threshold)] = self.flag_bad
-        flag[np.nonzero(feature <= threshold)] = self.flag_good
-        x = self.data[self.varname]
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
+        flag[feature > threshold] = self.flag_bad
+        flag[feature <= threshold] = self.flag_good
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["rate_of_change"] = flag

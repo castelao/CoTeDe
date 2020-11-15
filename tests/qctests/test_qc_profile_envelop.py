@@ -6,11 +6,13 @@
 
 import numpy as np
 
-from cotede.qctests.profile_envelop import ProfileEnvelop, profile_envelop
-from data import DummyData
+from cotede.qctests.profile_envelop import ProfileEnvelop
+from ..data import DummyData
+
+from .compare import compare_input_types
 
 
-def test():
+def notest_profile_envelop():
     profile = DummyData()
 
     cfg = {"layers": [["> 0", "<= 25", -2, 37], ["> 25", "<= 50", -2, 36]]}
@@ -21,12 +23,16 @@ def test():
     assert 9 in flags
 
 
-def test_class():
-    """
+def test_standard_dataset():
+    """Test ProfileEnvelop QC procedure with standard dataset
 
-       ATTENTION, unrealistic limits used just for testing purposes.
+    Also tets a case with depths not included in the layers definition, thus
+    it should return flag 0, i.e. not evaluated on those depths.
     """
-    data = DummyData()
+    profile = DummyData()
+
+    flags = {"profile_envelop": [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1, 9]}
+
     cfg = {
         "layers": [
             ["> 0", "<= 149", -2, 37],
@@ -34,11 +40,22 @@ def test_class():
             ["> 999", "<= 12000", -1.5, 4],
         ]
     }
-    y = ProfileEnvelop(data, varname="TEMP", cfg=cfg)
 
-    assert hasattr(y, "features")
+    y = ProfileEnvelop(profile, varname="TEMP", cfg=cfg)
+
     assert hasattr(y, "flags")
+    for f in flags:
+        assert f in y.flags, "Missing flag {}".format(f)
+        assert np.allclose(y.flags[f], flags[f], equal_nan=True)
 
-    assert np.all(
-        y.flags["profile_envelop"] == [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 4, 1, 9]
-    )
+
+def test_input_types():
+    cfg = {
+        "layers": [
+            ["> 0", "<= 149", -2, 37],
+            ["> 150", "<= 999", -2, 33],
+            ["> 999", "<= 12000", -1.5, 4],
+        ]
+    }
+
+    compare_input_types(ProfileEnvelop, cfg)

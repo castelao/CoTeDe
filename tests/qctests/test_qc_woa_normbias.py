@@ -8,9 +8,9 @@ from datetime import datetime
 import numpy as np
 from numpy import ma
 
-from cotede.qctests import woa_normbias
+from cotede.qctests import WOA_NormBias, woa_normbias
 from cotede.qc import ProfileQC
-from data import DummyData
+from ..data import DummyData
 
 
 def test_basic():
@@ -36,10 +36,11 @@ def test_attribute():
     assert "woa_normbias" in pqc.flags["TEMP"]
     assert pqc.flags["TEMP"]["woa_normbias"].shape == profile.data["TEMP"].shape
     assert np.unique(pqc.features["TEMP"]["woa_mean"]).size > 1
-    assert (
-        pqc.flags["TEMP"]["woa_normbias"]
-        == [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 9]
-    ).all()
+    assert np.allclose(
+        pqc.flags["TEMP"]["woa_normbias"],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 9],
+        equal_nan=True,
+    )
 
 
 def test_track():
@@ -57,10 +58,11 @@ def test_track():
     assert "woa_normbias" in pqc.flags["TEMP"]
     assert pqc.flags["TEMP"]["woa_normbias"].shape == profile.data["TEMP"].shape
     assert np.unique(pqc.features["TEMP"]["woa_mean"]).size > 1
-    assert (
-        pqc.flags["TEMP"]["woa_normbias"]
-        == [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9]
-    ).all()
+    assert np.allclose(
+        pqc.flags["TEMP"]["woa_normbias"],
+        [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 9],
+        equal_nan=True,
+    )
 
 
 def test_standard_error():

@@ -8,7 +8,7 @@ import numpy as np
 from numpy import ma
 
 from cotede.qctests import DeepestPressure
-from data import DummyData
+from ..data import DummyData
 
 
 def test_default():

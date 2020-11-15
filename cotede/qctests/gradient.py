@@ -17,7 +17,7 @@ try:
     import pandas as pd
 
     PANDAS_AVAILABLE = True
-except:
+except ImportError:
     PANDAS_AVAILABLE = False
 
 module_logger = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ def curvature(x):
     Note
     ----
     - Pandas.Series operates with indexes, so it should be done different. In
-      that case, call for _curcature_pandas.
+      that case, call for _curvature_pandas.
     """
     if isinstance(x, ma.MaskedArray):
         x[x.mask] = np.nan
@@ -75,7 +75,8 @@ def curvature(x):
     if PANDAS_AVAILABLE and isinstance(x, pd.Series):
         return _curvature_pandas(x)
 
-    y = np.nan * np.ones_like(x)
+    x = np.atleast_1d(x)
+    y = np.nan * x
     y[1:-1] = x[1:-1] - (x[:-2] + x[2:]) / 2.0
     return y
 
@@ -100,10 +101,10 @@ class Gradient(QCCheckVar):
             and (np.isfinite(threshold))
         )
 
-        flag = np.zeros(self.data[self.varname].shape, dtype="i1")
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
         feature = np.absolute(self.features["gradient"])
-        flag[np.nonzero(feature > threshold)] = self.flag_bad
-        flag[np.nonzero(feature <= threshold)] = self.flag_good
-        x = self.data[self.varname]
+        flag[feature > threshold] = self.flag_bad
+        flag[feature <= threshold] = self.flag_good
+        x = np.atleast_1d(self.data[self.varname])
         flag[ma.getmaskarray(x) | ~np.isfinite(x)] = 9
         self.flags["gradient"] = flag

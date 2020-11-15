@@ -12,7 +12,7 @@ import numpy as np
 import cotede.qc
 from cotede.qc import ProfileQC
 
-from data import DummyData
+from .data import DummyData
 
 
 def test_cfg_json():

@@ -9,7 +9,7 @@ import numpy as np
 
 from cotede.qctests import cars_normbias
 from cotede.qc import ProfileQC
-from data import DummyData
+from ..data import DummyData
 
 
 def test():
