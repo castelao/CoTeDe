@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """ Consistency check for location at sea QC test.
+
+Create tests to evaluate lat > 90, lat < -90, lon < -180, lon > 360
+  for get_bathymetry and for LocationAtSea
 """
 
 import numpy as np

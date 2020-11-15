@@ -37,6 +37,9 @@ def location_at_sea(data, cfg=None):
           TSGs, i.e. one location for each measurement.
           Double check other branches, I thought I had already done
             this before.
+
+    ATTENTION: This is old code that was completely replaced by LocationAtSea
+    and it will be removed.
     """
     try:
         flag_good = cfg["flag_good"]
