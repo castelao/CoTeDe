@@ -234,7 +234,7 @@ class LocationAtSea(QCCheck):
         try:
             # Note that QCCheck fallback to self.data.attrs if attrs not given
             lat, lon = extract_coordinates(self.data, self.attrs)
-        except:
+        except LookupError:
             module_logger.warning("Missing geolocation (lat/lon)")
             self.features = {}
             return
