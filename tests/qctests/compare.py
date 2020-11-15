@@ -157,7 +157,7 @@ def compare_xarray(Procedure, cfg):
         assert np.allclose(y.flags[f], y2.flags[f], equal_nan=True)
 
 
-def compare_input_types(feature, cfg):
-    compare_tuple(feature, cfg)
-    compare_pandas(feature, cfg)
-    compare_xarray(feature, cfg)
+def compare_input_types(Procedure, cfg):
+    compare_tuple(Procedure, cfg)
+    compare_pandas(Procedure, cfg)
+    compare_xarray(Procedure, cfg)
