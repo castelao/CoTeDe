@@ -232,10 +232,34 @@ def test_LocationAtSea_attrs():
 
     assert hasattr(y, "features")
     assert "bathymetry" in y.features
-    assert ma.allclose(y.features["bathymetry"], 5036)
+    assert np.allclose(y.features["bathymetry"], 5036)
     assert hasattr(y, "flags")
     assert "location_at_sea" in y.flags
-    assert ma.allclose(y.flags["location_at_sea"], 1)
+    assert np.allclose(y.flags["location_at_sea"], 1)
+
+
+def test_LocationAtSea_attrs_inland():
+    """Test standard with single location inland
+
+       Lat & Lon defined in the attrs
+
+       Locking etopo resolution, since it can change the values.
+    """
+    if not OCEANSDB_AVAILABLE:
+        return
+
+    data = DummyData()
+    data.attrs["LATITUDE"] = 2.364128
+    data.attrs["LONGITUDE"] = 42.205123
+    y = LocationAtSea(data, cfg={"resolution": "5min"})
+
+    assert hasattr(y, "features")
+    assert "bathymetry" in y.features
+    # The convention here is bathymetry above sea level is a negative value
+    assert y.features["bathymetry"] < 0
+    assert hasattr(y, "flags")
+    assert "location_at_sea" in y.flags
+    assert np.allclose(y.flags["location_at_sea"], 3)
 
 
 def test_LocationAtSea_track():
