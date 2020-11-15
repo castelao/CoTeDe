@@ -36,6 +36,9 @@ def test_densitystep():
 
 
 def test_feature_input_types():
+    if not GSW_AVAILABLE:
+        return
+
     p = [1.0, 100, 200, 300, 500, 5000, np.nan]
     t = [27.44, 14.55, 11.96, 11.02, 7.65, 2.12, 2.12]
     SA = [35.71, 35.50, 35.13, 35.02, 34.72, 35.03, 35.03]
