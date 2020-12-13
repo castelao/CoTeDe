@@ -12,7 +12,7 @@ import logging
 import numpy as np
 from numpy import ma
 
-from cotede.qctests import *
+from cotede import qctests
 from cotede.misc import combined_flag
 from cotede.utils import load_cfg
 
@@ -149,7 +149,7 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'location_at_sea' in self.cfg['common']:
-            y = LocationAtSea(self.input, cfg['common']['location_at_sea'])
+            y = qctests.LocationAtSea(self.input, cfg['common']['location_at_sea'])
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -223,30 +223,9 @@ class ProfileQC(object):
             module_logger.warning(
                     "Sorry I'm not ready to evaluate frozen_profile()")
 
-        catalog = {
-                'bin_spike': Bin_Spike,
-                'cars_normbias': CARS_NormBias,
-                'constant_cluster_size': ConstantClusterSize,
-                'cum_rate_of_change': CumRateOfChange,
-                'deepest_pressure': DeepestPressure,
-                'digit_roll_over': DigitRollOver,
-                'global_range': GlobalRange,
-                'gradient': Gradient,
-                'gradient_depthconditional': GradientDepthConditional,
-                'monotonic_z': MonotonicZ,
-                'profile_envelop': ProfileEnvelop,
-                'rate_of_change': RateOfChange,
-                'regional_range': RegionalRange,
-                'spike': Spike,
-                'spike_depthconditional': SpikeDepthConditional,
-                'stuck_value': StuckValue,
-                'tukey53H_norm': Tukey53H,
-                'woa_normbias': WOA_NormBias,
-                'density_inversion': DensityInversion,
-                }
-
-        for criterion in [c for c in catalog if c in cfg]:
-            Procedure = catalog[criterion]
+        criteria = (c for c in cfg if ("procedure" in cfg[c]) and (cfg[c]["procedure"] in qctests.QCTESTS))
+        for criterion in criteria:
+            Procedure = qctests.catalog(cfg[criterion]["procedure"])
             try:
                 y = Procedure(self.input, v, cfg[criterion], autoflag=True)
             except:
@@ -289,22 +268,22 @@ class ProfileQC(object):
                     features[f] = self.features[v][f]
                 except:
                     if f == 'spike':
-                        features['spike'] = spike(self.input[v])
+                        features['spike'] = qctests.spike(self.input[v])
                     elif f == 'gradient':
-                        features['gradient'] = gradient(self.input[v])
+                        features['gradient'] = qctests.gradient(self.input[v])
                     elif f == 'constant_cluster_size':
                         features['constant_cluster_size'] = \
-                                constant_cluster_size(self.input[v])
+                                qctests.constant_cluster_size(self.input[v])
                     elif f == 'tukey53H_norm':
-                        features['tukey53H_norm'] = tukey53H_norm(self.input[v])
+                        features['tukey53H_norm'] = qctests.tukey53H_norm(self.input[v])
                     elif f == 'rate_of_change':
-                        features['rate_of_change'] = rate_of_change(self.input[v])
+                        features['rate_of_change'] = qctests.rate_of_change(self.input[v])
                     elif (f == 'woa_normbias'):
-                        y = WOA_NormBias(self.input, v, {}, autoflag=False)
+                        y = qctests.WOA_NormBias(self.input, v, {}, autoflag=False)
                         features['woa_normbias'] = \
                                 np.abs(y.features['woa_normbias'])
                     elif (f == 'cars_normbias'):
-                        y = CARS_NormBias(self.input, v, {}, autoflag=False)
+                        y = qctests.CARS_NormBias(self.input, v, {}, autoflag=False)
                         features['cars_normbias'] = \
                                 np.abs(y.features['cars_normbias'])
                     else:
@@ -312,13 +291,13 @@ class ProfileQC(object):
                                 "Sorry, I can't evaluate anomaly_detection with: %s" % f)
 
             prob, self.flags[v]['anomaly_detection'] = \
-                    anomaly_detection(features, cfg['anomaly_detection'])
+                    qctests.anomaly_detection(features, cfg['anomaly_detection'])
 
             if self.saveauxiliary:
                 self.features[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
-            self.flags[v]['morello2014'] = morello2014(
+            self.flags[v]['morello2014'] = qctests.morello2014(
                     features=self.features[v],
                     cfg=cfg['morello2014'])
 
@@ -330,7 +309,7 @@ class ProfileQC(object):
                 except:
                     module_logger.error("Can't evaluate fuzzylogic with: %s" % f)
 
-            self.flags[v]['fuzzylogic'] = fuzzylogic(
+            self.flags[v]['fuzzylogic'] = qctests.fuzzylogic(
                     features=features,
                     cfg=cfg['fuzzylogic'])
 
