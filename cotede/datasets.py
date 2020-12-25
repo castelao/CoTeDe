@@ -22,7 +22,7 @@ except ImportError:
 def load_ctd():
     """
     """
-    DATA_URL = "https://raw.githubusercontent.com/castelao/dummy/main/dPIRX010.npz"
+    DATA_URL = "https://raw.githubusercontent.com/castelao/CoTeDe/datasets/sampledata/dPIRX010.npz"
     DATA_HASH = "16de9b674e7dceb4ac24feedda58a3ab"
 
     filename = os.path.join(cotederc("sampledata"), "dPIRX010.npz")
@@ -54,7 +54,7 @@ def load_ctd():
 def load_water_level(as_frame=False):
     """
     """
-    DATA_URL = "https://raw.githubusercontent.com/castelao/dummy/main/NOS_8764227.npz"
+    DATA_URL = "https://raw.githubusercontent.com/castelao/CoTeDe/datasets/sampledata/NOS_8764227.npz"
     DATA_HASH = "7ec673d82e0e361acfc4075fe914dc7d"
 
     filename = os.path.join(cotederc("sampledata"), "NOS_8764227.npz")
