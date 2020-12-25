@@ -208,10 +208,6 @@ class ProfileQC(object):
             except:
                 module_logger.warning("Fail on valid_speed")
 
-        if 'pressure_increasing' in cfg:
-            module_logger.warning(
-                    "Sorry, I'm no ready to evaluate pressure_increasing()")
-
         if 'grey_list' in cfg:
             module_logger.warning("Sorry I'm not ready to evaluate grey_list()")
 
