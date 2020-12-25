@@ -28,6 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install supportdata
         pip install -e .
 
     - name: Cache ETOPO
@@ -77,6 +78,20 @@ jobs:
       run: |
         python -c "import oceansdb; oceansdb.CARS()['sea_water_temperature']"
         python -c "import oceansdb; oceansdb.CARS()['sea_water_salinity']"
+
+    - name: Cache sample data
+      id: cache-samples
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.config/sampledata/dPIRX010.npz
+          ~/.config/sampledata/NOS_8764227.npz
+        key: ${{ runner.os }}-dPIRX010
+    - name: Download sample data
+      if: steps.cache-samples.outputs.cache-hit != 'true'
+      run: |
+        python -c "from cotede import datasets; datasets.load_ctd()"
+        python -c "from cotede import datasets; datasets.load_water_level()"
 
     - name: Test with pytest
       run: |
