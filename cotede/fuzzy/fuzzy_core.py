@@ -40,7 +40,7 @@ def fuzzyfy(features, cfg):
                     "Missing %s in %s" % (m, cfg['features'][t])
 
             membership[m][t] = ma.masked_all_like(features[t])
-            ind = ~ma.getmaskarray(features[t])
+            ind = ~np.isnan(features[t])
             if m == 'low':
                 membership[m][t][ind] = zmf(
                         np.asanyarray(features[t])[ind], cfg['features'][t][m])
