@@ -237,13 +237,25 @@ class WOA_NormBias(QCCheckVar):
 
         self.features["woa_bias"] = self.data[self.varname] - self.features["woa_mean"]
 
+        for v in self.features:
+            idx = ma.getmaskarray(self.features[v]) | ~np.isfinite(np.array(self.features[v]))
+            if idx.any():
+                if v == "woa_nsamples":
+                    missing_value = -1
+                else:
+                    missing_value = np.nan
+                self.features[v][idx] = missing_value
+            self.features[v] = np.array(self.features[v])
+
         # if use_standard_error = True, the comparison with the climatology
         #   considers the standard error, i.e. the bias will be only the
         #   ammount above the standard error range.
         if self.use_standard_error is True:
-            standard_error = (
-                self.features["woa_std"] / self.features["woa_nsamples"] ** 0.5
-            )
+            standard_error = self.features["woa_std"]
+            idx = self.features["woa_nsamples"] > 0
+            standard_error[~idx] = np.nan
+            standard_error[idx] /= self.features["woa_nsamples"][idx] ** 0.5
+
             idx = np.absolute(self.features["woa_bias"]) <= standard_error
             self.features["woa_bias"][idx] = 0
             idx = np.absolute(self.features["woa_bias"]) > standard_error
