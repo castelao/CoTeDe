@@ -13,6 +13,21 @@ from cotede.qc import ProfileQC
 from ..data import DummyData
 
 
+def test_woa_normbias():
+    profile = DummyData()
+    features = woa_normbias(profile, "TEMP")
+
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_nsamples",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert v in features
+
+
 def test_standard_dataset():
     """Test WOA_NormBias with a standard dataset
     """

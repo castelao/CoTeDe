@@ -26,11 +26,12 @@ from numpy import ma
 from oceansdb import WOA
 
 from .qctests import QCCheckVar
+from ..utils import extract_coordinates
 
 module_logger = logging.getLogger(__name__)
 
 
-def woa_normbias(data, v, cfg):
+def woa_normbias(data, varname, attrs=None, use_standard_error=False):
     """
 
         FIXME: Move this procedure into a class to conform with the new system
@@ -39,93 +40,111 @@ def woa_normbias(data, v, cfg):
           less than 5 samples.
     """
 
-    # 3 is the possible minimum to estimate the std, but I shold use higher.
-    min_samples = 3
-    woa = None
-
-    db = WOA()
-    if v not in db.keys():
-        vtype = v[:-1]
-    else:
-        vtype = v
-
-    # Temporary solution while I'm not ready to handle tracks.
-    if (
-        ("LATITUDE" in data)
-        and ("LONGITUDE" in data)
-        and ("LATITUDE" not in data.attributes)
-        and ("LONGITUDE" not in data.attributes)
-    ):
-        if "datetime" in data.keys():
-            d = data["datetime"]
-        elif "datetime" in data.attributes:
-            d0 = data.attributes["datetime"]
-            if "timeS" in data.keys():
-                d = [d0 + timedelta(seconds=s) for s in data["timeS"]]
-            else:
-                d = ([data.attributes["datetime"]] * len(data["LATITUDE"]),)
-
-        # woa = woa_track_from_file(
-        #        d,
-        #        data['LATITUDE'],
-        #        data['LONGITUDE'],
-        #        cfg['file'],
-        #        varnames=cfg['vars'])
-
-        module_logger.error("Sorry, I'm temporary not ready to handle tracks.")
-        # woa = db[vtype].get_track(var=['mean', 'standard_deviation'],
-        #        doy=d,
-        #        depth=[0],
-        #        lat=data['LATITUDE'],
-        #        lon=data['LONGITUDE'])
-
-    elif (
-        ("LATITUDE" in data.attributes.keys())
-        and ("LONGITUDE" in data.attributes.keys())
-        and ("PRES" in data.keys())
-    ):
-
-        woa = db[vtype].track(
-            var=["mean", "standard_deviation", "number_of_observations"],
-            doy=int(data.attributes["datetime"].strftime("%j")),
-            depth=data["PRES"],
-            lat=data.attributes["LATITUDE"],
-            lon=data.attributes["LONGITUDE"],
-        )
-
-    flag = np.zeros(data[v].shape, dtype="i1")
-    features = {}
+    try:
+        doy = int(data.attrs["date"].strftime("%j"))
+    except:
+        doy = int(data.attrs["datetime"].strftime("%j"))
 
     try:
-        woa_bias = data[v] - woa["mean"]
-        woa_normbias = woa_bias / woa["standard_deviation"]
+        # Note that QCCheck fallback to self.data.attrs if attrs not given
+        lat, lon = extract_coordinates(data, attrs)
+    except LookupError:
+        module_logger.warning("Missing geolocation (lat/lon)")
+        return {}
 
-        ind = np.nonzero(
-            (woa["number_of_observations"] >= min_samples)
-            & (np.absolute(woa_normbias) <= cfg["sigma_threshold"])
+    kwargs = {"lat": lat, "lon": lon}
+
+    if (np.size(lat) > 1) | (np.size(lon) > 1):
+        dLmax = max(np.max(lat) - np.min(lat), np.max(lon) - np.min(lon))
+        if dLmax >= 0.01:
+            mode = "track"
+            # kwargs["alongtrack_axis"] = ['lat', 'lon']
+        else:
+            mode = "profile"
+            kwargs = {
+                "lat": np.mean(lat),
+                "lon": np.mean(lon),
+            }
+    else:
+        mode = "profile"
+
+    if "DEPTH" in data.keys():
+        depth = data["DEPTH"]
+    elif "PRES" in data.keys():
+        depth = data["PRES"]
+
+    db = WOA()
+    # This must go away. This was a trick to handle Seabird CTDs, but
+    # now that seabird is a different package it should be handled there.
+    if isinstance(varname, str) and (varname[-1] == "2"):
+        vtype = varname[:-1]
+    else:
+        vtype = varname
+
+    woa_vars = [
+        "mean",
+        "standard_deviation",
+        "standard_error",
+        "number_of_observations",
+    ]
+
+    idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
+    if idx.any():
+        if mode == "track":
+            woa = db[vtype].track(
+                var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
+            )
+        else:
+            woa = db[vtype].extract(
+                var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
+            )
+    else:
+        woa = {v: ma.masked_all(1) for v in woa_vars}
+
+    if idx.all() is not True:
+        for v in woa.keys():
+            tmp = ma.masked_all(depth.shape, dtype=woa[v].dtype)
+            tmp[idx] = woa[v]
+            woa[v] = tmp
+
+    features = {
+        "woa_mean": woa["mean"],
+        "woa_std": woa["standard_deviation"],
+        "woa_nsamples": woa["number_of_observations"],
+        "woa_se": woa["standard_error"],
+    }
+
+    features["woa_bias"] = data[varname] - features["woa_mean"]
+
+    for v in features:
+        idx = ma.getmaskarray(features[v])
+        if idx.any():
+            if v == "woa_nsamples":
+                missing_value = -1
+            else:
+                missing_value = np.nan
+            features[v][idx] = missing_value
+        features[v] = np.array(features[v])
+
+    # if use_standard_error = True, the comparison with the climatology
+    #   considers the standard error, i.e. the bias will be only the
+    #   ammount above the standard error range.
+    if use_standard_error is True:
+        standard_error = features["woa_std"]
+        idx = features["woa_nsamples"] > 0
+        standard_error[~idx] = np.nan
+        standard_error[idx] /= features["woa_nsamples"][idx] ** 0.5
+
+        idx = np.absolute(features["woa_bias"]) <= standard_error
+        features["woa_bias"][idx] = 0
+        idx = np.absolute(features["woa_bias"]) > standard_error
+        features["woa_bias"][idx] -= (
+            np.sign(features["woa_bias"][idx]) * standard_error[idx]
         )
-        flag[ind] = 1  # cfg['flag_good']
-        ind = np.nonzero(
-            (woa["number_of_observations"] >= min_samples)
-            & (np.absolute(woa_normbias) > cfg["sigma_threshold"])
-        )
-        flag[ind] = 3  # cfg['flag_bad']
 
-        # Flag as 9 any masked input value
-        flag[ma.getmaskarray(data[v])] = 9
+    features["woa_normbias"] = features["woa_bias"] / features["woa_std"]
 
-        features = {
-            "woa_bias": woa_bias,
-            "woa_normbias": woa_normbias,
-            "woa_std": woa["standard_deviation"],
-            "woa_nsamples": woa["number_of_observations"],
-            "woa_mean": woa["mean"],
-        }
-
-    finally:
-        # self.logger.warnning("%s - WOA is not available at this site" %
-        # self.name)
-        return flag, features
+    return features
 
 
 class WOA_NormBias(QCCheckVar):
