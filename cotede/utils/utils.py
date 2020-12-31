@@ -197,17 +197,23 @@ def extract_time(obj, attrs=None, varname=None):
     try:
         return _time_flex_vocabulary(obj, varname)
     except LookupError:
-        module_logger.debug("Missing time in data, i.e. one time per measurement like a timeseries")
+        module_logger.debug(
+            "Missing time in data, i.e. one time per measurement like a timeseries"
+        )
     if attrs is not None:
         try:
             return _time_flex_vocabulary(attrs, varname)
         except LookupError:
-            module_logger.debug("Missing time in explicitly give attrs: {}".format(attrs))
+            module_logger.debug(
+                "Missing time in explicitly give attrs: {}".format(attrs)
+            )
     if hasattr(obj, "attrs"):
         try:
             return _time_flex_vocabulary(obj.attrs, varname)
         except LookupError:
-            module_logger.debug("Missing time in obj's method attrs: {}".format(obj.attrs))
+            module_logger.debug(
+                "Missing time in obj's method attrs: {}".format(obj.attrs)
+            )
 
     raise LookupError
 
