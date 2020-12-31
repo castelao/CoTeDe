@@ -164,6 +164,54 @@ def extract_coordinates(obj, attrs=None, latname=None, lonname=None):
             pass
 
     raise LookupError
+
+
+def _time_flex_vocabulary(obj, varname=None):
+    if varname is not None:
+        try:
+            t = obj[varname]
+        except KeyError:
+            raise LookupError
+        return t
+
+    vocab = ("time", "TIME", "date", "datetime")
+    for v in vocab:
+        try:
+            t = obj[v]
+            if np.size(t) > 1:
+                t = np.atleast_1d(t).astype("datetime64[s]")
+            return t
+        except KeyError:
+            module_logger.debug("Couldn't extract time as '{}'".format(v))
+    raise LookupError
+
+
+def extract_time(obj, attrs=None, varname=None):
+    """Extract time from the given object or an explicitly given attrs
+
+    It will return the first found following the priority:
+    - Time item contained in the object (ex.: alongtrack).
+    - Time item of a given attrs.
+    - Time item of the obj.attrs (ex.: xr.Dataset of a mooring).
+    """
+    try:
+        return _time_flex_vocabulary(obj, varname)
+    except LookupError:
+        module_logger.debug("Missing time in data, i.e. one time per measurement like a timeseries")
+    if attrs is not None:
+        try:
+            return _time_flex_vocabulary(attrs, varname)
+        except LookupError:
+            module_logger.debug("Missing time in explicitly give attrs: {}".format(attrs))
+    if hasattr(obj, "attrs"):
+        try:
+            return _time_flex_vocabulary(obj.attrs, varname)
+        except LookupError:
+            module_logger.debug("Missing time in obj's method attrs: {}".format(obj.attrs))
+
+    raise LookupError
+
+
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save
