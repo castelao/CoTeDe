@@ -134,7 +134,7 @@ def extract_coordinates(obj, attrs=None, latname=None, lonname=None):
     such as the alongtrack of a TSG. This function searches for the
     coordinates associated with a dataset.
 
-    It will return the first found followin the priority:
+    It will return the first found following the priority:
     - Latitude and longitude items contained in the object (ex.: alongtrack).
     - Latitude and longitude as items of the given attr.
     - Latitude and longitude as items of the obj.attrs (ex.: xr.Dataset of a mooring).
