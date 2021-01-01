@@ -5,6 +5,7 @@
 Miscelaneous resources to support CoTeDe.
 """
 
+from datetime import date, datetime
 import json
 import logging
 import numpy as np
@@ -216,6 +217,29 @@ def extract_time(obj, attrs=None, varname=None):
             )
 
     raise LookupError
+
+
+def day_of_year(time):
+    """[WIP] extract day of year from several possible inputs
+
+    """
+    if isinstance(time, datetime) or isinstance(time, date):
+        return int(time.strftime("%j"))
+    elif isinstance(time, np.datetime64):
+        doy = time.astype("datetime64[D]")
+        doy = doy - doy.astype("datetime64[Y]") + np.timedelta64(1, "D")
+        return doy.astype("i")
+    elif isinstance(time, str):
+        return day_of_year(np.datetime64(time))
+    elif np.size(time) > 0:
+        if isinstance(time, list) or isinstance(time, tuple):
+            return np.array([day_of_year(t) for t in time])
+        else:
+            doy = np.atleast_1d(time)
+            # Truncate on daily resolution
+            doy = doy.astype("datetime64[D]")
+            doy = doy - doy.astype("datetime64[Y]") + np.timedelta64(1, "D")
+            return doy.astype("i")
 
 
 # ============================================================================
