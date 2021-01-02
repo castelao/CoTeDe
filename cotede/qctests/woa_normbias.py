@@ -190,6 +190,10 @@ class WOA_NormBias(QCCheckVar):
 
         flag = np.zeros(self.data[self.varname].shape, dtype="i1")
 
+        if "woa_normbias" not in self.features:
+            self.flags["woa_normbias"] = flag
+            return
+
         normbias_abs = np.absolute(self.features["woa_normbias"])
         ind = np.nonzero(
             (self.features["woa_nsamples"] >= self.min_samples)
