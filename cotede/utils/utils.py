@@ -268,7 +268,7 @@ def extract_depth(obj, varname=None):
     for v in [v for v in vocab]:
         try:
             depth = extract_depth(obj, varname=v)
-            module_logger.warning("Approximating pressure to depth without any adjusting!!")
+            module_logger.warning("Using pressure as depth without any correction!")
             return depth
         except LookupError:
             module_logger.debug("Couldn't define depth from '{}'".format(v))
