@@ -39,7 +39,7 @@ class QCCheck(object):
     flag_good = 1
     flag_bad = 4
 
-    def __init__(self, data, cfg=None, autoflag=True, attrs=None):
+    def __init__(self, data, *, cfg=None, autoflag=True, attrs=None):
         self.data = data
         if (cfg is not None):
             self.cfg = cfg
@@ -87,4 +87,4 @@ class QCCheckVar(QCCheck):
 
     def __init__(self, data, varname, cfg=None, autoflag=True):
         self.varname = varname
-        super().__init__(data, cfg, autoflag)
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag)

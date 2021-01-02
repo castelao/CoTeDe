@@ -222,11 +222,7 @@ class ProfileQC(object):
         criteria = (c for c in cfg if ("procedure" in cfg[c]) and (cfg[c]["procedure"] in qctests.QCTESTS))
         for criterion in criteria:
             Procedure = qctests.catalog(cfg[criterion]["procedure"])
-            try:
-                y = Procedure(self.input, v, cfg[criterion], autoflag=True)
-            except:
-                # currently accommodates catalog['density_inversion']
-                y = Procedure(self.input, cfg[criterion], autoflag=True)
+            y = Procedure(self.input, varname=v, cfg=cfg[criterion], autoflag=True)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
