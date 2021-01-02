@@ -242,6 +242,38 @@ def day_of_year(time):
             return doy.astype("i")
 
 
+
+def extract_depth(obj, varname=None):
+    """[WIP]
+
+    If missing depth, try to use pressure with gsw
+    """
+    if varname is not None:
+        try:
+            depth = obj[varname]
+        except KeyError:
+            raise LookupError
+        if np.size(depth) > 1:
+            depth = np.atleast_1d(depth)
+        return depth
+
+    vocab = ("depth", "DEPTH")
+    for v in [v for v in vocab]:
+        try:
+            return extract_depth(obj, varname=v)
+        except LookupError:
+            module_logger.debug("Couldn't extract depth as '{}'".format(v))
+
+    vocab = ("pressure", "press", "PRES")
+    for v in [v for v in vocab]:
+        try:
+            depth = extract_depth(obj, varname=v)
+            module_logger.warning("Approximating pressure to depth without any adjusting!!")
+            return depth
+        except LookupError:
+            module_logger.debug("Couldn't define depth from '{}'".format(v))
+
+
 # ============================================================================
 def savePQCCollection_pandas(db, filename):
     """ Save

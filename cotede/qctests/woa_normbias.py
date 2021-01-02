@@ -26,7 +26,7 @@ from numpy import ma
 from oceansdb import WOA
 
 from .qctests import QCCheckVar
-from ..utils import extract_coordinates, extract_time, day_of_year
+from ..utils import extract_coordinates, extract_time, day_of_year, extract_depth
 
 module_logger = logging.getLogger(__name__)
 
@@ -69,10 +69,7 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
     else:
         mode = "profile"
 
-    if "DEPTH" in data.keys():
-        depth = data["DEPTH"]
-    elif "PRES" in data.keys():
-        depth = data["PRES"]
+    depth = extract_depth(data)
 
     db = WOA()
     # This must go away. This was a trick to handle Seabird CTDs, but
@@ -89,20 +86,22 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
         "number_of_observations",
     ]
 
-    idx = ~ma.getmaskarray(depth) & np.array(depth >= 0)
-    if idx.any():
-        if mode == "track":
-            woa = db[vtype].track(
-                var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
-            )
-        else:
-            woa = db[vtype].extract(
-                var=woa_vars, doy=doy, depth=np.atleast_1d(depth[idx]), **kwargs
-            )
+    # Eventually the case of some invalid depth levels will be handled by
+    # OceansDB and the following steps will be simplified.
+    valid_depth = depth
+    if (np.size(depth) > 0):
+        idx = ~ma.getmaskarray(depth) & (np.array(depth) >= 0) & np.isfinite(depth)
+        if not idx.any():
+            module_logger.error("Invalid depth(s) for WOA comparison: {}".format(depth))
+            raise IndexError
+        elif not idx.all():
+            valid_depth = depth[idx]
+    if mode == "track":
+        woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
     else:
-        woa = {v: ma.masked_all(1) for v in woa_vars}
+        woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
 
-    if idx.all() is not True:
+    if not np.all(depth == valid_depth):
         for v in woa.keys():
             tmp = ma.masked_all(depth.shape, dtype=woa[v].dtype)
             tmp[idx] = woa[v]
