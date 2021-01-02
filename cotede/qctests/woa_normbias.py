@@ -34,8 +34,11 @@ module_logger = logging.getLogger(__name__)
 def woa_normbias(data, varname, attrs=None, use_standard_error=False):
     """
 
-    """
+    Notes
+    -----
+    - Include arguments to overwrite target variable (timename=None, latname=None, lonname=None)
 
+    """
     try:
         doy = day_of_year(extract_time(data, attrs))
     except LookupError as err:
