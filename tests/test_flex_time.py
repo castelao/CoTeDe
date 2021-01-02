@@ -13,8 +13,7 @@ from datetime import datetime
 
 import numpy as np
 
-# from .data import DummyData
-from data import DummyData
+from .data import DummyData
 
 try:
     from cotede.utils import extract_time, day_of_year
