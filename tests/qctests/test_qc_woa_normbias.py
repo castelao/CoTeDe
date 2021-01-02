@@ -13,9 +13,64 @@ from cotede.qc import ProfileQC
 from ..data import DummyData
 
 
-def test_woa_normbias():
+def test_woa_normbias_standard_dataset():
     profile = DummyData()
     features = woa_normbias(profile, "TEMP")
+
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_nsamples",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert v in features
+
+
+def test_woa_normbias_invalid_position():
+    profile = DummyData()
+    assert "LONGITUDE" in profile.attrs
+    profile.attrs["LONGITUDE"] = 38
+    features = woa_normbias(profile, "TEMP")
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert np.isnan(features[v]).all()
+
+
+def notest_woa_normbias_invalid_position_track():
+    alongtrack = {
+        "time": ["2000-01-01", "2000-01-02", "2000-01-03"],
+        "DEPTH": np.array([0, 0, 0]),
+        "latitude": [14.9, 15, 15.1],
+        "longitude": [38, 38.1, 38],
+        "TEMP": [25, 25, 25],
+    }
+    features = woa_normbias(alongtrack, "TEMP")
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert np.isnan(features[v]).all()
+
+
+def test_woa_track():
+    alongtrack = {
+        "time": ["2000-01-01", "2000-01-02", "2000-01-03"],
+        "DEPTH": [0, 0, 0],
+        "latitude": [14.9, 15, 15.1],
+        "longitude": [-38, -38.1, -38],
+        "TEMP": [25, 25, 25],
+    }
+    features = woa_normbias(alongtrack, "TEMP")
 
     for v in [
         "woa_mean",
