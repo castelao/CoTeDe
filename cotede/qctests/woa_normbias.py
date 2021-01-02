@@ -149,7 +149,7 @@ class WOA_NormBias(QCCheckVar):
 
     Notes
     -----
-    * Although using standard error is a good idea, the default is to not use
+    * Although using standard error is a good idea, the default is to don't use
       standard error to estimate the bias to follow the traaditional approach.
       This can have a signifcant impact in the deep oceans and regions lacking
       extensive sampling.
