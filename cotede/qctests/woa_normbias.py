@@ -34,10 +34,6 @@ module_logger = logging.getLogger(__name__)
 def woa_normbias(data, varname, attrs=None, use_standard_error=False):
     """
 
-        FIXME: Move this procedure into a class to conform with the new system
-          and include a limit in minimum ammount of samples to trust it. For
-          example, consider as masked all climatologic values estimated from
-          less than 5 samples.
     """
 
     try:
@@ -157,16 +153,27 @@ class WOA_NormBias(QCCheckVar):
       standard error to estimate the bias to follow the traaditional approach.
       This can have a signifcant impact in the deep oceans and regions lacking
       extensive sampling.
+
+        FIXME: Move this procedure into a class to conform with the new system
+          and include a limit in minimum ammount of samples to trust it. For
+          example, consider as masked all climatologic values estimated from
+          less than 5 samples.
     """
 
     flag_bad = 3
     use_standard_error = False
+    # 3 is the possible minimum to estimate the std, but I shold use higher.
+    min_samples = 3
 
     def __init__(self, data, varname, cfg=None, autoflag=True):
         try:
             self.use_standard_error = cfg["use_standard_error"]
         except (KeyError, TypeError):
             module_logger.debug("use_standard_error undefined. Using default value")
+        try:
+            self.min_samples = cfg["min_samples"]
+        except (KeyError, TypeError):
+            module_logger.debug("min_samples undefined. Using default value")
         super().__init__(data, varname, cfg, autoflag)
 
     def set_features(self):
@@ -176,12 +183,6 @@ class WOA_NormBias(QCCheckVar):
             self.features = {}
 
     def test(self):
-        # 3 is the possible minimum to estimate the std, but I shold use higher.
-        try:
-            min_samples = self.cfg["min_samples"]
-        except KeyError:
-            min_samples = 3
-
         self.flags = {}
 
         threshold = self.cfg["threshold"]
@@ -191,12 +192,12 @@ class WOA_NormBias(QCCheckVar):
 
         normbias_abs = np.absolute(self.features["woa_normbias"])
         ind = np.nonzero(
-            (self.features["woa_nsamples"] >= min_samples)
+            (self.features["woa_nsamples"] >= self.min_samples)
             & np.array(normbias_abs <= threshold)
         )
         flag[ind] = self.flag_good
         ind = np.nonzero(
-            (self.features["woa_nsamples"] >= min_samples)
+            (self.features["woa_nsamples"] >= self.min_samples)
             & np.array(normbias_abs > threshold)
         )
         flag[ind] = self.flag_bad
