@@ -43,7 +43,7 @@ def test_woa_normbias_invalid_position():
         assert np.isnan(features[v]).all()
 
 
-def notest_woa_normbias_invalid_position_track():
+def test_woa_normbias_invalid_position_track():
     alongtrack = {
         "time": ["2000-01-01", "2000-01-02", "2000-01-03"],
         "DEPTH": np.array([0, 0, 0]),

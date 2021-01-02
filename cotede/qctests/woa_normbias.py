@@ -50,8 +50,8 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
         # Note that QCCheck fallback to self.data.attrs if attrs not given
         lat, lon = extract_coordinates(data, attrs)
     except LookupError:
-        module_logger.warning("Missing geolocation (lat/lon)")
-        return {}
+        module_logger.error("Missing geolocation (lat/lon)")
+        raise
 
     kwargs = {"lat": lat, "lon": lon}
 
