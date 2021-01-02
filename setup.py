@@ -24,7 +24,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='cotede',
-    version='0.23.2',
+    version='0.23.3',
     description='Quality Control of Oceanographic Data',
     long_description=readme + '\n\n' + history,
     author='Guilherme Castelão',
@@ -55,7 +55,7 @@ setup(
     zip_safe=False,
     extras_require = {
         'GSW': ["gsw>=3.0.6"],
-        'OceansDB': ["oceansdb>=0.8.6"],
+        'OceansDB': ["oceansdb>=0.8.13"],
         'manualqc': ["matplotlib"],
         'regional': ["Shapely>=1.6.4"]
     }

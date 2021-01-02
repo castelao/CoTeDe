@@ -13,6 +13,109 @@ from cotede.qc import ProfileQC
 from ..data import DummyData
 
 
+def test_woa_normbias_standard_dataset():
+    profile = DummyData()
+    features = woa_normbias(profile, "TEMP")
+
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_nsamples",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert v in features
+
+
+def test_woa_normbias_invalid_position():
+    profile = DummyData()
+    assert "LONGITUDE" in profile.attrs
+    profile.attrs["LONGITUDE"] = 38
+    features = woa_normbias(profile, "TEMP")
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert np.isnan(features[v]).all()
+
+
+def test_woa_normbias_invalid_position_track():
+    alongtrack = {
+        "time": ["2000-01-01", "2000-01-02", "2000-01-03"],
+        "DEPTH": np.array([0, 0, 0]),
+        "latitude": [14.9, 15, 15.1],
+        "longitude": [38, 38.1, 38],
+        "TEMP": [25, 25, 25],
+    }
+    features = woa_normbias(alongtrack, "TEMP")
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert np.isnan(features[v]).all()
+
+
+def test_woa_track():
+    alongtrack = {
+        "time": ["2000-01-01", "2000-01-02", "2000-01-03"],
+        "DEPTH": [0, 0, 0],
+        "latitude": [14.9, 15, 15.1],
+        "longitude": [-38, -38.1, -38],
+        "TEMP": [25, 25, 25],
+    }
+    features = woa_normbias(alongtrack, "TEMP")
+
+    for v in [
+        "woa_mean",
+        "woa_std",
+        "woa_nsamples",
+        "woa_se",
+        "woa_bias",
+        "woa_normbias",
+    ]:
+        assert v in features
+
+
+def test_standard_dataset():
+    """Test WOA_NormBias with a standard dataset
+    """
+    flags = {
+        "woa_normbias": np.array(
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 9], dtype="i1"
+        )
+    }
+
+    profile = DummyData()
+    cfg = {"threshold": 3}
+    y = WOA_NormBias(profile, "TEMP", cfg, autoflag=True)
+
+    assert len(y.features) > 0
+    for f in y.flags:
+        assert np.allclose(y.flags[f], flags[f], equal_nan=True)
+
+
+def test_features_non_masked_array():
+    """WOA_NormBias should return features type array
+
+    Originally I used masked arrays, which is the standard for OceansDB but
+    recently I moved to regular arrays using NaN.
+    """
+    profile = DummyData()
+    cfg = {"threshold": 3}
+    y = WOA_NormBias(profile, "TEMP", cfg, autoflag=True)
+
+    assert len(y.features) > 0
+    for v in y.features:
+        assert not isinstance(y.features[v], ma.MaskedArray)
+
+
 def test_basic():
     """
     """
