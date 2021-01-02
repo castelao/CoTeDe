@@ -66,6 +66,7 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
                 "lat": np.mean(lat),
                 "lon": np.mean(lon),
             }
+            module_logger.warning("Multiple lat/lon positions but too close to each other so it will be considered a single position for the WOA comparison. lat: {}, lon: {}".format(kwargs["lat"], kwargs["lon"]))
     else:
         mode = "profile"
 
