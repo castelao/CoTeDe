@@ -8,6 +8,7 @@
 from datetime import datetime, date
 
 from numpy import ma
+import pytest
 
 from cotede.qc import ProfileQC
 from .data import DummyData
@@ -42,6 +43,7 @@ def test_single_measurement():
     ProfileQC(profile, saveauxiliary=True)
 
 
+@pytest.mark.skip(reason="Requires new generic Anomaly Detection procedure")
 def test_single_negative_depth():
     """Evaluate a profile with a single measurement
 
