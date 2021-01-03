@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from .qctests import *
+from .core import QCCheck, QCCheckVar
 from .descentPrate import descentPrate
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed
