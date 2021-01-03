@@ -10,34 +10,41 @@ This method applies a fuzzy logic classification with a modified deffuzification
 - Morello, E.B., Galibert, G., Smith, D., Ridgway, K.R., Howell, B., Slawin- ski, D., Timms, G.P., Evans, K., Lynch, T.P., 2014. Quality Control (QC) procedures for Australias National Reference Stations sensor dataComparing semi-autonomous systems to an expert oceanographer. Methods Oceanogr. 9, 17–33. doi:10.1016/j.mio.2014.09.001.
 """
 
+import logging
 
 import numpy as np
 from numpy import ma
+
 from ..fuzzy import fuzzyfy
+from .qctests import QCCheckVar
+from .gradient import gradient
+from .spike import spike
+from .woa_normbias import woa_normbias
+
+module_logger = logging.getLogger(__name__)
 
 
-def morello2014(features, cfg):
+def morello2014(features, cfg=None):
     """
-
-        FIXME: Think about, should I return 0, or have an assert, and at qc.py
-          all qc tests are applied with a try, and in case it fails it flag
-          0s.
-
     """
-    # for f in cfg['features']:
-    #    assert f in features, \
-    #            "morello2014 requires feature %s, which is not available" \
-    #            % f
+    if (cfg is None) or ("output" not in cfg) or ("features" not in cfg):
+        module_logger.debug("Using original Morello2014 coefficients")
+        cfg = {
+            "output": {"low": None, "high": None},
+            "features": {
+                "spike": {"weight": 1, "low": [0.07, 0.2], "high": [2, 6]},
+                "woa_normbias": {"weight": 1, "low": [3, 4], "high": [5, 6]},
+                "gradient": {"weight": 1, "low": [0.5, 1.5], "high": [3, 4]},
+            },
+        }
 
     if not np.all([f in features for f in cfg["features"]]):
-        print(
-            "Not all features (%s) required by morello2014 are available"
-            % cfg["features"].keys()
+        module_logger.warning(
+            "Not all features (%s) required by morello2014 are available".format(
+                cfg["features"].keys()
+            )
         )
-        try:
-            return np.zeros(features[features.keys()[0]].shape, dtype="i1")
-        except:
-            return 0
+        raise KeyError
 
     f = fuzzyfy(features, cfg)
 
@@ -47,18 +54,37 @@ def morello2014(features, cfg):
             f[level] = f[level].data
             f[level][mask] = np.nan
 
-    # This is how Timms and Morello defined the Fuzzy Logic approach
-    # flag = np.zeros(N, dtype='i1')
-    # Flag must be np.array, not a ma.array.
-    flag = np.zeros(features[list(features.keys())[0]].shape, dtype="i1")
+    return f
 
-    flag[(f["low"] > 0.5) & (f["high"] < 0.3)] = 2
-    flag[(f["low"] > 0.9)] = 1
-    # Everything else is flagged 3
-    flag[(f["low"] <= 0.5) | (f["high"] >= 0.3)] = 3
-    # Missing check if threshold was crossed, to flag as 4
-    # The thresholds coincide with the end of the ramp for the fuzzy set high,
-    #   hence we can simply
-    flag[(f["high"] == 1.0)] = 4
 
-    return flag
+class Morello2014(QCCheckVar):
+    def set_features(self):
+        self.features = {}
+        self.features["spike"] = spike(self.data[self.varname])
+        self.features["gradient"] = gradient(self.data[self.varname])
+        woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+        self.features["woa_normbias"] = woa_comparison["woa_normbias"]
+
+    def test(self):
+        self.flags = {}
+
+        cfg = self.cfg
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
+
+        try:
+            f = morello2014(self.features, self.cfg)
+        except:
+            self.flags["morello2014"] = flag
+            return
+
+        # This is how Timms and Morello defined the Fuzzy Logic approach
+        flag[(f["low"] > 0.5) & (f["high"] < 0.3)] = 2
+        flag[(f["low"] > 0.9)] = 1
+        # Everything else is flagged 3
+        flag[(f["low"] <= 0.5) | (f["high"] >= 0.3)] = 3
+        # Missing check if threshold was crossed, to flag as 4
+        # The thresholds coincide with the end of the ramp for the fuzzy set
+        #   high, hence we can simply
+        flag[(f["high"] == 1.0)] = 4
+
+        self.flags["morello2014"] = flag
