@@ -80,6 +80,11 @@ class QCCheck(object):
     def keys(self):
         return self.features.keys() + ["flag_%s" % f for f in self.flags.keys()]
 
+    def test(self):
+        """Actual test evaluation procedure: Expected from derived objects
+        """
+        raise NotImplementedError
+
 
 class QCCheckVar(QCCheck):
     """Template for a QC check of a specific variable
