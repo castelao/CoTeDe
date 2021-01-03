@@ -60,10 +60,18 @@ def morello2014(features, cfg=None):
 class Morello2014(QCCheckVar):
     def set_features(self):
         self.features = {}
-        self.features["spike"] = spike(self.data[self.varname])
-        self.features["gradient"] = gradient(self.data[self.varname])
-        woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
-        self.features["woa_normbias"] = woa_comparison["woa_normbias"]
+        for v in [f for f in self.cfg["features"] if f not in self.features]:
+            if v == "woa_bias":
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                self.features[v] = woa_comparison["woa_bias"]
+            elif v == "woa_normbias":
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                self.features[v] = woa_comparison["woa_normbias"]
+            elif v == "spike":
+                self.features[v] = spike(self.data[self.varname])
+            elif v == "gradient":
+                self.features[v] = gradient(self.data[self.varname])
+
 
     def test(self):
         self.flags = {}
