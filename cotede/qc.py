@@ -289,9 +289,12 @@ class ProfileQC(object):
                 self.features[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
-            self.flags[v]['morello2014'] = qctests.morello2014(
-                    features=self.features[v],
-                    cfg=cfg['morello2014'])
+            y = Morello2014(self.input, v, cfg['morello2014'], autoflag=True)
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         if 'fuzzylogic' in  cfg:
             features = {}
