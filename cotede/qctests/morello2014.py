@@ -16,7 +16,7 @@ import numpy as np
 from numpy import ma
 
 from ..fuzzy import fuzzyfy
-from .qctests import QCCheckVar
+from .core import QCCheckVar
 from .gradient import gradient
 from .spike import spike
 from .woa_normbias import woa_normbias
