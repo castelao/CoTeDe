@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE_scikit-fuzzy.txt
 
@@ -39,8 +38,8 @@ def smf(x, p):
     Named such because of its S-like shape.
 
     """
-    assert len(p) == 2, 'smf requires 2 parameters'
-    assert p[0] <= p[1], 'p[0] must be <= p[1].'
+    assert len(p) == 2, "smf requires 2 parameters"
+    assert p[0] <= p[1], "p[0] must be <= p[1]."
 
     x = np.asanyarray(x)
     y = np.ones_like(x)
@@ -48,11 +47,11 @@ def smf(x, p):
     idx = x <= p[0]
     y[idx] = 0
 
-    idx = np.logical_and(p[0] <= x, x <= (p[0] + p[1]) / 2.)
-    y[idx] = 2. * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.
+    idx = np.logical_and(p[0] <= x, x <= (p[0] + p[1]) / 2.0)
+    y[idx] = 2.0 * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.0
 
-    idx = np.logical_and((p[0] + p[1]) / 2. <= x, x <= p[1])
-    y[idx] = 1 - 2. * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.
+    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x <= p[1])
+    y[idx] = 1 - 2.0 * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.0
 
     return y
 
@@ -76,9 +75,10 @@ def trapmf(x, p):
         Trapezoidal membership function.
 
     """
-    assert len(p) == 4, 'trapmf requires 4 parameters.'
-    assert p[0] <= p[1] and p[1] <= p[2] and p[2] <= p[3], \
-            'trapmf requires 4 parameters: p[0] <= p[1] <= p[2] <= p[3].'
+    assert len(p) == 4, "trapmf requires 4 parameters."
+    assert (
+        p[0] <= p[1] and p[1] <= p[2] and p[2] <= p[3]
+    ), "trapmf requires 4 parameters: p[0] <= p[1] <= p[2] <= p[3]."
 
     x = np.asanyarray(x)
     y = np.ones_like(x)
@@ -116,9 +116,10 @@ def trimf(x, p):
         Triangular membership function.
 
     """
-    assert len(p) == 3, 'trimf requires 3 parameters.'
-    assert p[0] <= p[1] and p[1] <= p[2], \
-            'trimf requires 3 parameters: p[0] <= p[1] <= p[2].'
+    assert len(p) == 3, "trimf requires 3 parameters."
+    assert (
+        p[0] <= p[1] and p[1] <= p[2]
+    ), "trimf requires 3 parameters: p[0] <= p[1] <= p[2]."
 
     x = np.asanyarray(x)
     y = np.zeros(x.shape)
@@ -161,17 +162,17 @@ def zmf(x, p):
     Named such because of its Z-like shape.
 
     """
-    assert len(p) == 2, 'zmf requires 2 parameters'
-    assert p[0] <= p[1], 'p[0] must be <= p[1].'
+    assert len(p) == 2, "zmf requires 2 parameters"
+    assert p[0] <= p[1], "p[0] must be <= p[1]."
 
     x = np.asanyarray(x)
     y = np.ones_like(x)
 
-    idx = np.logical_and(p[0] <= x, x < (p[0] + p[1]) / 2.)
-    y[idx] = 1 - 2. * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.
+    idx = np.logical_and(p[0] <= x, x < (p[0] + p[1]) / 2.0)
+    y[idx] = 1 - 2.0 * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.0
 
-    idx = np.logical_and((p[0] + p[1]) / 2. <= x, x <= p[1])
-    y[idx] = 2. * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.
+    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x <= p[1])
+    y[idx] = 2.0 * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.0
 
     idx = x >= p[1]
     y[idx] = 0
