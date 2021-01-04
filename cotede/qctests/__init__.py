@@ -6,6 +6,7 @@ from .descentPrate import descentPrate
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed
 from .fuzzylogic import fuzzylogic
+from .morello2014 import Morello2014, morello2014
 
 from .bin_spike import Bin_Spike, bin_spike
 from .cars_normbias import CARS_NormBias, cars_normbias

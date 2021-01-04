@@ -296,17 +296,13 @@ class ProfileQC(object):
             for f in y.flags:
                 self.flags[v][f] = y.flags[f]
 
-        if 'fuzzylogic' in  cfg:
-            features = {}
-            for f in cfg['fuzzylogic']['features']:
-                try:
-                    features[f] = self.features[v][f]
-                except:
-                    module_logger.error("Can't evaluate fuzzylogic with: %s" % f)
-
-            self.flags[v]['fuzzylogic'] = qctests.fuzzylogic(
-                    features=features,
-                    cfg=cfg['fuzzylogic'])
+        if "fuzzylogic" in  cfg:
+            y = qctests.FuzzyLogic(self.input, v, cfg["fuzzylogic"], autoflag=True)
+            if self.saveauxiliary:
+                for f in y.features.keys():
+                    self.features[v][f] = y.features[f]
+            for f in y.flags:
+                self.flags[v][f] = y.flags[f]
 
         self.flags[v]['overall'] = combined_flag(self.flags[v])
 

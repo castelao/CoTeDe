@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 """
     Quality Control based on fuzzy logic.
 """
 
+import logging
+
 import numpy as np
+
+from .core import QCCheckVar
+from .gradient import gradient
+from .spike import spike
+from .woa_normbias import woa_normbias
 from cotede.fuzzy import fuzzy_uncertainty
 
+module_logger = logging.getLogger(__name__)
 
 def fuzzylogic(features, cfg):
     """
@@ -20,25 +29,48 @@ def fuzzylogic(features, cfg):
     #   when it is missing some of the features? Sounds like the best guess
     #   possible.
     if not np.all([f in features for f in cfg['features']]):
-        print("Not all features (%s) required to fuzzyfy are available" %
-                cfg['features'].keys())
-        try:
-            return np.zeros(features[features.keys()[0]].shape, dtype='i1')
-        except:
-            return 0
+        module_logger.warning(
+            "Not all features (%s) required by fuzzy logic are available".format(
+                cfg["features"].keys()
+            )
+        )
+        raise KeyError
 
     #f = fuzzyfy(features, cfg)
     uncertainty = fuzzy_uncertainty(features, cfg)
 
-    # FIXME: As it is now, it will have no zero flag value. Think about cases
-    #   where some values in a profile would not be estimated, hence flag=0
-    # I needed to use np.nonzeros because now uncertainty is a masked array,
-    #   to accept when a feature is masked.
-    flags = np.zeros(
-            features[list(cfg['features'].keys())[0]].shape, dtype='i1')
-    flags[np.nonzero(uncertainty <= 0.29)] = 1
-    flags[np.nonzero((uncertainty > 0.29)  & (uncertainty <= 0.34))] = 2
-    flags[np.nonzero((uncertainty > 0.34)  & (uncertainty <= 0.72))] = 3
-    flags[np.nonzero(uncertainty > 0.72)] = 4
+    return uncertainty
 
-    return flags
+
+class FuzzyLogic(QCCheckVar):
+    def set_features(self):
+        self.features = {}
+        for v in [f for f in self.cfg["features"] if f not in self.features]:
+            if v == "woa_bias":
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                self.features[v] = woa_comparison["woa_bias"]
+            elif v == "woa_normbias":
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                self.features[v] = woa_comparison["woa_normbias"]
+            elif v == "spike":
+                self.features[v] = spike(self.data[self.varname])
+            elif v == "gradient":
+                self.features[v] = gradient(self.data[self.varname])
+
+
+    def test(self):
+        self.flags = {}
+        cfg = self.cfg
+        flag = np.zeros(np.shape(self.data[self.varname]), dtype="i1")
+
+        uncertainty = fuzzylogic(self.features, self.cfg)
+        # FIXME: As it is now, it will have no zero flag value. Think about cases
+        #   where some values in a profile would not be estimated, hence flag=0
+        # I needed to use np.nonzeros because now uncertainty is a masked array,
+        #   to accept when a feature is masked.
+        flag[np.nonzero(uncertainty <= 0.29)] = 1
+        flag[np.nonzero((uncertainty > 0.29)  & (uncertainty <= 0.34))] = 2
+        flag[np.nonzero((uncertainty > 0.34)  & (uncertainty <= 0.72))] = 3
+        flag[np.nonzero(uncertainty > 0.72)] = 4
+
+        self.flags["fuzzylogic"] = flag
