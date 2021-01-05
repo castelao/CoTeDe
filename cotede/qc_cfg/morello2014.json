@@ -3,9 +3,9 @@
     "common": {"valid_datetime": null, "location_at_sea": {"bad_flag": 3}},
     "variables": {
         "sea_water_temperature": {
-            "spike": {"threshold": 6.0},
-            "woa_normbias": {"threshold": 6},
-            "gradient": {"threshold": 4.0},
+            "spike": {"procedure": "Spike", "threshold": 6.0},
+            "woa_normbias": {"procedure": "WOA_NormBias", "threshold": 6},
+            "gradient": {"procedure": "Gradient", "threshold": 4.0},
             "morello2014": {
                 "output": {"low": null, "high": null},
                 "features": {
@@ -16,9 +16,9 @@
             }
         },
         "sea_water_salinity": {
-            "spike": {"threshold": 0.9},
-            "woa_normbias": {"threshold": 6},
-            "gradient": {"threshold": 4.0},
+            "spike": {"procedure": "Spike", "threshold": 0.9},
+            "woa_normbias": {"procedure": "WOA_NormBias", "threshold": 6},
+            "gradient": {"procedure": "Gradient", "threshold": 4.0},
             "morello2014": {
                 "output": {"low": null, "high": null},
                 "features": {
