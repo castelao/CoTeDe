@@ -9,7 +9,7 @@ from .morello2014 import morello2014
 from .fuzzylogic import fuzzylogic
 
 from .bin_spike import Bin_Spike, bin_spike
-from .cars_normbias import CARS_NormBias
+from .cars_normbias import CARS_NormBias, cars_normbias
 from .constant_cluster_size import ConstantClusterSize, constant_cluster_size
 from .cum_rate_of_change import CumRateOfChange, cum_rate_of_change
 from .deepest_pressure import DeepestPressure

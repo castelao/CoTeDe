@@ -7,9 +7,56 @@
 from datetime import datetime
 import numpy as np
 
-from cotede.qctests import cars_normbias
+from cotede.qctests import CARS_NormBias, cars_normbias
 from cotede.qc import ProfileQC
 from ..data import DummyData
+
+
+def test_cars_normbias_standard_dataset():
+    profile = DummyData()
+    features = cars_normbias(profile, "TEMP")
+
+    for v in [
+        "cars_mean",
+        "cars_std",
+        # "cars_nsamples",
+        "cars_bias",
+        "cars_normbias",
+    ]:
+        assert v in features
+
+
+def test_cars_normbias_invalid_position():
+    profile = DummyData()
+    assert "LONGITUDE" in profile.attrs
+    profile.attrs["LONGITUDE"] = 38
+    features = cars_normbias(profile, "TEMP")
+    for v in [
+        "cars_mean",
+        "cars_std",
+        # "cars_nsamples",
+        "cars_bias",
+        "cars_normbias",
+    ]:
+        assert np.isnan(features[v]).all()
+
+
+def test_standard_dataset():
+    """Test CARS_NormBias with a standard dataset
+    """
+    flags = {
+        "cars_normbias": np.array(
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 9], dtype="i1"
+        )
+    }
+
+    profile = DummyData()
+    cfg = {"threshold": 3}
+    y = CARS_NormBias(profile, "TEMP", cfg, autoflag=True)
+
+    assert len(y.features) > 0
+    for f in y.flags:
+        assert np.allclose(y.flags[f], flags[f], equal_nan=True)
 
 
 def test():
