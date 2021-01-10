@@ -5,7 +5,6 @@ from .core import QCCheck, QCCheckVar
 from .descentPrate import descentPrate
 from .anomaly_detection import anomaly_detection
 from .possible_speed import possible_speed
-from .morello2014 import morello2014
 from .fuzzylogic import fuzzylogic
 
 from .bin_spike import Bin_Spike, bin_spike
@@ -29,6 +28,8 @@ from .tukey53H import Tukey53H, tukey53H, tukey53H_norm
 from .woa_normbias import WOA_NormBias, woa_normbias
 from .stuck_value import StuckValue
 from .valid_geolocation import ValidGeolocation
+
+from .morello2014 import Morello2014, morello2014
 
 
 QCTESTS = {
