@@ -104,7 +104,7 @@ def compare_tuple(Procedure, cfg):
         tp[v] = tuple(profile.data[v])
 
     y = Procedure(profile, "TEMP", cfg)
-    y2 = Procedure(tp, "TEMP", cfg)
+    y2 = Procedure(tp, "TEMP", cfg, attrs=profile.attrs)
 
     assert isinstance(y2["TEMP"], tuple), "It didn't preserve the tuple type"
 

@@ -17,34 +17,34 @@ from cotede.fuzzy.membership_functions import smf, zmf, trimf, trapmf
 
 
 def test_smf():
-    x = [-4, 5.1, 0.1]
+    x = [-9, -6.3, -4, 4, 5.1, 0.1]
     p = [-6.3, 4]
     test = smf(x, p)
-    expected = np.array([0.09972665, 1.0, 0.71326232])
+    expected = [0, 0, 0.09972665, 1., 1, 0.71326232]
     assert_allclose(test, expected)
 
 
 def test_zmf():
-    x = [-4, 5.1, 0.1]
+    x = [-9, -6.3, -4, 4, 5.1, 0.1]
     p = [-6.3, 4]
     test = zmf(x, p)
-    expected = np.array([0.90027335, 0.0, 0.28673768])
+    expected = [1., 1., 0.90027335, 0.0, 0, 0.28673768]
     assert_allclose(test, expected)
 
 
 def test_trimf():
-    x = [-4, 5.1, 0.1, 0]
+    x = [-9, -6.3, -4, 4, 5.1, 0.1]
     p = [-6.3, 0, 4]
     test = trimf(x, p)
-    expected = np.array([0.36507937, 0.0, 0.975, 1.0])
+    expected = [0., 0., 0.36507937, 0.0, 0., 0.975]
     assert_allclose(test, expected)
 
 
 def test_trapmf():
-    x = [-4, 5.1, 0.1, 0]
+    x = [-9, -6.3, -4, 4, 5.1, 0.1]
     p = [-6.3, -1, 0, 2]
     test = trapmf(x, p)
-    expected = np.array([0.43396226, 0.0, 0.95, 1.0])
+    expected = [0., 0., 0.43396226, 0.0, 0., 0.95]
     assert_allclose(test, expected)
 
 
