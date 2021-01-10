@@ -37,7 +37,7 @@ def test_fuzzyfy():
 
     features = {"f1": np.array([1.0]), "f2": np.array([5.2]), "f3": np.array([0.9])}
 
-    rules = fuzzyfy(features, cfg)
+    rules = fuzzyfy(features, **cfg)
     assert_allclose(rules["low"], [0.226666666])
     assert_allclose(rules["medium"], [0.733333333])
     assert_allclose(rules["high"], [0.08000000])
@@ -73,12 +73,12 @@ def test_fuzzyfy_with_nan():
         "f3": np.array([0.9, 0.9, 0.9, np.nan, np.nan]),
     }
 
-    rules = fuzzyfy(features, cfg)
+    rules = fuzzyfy(features, **cfg)
     assert_allclose(rules["low"], [0.22666667, np.nan, np.nan, np.nan, np.nan])
     assert_allclose(rules["medium"], [0.733333333, np.nan, np.nan, np.nan, np.nan])
     assert_allclose(rules["high"], [0.08000000, np.nan, np.nan, np.nan, np.nan])
 
-    rules = fuzzyfy(features, cfg, require="any")
+    rules = fuzzyfy(features, **cfg, require="any")
     assert_allclose(rules["low"], [0.22666667, 0.34, 0.34, 0, np.nan])
     assert_allclose(rules["medium"], [0.733333333, 0.6, 0.7, 0.9, np.nan])
     assert_allclose(rules["high"], [0.08, 0.08, 0, 0.08, np.nan])

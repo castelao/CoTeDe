@@ -16,30 +16,30 @@ from .membership_functions import smf, zmf, trapmf, trimf
 from .defuzz import defuzz
 
 
-def fuzzyfy(data, cfg, require="all"):
+def fuzzyfy(data, features, output, require="all"):
     """
     Notes
     -----
     In the generalize this once the membership combining rules are defined
     in the cfg, so I can decide to use mean or max.
     """
-    features_list = list(cfg["features"].keys())
+    features_list = list(features.keys())
 
     N = max([len(data[f]) for f in features_list])
 
     # The fuzzy set are usually: low, medium, high
     # The membership of each fuzzy set are each feature scaled.
-    membership = {f: {} for f in cfg["output"].keys()}
+    membership = {f: {} for f in output.keys()}
 
     for t in features_list:
         for m in membership:
-            assert m in cfg["features"][t], "Missing %s in %s" % (m, cfg["features"][t])
+            assert m in features[t], "Missing %s in %s" % (m, features[t])
             if m == "low":
-                membership[m][t] = zmf(np.asanyarray(data[t]), cfg["features"][t][m])
+                membership[m][t] = zmf(np.asanyarray(data[t]), features[t][m])
             elif m == "high":
-                membership[m][t] = smf(np.asanyarray(data[t]), cfg["features"][t][m])
+                membership[m][t] = smf(np.asanyarray(data[t]), features[t][m])
             else:
-                membership[m][t] = trapmf(np.asanyarray(data[t]), cfg["features"][t][m])
+                membership[m][t] = trapmf(np.asanyarray(data[t]), features[t][m])
 
     # Rule Set
     rules = {}
@@ -94,7 +94,7 @@ def fuzzy_uncertainty(features, cfg):
 
     # CQ = bisector(Qs, ...
 
-    rules = fuzzyfy(features, cfg)
+    rules = fuzzyfy(data=features, **cfg)
 
     N_out = 100
     output_range = np.linspace(0, 1, N_out)
