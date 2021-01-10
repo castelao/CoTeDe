@@ -42,16 +42,17 @@ def smf(x, p):
     assert p[0] <= p[1], "p[0] must be <= p[1]."
 
     x = np.asanyarray(x)
-    y = np.ones_like(x)
+    y = np.nan * np.ones_like(x)
 
-    idx = x <= p[0]
-    y[idx] = 0
+    y[np.nonzero(x <= p[0])] = 0
 
-    idx = np.logical_and(p[0] <= x, x <= (p[0] + p[1]) / 2.0)
+    idx = np.logical_and(p[0] < x, x <= (p[0] + p[1]) / 2.0)
     y[idx] = 2.0 * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.0
 
-    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x <= p[1])
+    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x < p[1])
     y[idx] = 1 - 2.0 * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.0
+
+    y[np.nonzero(x >= p[1])] = 1
 
     return y
 
@@ -81,19 +82,16 @@ def trapmf(x, p):
     ), "trapmf requires 4 parameters: p[0] <= p[1] <= p[2] <= p[3]."
 
     x = np.asanyarray(x)
-    y = np.ones_like(x)
+    y = np.nan * np.ones_like(x)
 
     idx = np.nonzero(x <= p[1])
     y[idx] = trimf(x[idx], [p[0], p[1], p[1]])
 
-    idx = np.nonzero(x >= p[2])[0]
+    idx = np.nonzero(x >= p[2])
     y[idx] = trimf(x[idx], [p[2], p[2], p[3]])
 
-    idx = np.nonzero(x < p[0])[0]
-    y[idx] = np.zeros(len(idx))
-
-    idx = np.nonzero(x > p[3])[0]
-    y[idx] = np.zeros(len(idx))
+    idx = (x > p[1]) & (x < p[2])
+    y[idx] = 1.0
 
     return y
 
@@ -122,20 +120,23 @@ def trimf(x, p):
     ), "trimf requires 3 parameters: p[0] <= p[1] <= p[2]."
 
     x = np.asanyarray(x)
-    y = np.zeros(x.shape)
+    y = np.nan * np.ones_like(x)
+
+    y[np.nonzero(x <= p[0])] = 0
 
     # Left side
     if p[0] != p[1]:
         idx = np.nonzero(np.logical_and(p[0] < x, x < p[1]))
         y[idx] = (x[idx] - p[0]) / float(p[1] - p[0])
 
+    y[np.nonzero(x == p[1])] = 1
+
     # Right side
     if p[1] != p[2]:
-        idx = np.nonzero(np.logical_and(p[1] < x, x < p[2]))[0]
+        idx = np.nonzero(np.logical_and(p[1] < x, x < p[2]))
         y[idx] = (p[2] - x[idx]) / float(p[2] - p[1])
 
-    idx = np.nonzero(x == p[1])
-    y[idx] = 1
+    y[np.nonzero(x >= p[2])] = 0
 
     return y
 
@@ -166,15 +167,16 @@ def zmf(x, p):
     assert p[0] <= p[1], "p[0] must be <= p[1]."
 
     x = np.asanyarray(x)
-    y = np.ones_like(x)
+    y = np.nan * np.ones_like(x)
 
-    idx = np.logical_and(p[0] <= x, x < (p[0] + p[1]) / 2.0)
+    y[np.nonzero(x <= p[0])] = 1
+
+    idx = np.logical_and(p[0] < x, x < (p[0] + p[1]) / 2.0)
     y[idx] = 1 - 2.0 * ((x[idx] - p[0]) / (p[1] - p[0])) ** 2.0
 
-    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x <= p[1])
+    idx = np.logical_and((p[0] + p[1]) / 2.0 <= x, x < p[1])
     y[idx] = 2.0 * ((x[idx] - p[1]) / (p[1] - p[0])) ** 2.0
 
-    idx = x >= p[1]
-    y[idx] = 0
+    y[np.nonzero(x >= p[1])] = 0
 
     return y

@@ -8,8 +8,11 @@
         masked input
 """
 
+from hypothesis import given, strategies as st
+from hypothesis.extra.numpy import arrays, array_shapes
 import numpy as np
 from numpy.testing import assert_allclose
+
 from cotede.fuzzy.membership_functions import smf, zmf, trimf, trapmf
 
 
@@ -43,3 +46,39 @@ def test_trapmf():
     test = trapmf(x, p)
     expected = np.array([ 0.43396226, 0., 0.95, 1.])
     assert_allclose(test, expected)
+
+
+@given(
+    x=arrays(
+        dtype=np.float,
+        shape=array_shapes(),
+        elements=st.floats(allow_infinity=True, allow_nan=True),
+    ),
+    p=arrays(
+        dtype=np.float,
+        shape=4,
+        elements=st.floats(allow_infinity=False, allow_nan=False),
+        unique=True,
+    ),
+)
+def test_membership_nan(x, p):
+    """Nan input results in NaN outputs
+
+    Test random combinations of inputs and parameters. Every NaN input must
+    reflect in NaN output of the membership, otherwise the output must be
+    between 0 and 1.
+    """
+    for f, psize in ((smf, 2), (zmf, 2), (trimf, 3), (trapmf, 4)):
+        y = f(x, sorted(p[:psize]))
+
+        # Output has the same shape
+        assert np.shape(x) == np.shape(y)
+
+        # NaN inputs results in NaN outputs
+        idx = np.isnan(x)
+        assert np.all(np.isnan(y[idx]))
+
+        # Possible values range between [0, 1]
+        assert np.all(
+            (y[~idx] >= 0) & (y[~idx] <= 1)
+        ), "Failed range output for {}".format(f)
