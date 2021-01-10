@@ -70,6 +70,6 @@ class QCCheckVar(QCCheck):
     """Template for a QC check of a specific variable
     """
 
-    def __init__(self, data, varname, cfg=None, autoflag=True):
+    def __init__(self, data, varname, cfg=None, autoflag=True, attrs=None):
         self.varname = varname
-        super().__init__(data=data, cfg=cfg, autoflag=autoflag)
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag, attrs=attrs)
