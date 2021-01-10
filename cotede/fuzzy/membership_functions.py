@@ -3,13 +3,13 @@
 
 """
 
-    This was strongly inspired on scikit-fuzzy by Joshua Warner et.al.,
-      and they deserve most of the credits for this.
-    The decision to split came from the fact that here we use only few
-      functions from scikit-fuzzy, and scikit-fuzzy 0.1.9 stopped to
-      work with pypi, breaking all tests and the development process of
-      CoTeDe.
+This block was based on scikit-fuzzy by Joshua Warner et.al., and they deserve
+most of the credits for this.
 
+The decision to split came from the fact that CoTeDe uses only few functions
+from scikit-fuzzy, and scikit-fuzzy 0.1.9 stopped to work with pypi breaking
+all tests and the development process of CoTeDe. I did contributed to
+scikit-fuzzy, but it would be more work than I could afford at that time.
 """
 
 import numpy as np
