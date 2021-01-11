@@ -74,10 +74,16 @@ def fuzzyfy(data, features, output, require="all"):
     return rules
 
 
-def fuzzy_uncertainty(features, cfg):
-    """
+def fuzzy_uncertainty(data, features, output, require="all"):
+    """Estimate the Fuzzy uncertainty of the given data
 
-        Temporary solution. Under-development.
+    Parameters
+    ----------
+    data :
+    features :
+    output :
+    require : all or any, optional
+        Require all or any of the features to estimate the uncertainty
     """
     # It's not clear at Morello 2014 what is the operator K()
     # Q is the uncertainty, hence Q_low is the low uncertainty
@@ -94,31 +100,32 @@ def fuzzy_uncertainty(features, cfg):
 
     # CQ = bisector(Qs, ...
 
-    rules = fuzzyfy(data=features, **cfg)
+    rules = fuzzyfy(data=data, features=features, output=output, require=require)
 
     N_out = 100
     output_range = np.linspace(0, 1, N_out)
-    output = {}
-    output['low'] = trimf(output_range, cfg['output']['low'])
-    if 'medium' in cfg['output']:
-        output['medium'] = trimf(output_range, cfg['output']['medium'])
-    output['high'] = smf(output_range, cfg['output']['high'])
+    Q = {}
+    Q["low"] = trimf(output_range, output["low"])
+    if "medium" in output:
+        Q["medium"] = trimf(output_range, output["medium"])
+    Q["high"] = smf(output_range, output["high"])
 
     # FIXME: As it is now, it will have no zero flag value. Think about cases
     #   where some values in a profile would not be estimated, hence flag=0
-    #   I think skfuzzy does not accept masked arrays?!?! That would be the
-    #   limiting factor.
 
     N = rules[list(rules.keys())[0]].size
-    # This would be the classic fuzzy approach.
+    # This would be the regular fuzzy approach.
     uncertainty = ma.masked_all(N)
     for i in range(N):
         aggregated = np.zeros(N_out)
         for m in rules:
             if rules[m][i] is not ma.masked:
-                aggregated = np.fmax(aggregated,
-                                     np.fmin(rules[m][i], output[m]))
+                aggregated = np.fmax(aggregated, np.fmin(rules[m][i], Q[m]))
         if aggregated.sum() > 0:
-            uncertainty[i] = defuzz(output_range, aggregated, 'bisector')
+            uncertainty[i] = defuzz(output_range, aggregated, "bisector")
+
+    if isinstance(uncertainty, ma.MaskedArray):
+        uncertainty[uncertainty.mask] = np.nan
+        uncertainty = uncertainty.data
 
     return uncertainty
