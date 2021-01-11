@@ -44,6 +44,13 @@ def test_fuzzy_uncertainty():
 
 
 def test_fuzzy_uncertainty_with_nan():
+    """How fuzzy_uncertainty responds to NaN depending on require input
+
+    The default is to require all features, thus if anyone is NaN the
+    outcome uncertainty will be NaN. If require is defined as any, one
+    single valid feature will be enough to define an uncertainty. In both
+    cases it returns NaN if all features are NaN.
+    """
     features = {
         "f1": np.array([1.0, np.nan, 1.0, 1.0, np.nan]),
         "f2": np.array([5.2, 5.2, np.nan, 5.2, np.nan]),
@@ -51,11 +58,11 @@ def test_fuzzy_uncertainty_with_nan():
     }
 
     uncertainty = fuzzy_uncertainty(features, **CFG)
-    answer = [0.47474747, 0.57575758, 0.57575758, 0.57575758, 0.57575758]
+    answer = [0.47474747, np.nan, np.nan, np.nan, np.nan]
     assert_allclose(uncertainty, answer)
 
     uncertainty = fuzzy_uncertainty(features, **CFG, require="any")
-    answer = [0.47474747, 0.44444444, 0.43434343, 0.51515152, 0.57575758]
+    answer = [0.47474747, 0.44444444, 0.43434343, 0.51515152, np.nan]
     assert_allclose(uncertainty, answer)
 
 

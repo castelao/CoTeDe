@@ -106,22 +106,15 @@ def fuzzy_uncertainty(data, features, output, require="all"):
         Q["medium"] = trimf(output_range, output["medium"])
     Q["high"] = smf(output_range, output["high"])
 
-    # FIXME: As it is now, it will have no zero flag value. Think about cases
-    #   where some values in a profile would not be estimated, hence flag=0
-
-    N = rules[list(rules.keys())[0]].size
+    idx = np.isfinite([rules[r] for r in rules])
     # This would be the regular fuzzy approach.
-    uncertainty = ma.masked_all(N)
-    for i in range(N):
+    uncertainty = np.nan * np.ones(np.shape(idx)[1:])
+    valid = np.nonzero(idx.all(axis=0))[0]
+    for i in valid:
         aggregated = np.zeros(N_out)
         for m in rules:
-            if rules[m][i] is not ma.masked:
-                aggregated = np.fmax(aggregated, np.fmin(rules[m][i], Q[m]))
+            aggregated = np.fmax(aggregated, np.fmin(rules[m][i], Q[m]))
         if aggregated.sum() > 0:
             uncertainty[i] = defuzz(output_range, aggregated, "bisector")
-
-    if isinstance(uncertainty, ma.MaskedArray):
-        uncertainty[uncertainty.mask] = np.nan
-        uncertainty = uncertainty.data
 
     return uncertainty
