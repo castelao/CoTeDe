@@ -52,9 +52,7 @@ def fuzzyfy(data, features, output, require="all"):
 
     for m in [m for m in membership if m != "high"]:
         tmp = np.vstack([membership[m][f] for f in membership[m]])
-        if np.isnan(tmp).all():
-            rules[m] = np.nan
-        elif require == "any":
+        if require == "any":
             rules[m] = np.nanmean(tmp, axis=0)
         else:
             rules[m] = np.mean(tmp, axis=0)
@@ -64,9 +62,7 @@ def fuzzyfy(data, features, output, require="all"):
     #    weights['woa_relbias']['high']], axis=0)
 
     tmp = np.vstack([membership["high"][f] for f in membership["high"]])
-    if np.isnan(tmp).all():
-        rules[m] = np.nan
-    elif require == "any":
+    if require == "any":
         rules["high"] = np.nanmax(tmp, axis=0)
     else:
         rules["high"] = np.max(tmp, axis=0)

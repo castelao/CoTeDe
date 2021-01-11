@@ -61,6 +61,19 @@ def test_fuzzyfy_with_nan():
     assert_allclose(rules["high"], [0.08, 0.08, 0, 0.08, np.nan])
 
 
+def test_fuzzyfy_all_nan():
+    features = {
+        "f1": np.array([np.nan]),
+        "f2": np.array([np.nan]),
+        "f3": np.array([np.nan]),
+    }
+
+    rules = fuzzyfy(features, **CFG)
+    assert_allclose(rules["low"], [np.nan])
+    assert_allclose(rules["medium"], [np.nan])
+    assert_allclose(rules["high"], [np.nan])
+
+
 """
 
     # FIXME: If there is only one feature, it will return 1 value
