@@ -25,7 +25,7 @@ def test_standard_dataset():
 
     flags = {
         "morello2014": np.array(
-            [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 1, 0], dtype="i1"
+            [0, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 0, 0], dtype="i1"
         )
     }
 

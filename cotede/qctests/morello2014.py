@@ -46,7 +46,7 @@ def morello2014(features, cfg=None):
         )
         raise KeyError
 
-    f = fuzzyfy(features, cfg)
+    f = fuzzyfy(data=features, features=cfg["features"], output=cfg["output"])
 
     for level in f:
         if isinstance(f[level], ma.MaskedArray):

@@ -1,3 +1,6 @@
+from hypothesis import given
+import hypothesis.strategies as st
+
 import numpy as np
 from numpy import ma
 
@@ -36,6 +39,18 @@ def compare_feature_tuple(feature, *args, **kwargs):
     assert np.allclose(y, y2, equal_nan=True)
 
 
+def compare_compound_feature_tuple(feature, data, *args, **kwargs):
+    tp = {}
+    for v in data:
+        tp[v] = tuple(data[v])
+
+    y = feature(data, *args, **kwargs)
+    y2 = feature(tp, *args, **kwargs)
+
+    assert isinstance(y, np.ndarray)
+    assert np.allclose(y, y2, equal_nan=True)
+
+
 def compare_feature_series(feature, *args, **kwargs):
     """Validate a feature from a pandas.Series
 
@@ -57,6 +72,20 @@ def compare_feature_series(feature, *args, **kwargs):
         assert type(x) != type(ds)
     for x, ds in zip(kwargs, ds_kwargs):
         assert type(kwargs[x]) != type(ds_kwargs[ds])
+    assert isinstance(y, np.ndarray)
+    assert np.allclose(y, y2, equal_nan=True)
+
+
+def compare_compound_feature_dataframe(feature, data, *args, **kwargs):
+    if not PANDAS_AVAILABLE:
+        return
+    df = pd.DataFrame(data)
+
+    y = feature(data, *args, **kwargs)
+    y2 = feature(df, *args, **kwargs)
+
+    for v in data:
+        assert type(data[v]) != type(df[v])
     assert isinstance(y, np.ndarray)
     assert np.allclose(y, y2, equal_nan=True)
 
@@ -86,10 +115,26 @@ def compare_feature_dataarray(feature, *args, **kwargs):
     assert np.allclose(y, y2, equal_nan=True)
 
 
+def compare_compound_feature_dataset(feature, data, *args, **kwargs):
+    if not XARRAY_AVAILABLE:
+        return
+
+    ds = xr.Dataset({v:("N", data[v]) for v in data})
+
+    y = feature(data, *args, **kwargs)
+    y2 = feature(ds, *args, **kwargs)
+
+
 def compare_feature_input_types(feature, *args, **kwargs):
     compare_feature_tuple(feature, *args, **kwargs)
     compare_feature_series(feature, *args, **kwargs)
     compare_feature_dataarray(feature, *args, **kwargs)
+
+
+def compare_compound_feature_input_types(feature, *args, **kwargs):
+    compare_compound_feature_tuple(feature, *args, **kwargs)
+    compare_compound_feature_dataframe(feature, *args, **kwargs)
+    compare_compound_feature_dataset(feature, *args, **kwargs)
 
 
 def compare_tuple(Procedure, cfg):
@@ -104,7 +149,7 @@ def compare_tuple(Procedure, cfg):
         tp[v] = tuple(profile.data[v])
 
     y = Procedure(profile, "TEMP", cfg)
-    y2 = Procedure(tp, "TEMP", cfg)
+    y2 = Procedure(tp, "TEMP", cfg, attrs=profile.attrs)
 
     assert isinstance(y2["TEMP"], tuple), "It didn't preserve the tuple type"
 

@@ -15,90 +15,71 @@ from numpy import ma
 from .membership_functions import smf, zmf, trapmf, trimf
 from .defuzz import defuzz
 
-def fuzzyfy(features, cfg):
+
+def fuzzyfy(data, features, output, require="all"):
     """
-
-        FIXME: Looks like skfuzzy.trapmf does not handle well masked values.
-               I must think better what to do with masked input values. What
-               to do when there is one feature, but the other features are
-               masked?
+    Notes
+    -----
+    In the generalize this once the membership combining rules are defined
+    in the cfg, so I can decide to use mean or max.
     """
+    features_list = list(features.keys())
 
-    features_list = list(cfg['features'].keys())
-
-    N = features[features_list[0]].size
+    N = max([len(data[f]) for f in features_list])
 
     # The fuzzy set are usually: low, medium, high
     # The membership of each fuzzy set are each feature scaled.
-    membership = {}
-    for f in cfg['output'].keys():
-        membership[f] = {}
+    membership = {f: {} for f in output.keys()}
 
     for t in features_list:
         for m in membership:
-            assert m in cfg['features'][t], \
-                    "Missing %s in %s" % (m, cfg['features'][t])
-
-            membership[m][t] = ma.masked_all_like(features[t])
-            ind = (~ma.getmaskarray(features[t]) & np.isfinite(features[t]))
-            if m == 'low':
-                membership[m][t][ind] = zmf(
-                        np.asanyarray(features[t])[ind], cfg['features'][t][m])
-            elif m == 'high':
-                membership[m][t][ind] = smf(
-                        np.asanyarray(features[t])[ind],
-                        cfg['features'][t][m])
+            assert m in features[t], "Missing %s in %s" % (m, features[t])
+            if m == "low":
+                membership[m][t] = zmf(np.asanyarray(data[t]), features[t][m])
+            elif m == "high":
+                membership[m][t] = smf(np.asanyarray(data[t]), features[t][m])
             else:
-                membership[m][t][ind] = trapmf(
-                        np.asanyarray(features[t])[ind],
-                        cfg['features'][t][m])
+                membership[m][t] = trapmf(np.asanyarray(data[t]), features[t][m])
 
     # Rule Set
     rules = {}
     # Low: u_low = mean(S_l(spike), S_l(clim)...)
-    #u_low = np.mean([weights['spike']['low'],
+    # u_low = np.mean([weights['spike']['low'],
     #    weights['woa_relbias']['low']], axis=0)
+    # Medium: u_medium = mean(S_l(spike), S_l(clim)...)
+    # u_medium = np.mean([weights['spike']['medium'],
+    #    weights['woa_relbias']['medium']], axis=0)
 
-    tmp = membership['low'][features_list[0]]
-    for f in features_list[1:]:
-        tmp = ma.vstack((tmp, membership['low'][f]))
-
-    # FIXME: If there is only one feature, it will return 1 value
-    #          instead of an array with N values.
-    rules['low'] = ma.mean(tmp, axis=0)
-
-    # IMPROVE IT: Morello2014 doesn't even use the medium uncertainty,
-    #   so no reason to estimate it. In the generalize this once the
-    #   membership combining rules are defined in the cfg, so I can
-    #   decide to use mean or max.
-    if 'medium' in membership:
-        # Medium: u_medium = mean(S_l(spike), S_l(clim)...)
-        #u_medium = np.mean([weights['spike']['medium'],
-        #    weights['woa_relbias']['medium']], axis=0)
-
-        tmp = membership['medium'][features_list[0]]
-        for f in features_list[1:]:
-            tmp = ma.vstack((tmp, membership['medium'][f]))
-
-        rules['medium'] = ma.mean(tmp, axis=0)
+    for m in [m for m in membership if m != "high"]:
+        tmp = np.vstack([membership[m][f] for f in membership[m]])
+        if require == "any":
+            rules[m] = np.nanmean(tmp, axis=0)
+        else:
+            rules[m] = np.mean(tmp, axis=0)
 
     # High: u_high = max(S_l(spike), S_l(clim)...)
-    #u_high = np.max([weights['spike']['high'],
+    # u_high = np.max([weights['spike']['high'],
     #    weights['woa_relbias']['high']], axis=0)
 
-    tmp = membership['high'][features_list[0]]
-    for f in features_list[1:]:
-        tmp = ma.vstack((tmp, membership['high'][f]))
-
-    rules['high'] = ma.max(tmp, axis=0)
+    tmp = np.vstack([membership["high"][f] for f in membership["high"]])
+    if require == "any":
+        rules["high"] = np.nanmax(tmp, axis=0)
+    else:
+        rules["high"] = np.max(tmp, axis=0)
 
     return rules
 
 
-def fuzzy_uncertainty(features, cfg):
-    """
+def fuzzy_uncertainty(data, features, output, require="all"):
+    """Estimate the Fuzzy uncertainty of the given data
 
-        Temporary solution. Under-development.
+    Parameters
+    ----------
+    data :
+    features :
+    output :
+    require : all or any, optional
+        Require all or any of the features to estimate the uncertainty
     """
     # It's not clear at Morello 2014 what is the operator K()
     # Q is the uncertainty, hence Q_low is the low uncertainty
@@ -115,31 +96,25 @@ def fuzzy_uncertainty(features, cfg):
 
     # CQ = bisector(Qs, ...
 
-    rules = fuzzyfy(features, cfg)
+    rules = fuzzyfy(data=data, features=features, output=output, require=require)
 
     N_out = 100
     output_range = np.linspace(0, 1, N_out)
-    output = {}
-    output['low'] = trimf(output_range, cfg['output']['low'])
-    if 'medium' in cfg['output']:
-        output['medium'] = trimf(output_range, cfg['output']['medium'])
-    output['high'] = smf(output_range, cfg['output']['high'])
+    Q = {}
+    Q["low"] = trimf(output_range, output["low"])
+    if "medium" in output:
+        Q["medium"] = trimf(output_range, output["medium"])
+    Q["high"] = smf(output_range, output["high"])
 
-    # FIXME: As it is now, it will have no zero flag value. Think about cases
-    #   where some values in a profile would not be estimated, hence flag=0
-    #   I think skfuzzy does not accept masked arrays?!?! That would be the
-    #   limiting factor.
-
-    N = rules[list(rules.keys())[0]].size
-    # This would be the classic fuzzy approach.
-    uncertainty = ma.masked_all(N)
-    for i in range(N):
+    idx = np.isfinite([rules[r] for r in rules])
+    # This would be the regular fuzzy approach.
+    uncertainty = np.nan * np.ones(np.shape(idx)[1:])
+    valid = np.nonzero(idx.all(axis=0))[0]
+    for i in valid:
         aggregated = np.zeros(N_out)
         for m in rules:
-            if rules[m][i] is not ma.masked:
-                aggregated = np.fmax(aggregated,
-                                     np.fmin(rules[m][i], output[m]))
+            aggregated = np.fmax(aggregated, np.fmin(rules[m][i], Q[m]))
         if aggregated.sum() > 0:
-            uncertainty[i] = defuzz(output_range, aggregated, 'bisector')
+            uncertainty[i] = defuzz(output_range, aggregated, "bisector")
 
     return uncertainty
