@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 # Licensed under a 3-clause BSD style license - see LICENSE.rst
 
+from datetime import timedelta
+
+from hypothesis import given, settings, strategies as st
+from hypothesis.extra.numpy import arrays, array_shapes
 import numpy as np
 from numpy.testing import assert_allclose
 
 from cotede.fuzzy import fuzzy_uncertainty
+from ..qctests.compare import compare_compound_feature_input_types
 
 
 CFG = {
@@ -52,3 +57,16 @@ def test_fuzzy_uncertainty_with_nan():
     uncertainty = fuzzy_uncertainty(features, **CFG, require="any")
     answer = [0.47474747, 0.44444444, 0.43434343, 0.51515152, 0.57575758]
     assert_allclose(uncertainty, answer)
+
+
+@given(
+    data=arrays(
+        dtype=np.float,
+        shape=array_shapes(min_dims=2, max_dims=2, min_side=3),
+        elements=st.floats(allow_infinity=True, allow_nan=True),
+    )
+)
+@settings(deadline=timedelta(milliseconds=300))
+def test_feature_input_types(data):
+    data = {"f1": data[:, 0], "f2": data[:, 1], "f3": data[:, 2]}
+    compare_compound_feature_input_types(fuzzy_uncertainty, data=data, **CFG)
