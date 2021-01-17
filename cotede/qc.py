@@ -219,7 +219,7 @@ class ProfileQC(object):
             module_logger.warning(
                     "Sorry I'm not ready to evaluate frozen_profile()")
 
-        criteria = (c for c in cfg if ("procedure" in cfg[c]) and (cfg[c]["procedure"] in qctests.QCTESTS))
+        criteria = (c for c in cfg if (cfg[c] is not None) and ("procedure" in cfg[c]) and (cfg[c]["procedure"] in qctests.QCTESTS))
         for criterion in criteria:
             Procedure = qctests.catalog(cfg[criterion]["procedure"])
             if issubclass(Procedure, qctests.QCCheckVar):
