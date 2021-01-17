@@ -88,6 +88,10 @@ def test_standard_dataset():
 
 
 def test_densityinversion_from_profileqc():
+    """Validate if ProfileQC can run DensityInversion
+
+    It requires GSW to estimate density if the density itself is not provided.
+    """
     cfg = {
         "TEMP": {"density_inversion": {"threshold": -0.03}},
         "PSAL": {"density_inversion": {"threshold": -0.03}},
@@ -97,6 +101,8 @@ def test_densityinversion_from_profileqc():
 
     for v in ("TEMP", "PSAL"):
         assert "density_inversion" in pqc.flags[v]
+        if not GSW_AVAILABLE:
+            assert (pqc.flags[v]["density_inversion"] == 0).all()
 
 
 # def test_input_types():
