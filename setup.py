@@ -24,7 +24,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='cotede',
-    version='0.23.5',
+    version='0.23.6',
     description='Quality Control of Oceanographic Data',
     long_description=readme + '\n\n' + history,
     author='Guilherme Castelão',
