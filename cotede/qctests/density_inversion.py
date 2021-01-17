@@ -84,6 +84,11 @@ class DensityInversion(QCCheck):
 
         flag = np.zeros(np.shape(self.data["TEMP"]), dtype="i1")
 
+        if ("densitystep" not in self.features) and not GSW_AVAILABLE:
+            module_logger.warning("Couldn't estimate density without GSW")
+            self.flags["density_inversion"] = flag
+            return
+
         feature = self.features["densitystep"]
         # Note the comparison is opposite of the usual (good if >=)
         flag[feature < threshold] = self.flag_bad
