@@ -5,6 +5,8 @@
 """
 
 import numpy as np
+
+from cotede.qc import ProfileQC
 from cotede.qctests import DensityInversion, densitystep
 from ..data import DummyData
 
@@ -83,6 +85,18 @@ def test_standard_dataset():
         assert np.allclose(y.features[f], features[f], equal_nan=True)
     for f in flags:
         assert np.allclose(y.flags[f], flags[f], equal_nan=True)
+
+
+def test_densityinversion_from_profileqc():
+    cfg = {
+        "TEMP": {"density_inversion": {"threshold": -0.03}},
+        "PSAL": {"density_inversion": {"threshold": -0.03}},
+    }
+    profile = DummyData()
+    pqc = ProfileQC(profile, cfg=cfg)
+
+    for v in ("TEMP", "PSAL"):
+        assert "density_inversion" in pqc.flags[v]
 
 
 # def test_input_types():
