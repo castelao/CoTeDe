@@ -32,9 +32,9 @@ def morello2014(features, cfg=None):
         cfg = {
             "output": {"low": None, "high": None},
             "features": {
-                "spike": {"weight": 1, "low": [0.07, 0.2], "high": [2, 6]},
-                "woa_normbias": {"weight": 1, "low": [3, 4], "high": [5, 6]},
-                "gradient": {"weight": 1, "low": [0.5, 1.5], "high": [3, 4]},
+                "spike": {"weight": 1, "low": {'type': 'zmf', 'params': [0.07, 0.2]}, "high": {'type': 'zmf', 'params': [2, 6]}},
+                "woa_normbias": {"weight": 1, "low": {'type': 'zmf', 'params': [3, 4]}, "high": {'type': 'zmf', 'params': [5, 6]}},
+                "gradient": {"weight": 1, "low": {'type': 'zmf', 'params': [0.5, 1.5]}, "high": {'type': 'zmf', 'params':[3, 4]}},
             },
         }
 
