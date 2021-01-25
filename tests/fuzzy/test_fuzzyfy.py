@@ -12,23 +12,28 @@ from cotede.fuzzy import fuzzyfy
 
 CFG = {
     "output": {
-        "low": [0.0, 0.225, 0.45],
-        "medium": [0.275, 0.5, 0.725],
-        "high": [0.55, 0.775],
+        "low": {"type": "trimf", "params": [0.0, 0.225, 0.45]},
+        "medium": {"type": "trimf", "params": [0.275, 0.5, 0.725]},
+        "high": {"type": "smf", "params": [0.55, 0.775]},
     },
     "features": {
         "f1": {
             "weight": 1,
-            "low": [0.07, 0.2],
-            "medium": [0.07, 0.2, 2, 6],
-            "high": [2, 6],
+            "low": {"type": "zmf", "params": [0.07, 0.2]},
+            "medium": {"type": "trapmf", "params": [0.07, 0.2, 2, 6]},
+            "high": {"type": "smf", "params": [2, 6]},
         },
-        "f2": {"weight": 1, "low": [3, 4], "medium": [3, 4, 5, 6], "high": [5, 6]},
+        "f2": {
+            "weight": 1,
+            "low": {"type": "zmf", "params": [3, 4]},
+            "medium": {"type": "trapmf", "params": [3, 4, 5, 6]},
+            "high": {"type": "smf", "params": [5, 6]},
+        },
         "f3": {
             "weight": 1,
-            "low": [0.5, 1.5],
-            "medium": [0.5, 1.5, 3, 4],
-            "high": [3, 4],
+            "low": {"type": "zmf", "params": [0.5, 1.5]},
+            "medium": {"type": "trapmf", "params": [0.5, 1.5, 3, 4]},
+            "high": {"type": "smf", "params": [3, 4]},
         },
     },
 }
