@@ -7,6 +7,7 @@ from hypothesis import given, settings, strategies as st
 from hypothesis.extra.numpy import arrays, array_shapes
 import numpy as np
 from numpy.testing import assert_allclose
+import pytest
 
 from cotede.fuzzy import fuzzy_uncertainty
 from ..qctests.compare import compare_compound_feature_input_types
