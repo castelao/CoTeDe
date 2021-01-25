@@ -78,7 +78,7 @@ def test_fuzzy_uncertainty_with_nan():
         elements=st.floats(allow_infinity=True, allow_nan=True),
     )
 )
-@settings(deadline=timedelta(milliseconds=300))
+@settings(deadline=timedelta(milliseconds=500))
 def test_feature_input_types(data):
     data = {"f1": data[:, 0], "f2": data[:, 1], "f3": data[:, 2]}
     compare_compound_feature_input_types(fuzzy_uncertainty, data=data, **CFG)
