@@ -4,9 +4,14 @@
 """ Check Fuzzy Logic QC test
 """
 
+from datetime import timedelta
+
+from hypothesis import given, settings, strategies as st
+from hypothesis.extra.numpy import arrays, array_shapes
 import numpy as np
 
 from cotede.qctests import FuzzyLogic, fuzzylogic
+from .compare import compare_input_types, compare_compound_feature_input_types
 from ..data import DummyData
 
 
@@ -60,3 +65,21 @@ def test_standard_dataset():
         assert np.allclose(y.features[f], features[f], equal_nan=True)
     for f in flags:
         assert np.allclose(y.flags[f], flags[f], equal_nan=True)
+
+
+def test_feature_input_types():
+    x = np.array([0, 1, -1, 2, -2, 3, 2, 4, 0, np.nan])
+    features = {"spike": x, "woa_normbias": x, "gradient": x}
+    compare_compound_feature_input_types(fuzzylogic, features, cfg=CFG)
+
+
+@given(data=arrays(dtype=np.float, shape=array_shapes(min_dims=2, max_dims=2, min_side=3), elements=st.floats(allow_infinity=True, allow_nan=True)))
+@settings(deadline=timedelta(milliseconds=500))
+def test_feature_input_types(data):
+    data = {"spike": data[:,0], "woa_normbias": data[:,1], "gradient": data[:,2]}
+    compare_compound_feature_input_types(fuzzylogic, data=data, cfg=CFG)
+
+
+def test_input_types():
+    # compare_tuple(FuzzyLogic, cfg=CFG)
+    compare_input_types(FuzzyLogic, cfg=CFG)
