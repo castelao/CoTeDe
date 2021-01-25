@@ -31,15 +31,12 @@ def fuzzyfy(data, features, output, require="all"):
     # The membership of each fuzzy set are each feature scaled.
     membership = {f: {} for f in output.keys()}
 
+    mfuncs = {"smf": smf, "trimf": trimf, "trapmf": trapmf, "zmf": zmf}
     for t in features_list:
         for m in membership:
             assert m in features[t], "Missing %s in %s" % (m, features[t])
-            if m == "low":
-                membership[m][t] = zmf(np.asanyarray(data[t]), features[t][m])
-            elif m == "high":
-                membership[m][t] = smf(np.asanyarray(data[t]), features[t][m])
-            else:
-                membership[m][t] = trapmf(np.asanyarray(data[t]), features[t][m])
+            f = mfuncs[features[t][m]["type"]]
+            membership[m][t] = f(np.asanyarray(data[t]), features[t][m]["params"])
 
     # Rule Set
     rules = {}
@@ -101,10 +98,10 @@ def fuzzy_uncertainty(data, features, output, require="all"):
     N_out = 100
     output_range = np.linspace(0, 1, N_out)
     Q = {}
-    Q["low"] = trimf(output_range, output["low"])
-    if "medium" in output:
-        Q["medium"] = trimf(output_range, output["medium"])
-    Q["high"] = smf(output_range, output["high"])
+    mfuncs = {"smf": smf, "trimf": trimf, "trapmf": trapmf, "zmf": zmf}
+    for m in output:
+        f = mfuncs[output[m]["type"]]
+        Q[m] = f(output_range, output[m]["params"])
 
     idx = np.isfinite([rules[r] for r in rules])
     # This would be the regular fuzzy approach.
