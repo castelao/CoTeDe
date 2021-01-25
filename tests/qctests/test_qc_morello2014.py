@@ -11,19 +11,58 @@ from cotede.qctests import Morello2014
 from ..data import DummyData
 
 
+CFG = {
+    "TEMP": {
+        "morello2014": {
+            "procedure": "Morello2014",
+            "output": {"low": None, "high": None},
+            "features": {
+                "spike": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [0.07, 0.2]},
+                    "high": {"type": "smf", "params": [2, 6]},
+                },
+                "woa_normbias": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [3, 4]},
+                    "high": {"type": "smf", "params": [5, 6]},
+                },
+                "gradient": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [0.5, 1.5]},
+                    "high": {"type": "smf", "params": [3, 4]},
+                },
+            },
+        }
+    },
+    "PSAL": {
+        "morello2014": {
+            "output": {"low": None, "high": None},
+            "features": {
+                "spike": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [0.05, 0.15]},
+                    "high": {"type": "smf", "params": [0.5, 0.9]},
+                },
+                "woa_normbias": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [3, 4]},
+                    "high": {"type": "smf", "params": [5, 6]},
+                },
+                "gradient": {
+                    "weight": 1,
+                    "low": {"type": "zmf", "params": [1, 2]},
+                    "high": {"type": "smf", "params": [3, 4]},
+                },
+            },
+        }
+    },
+}
+
+
 def test_standard_dataset():
     """Check Morello2014 with the standard dataset
     """
-    cfg = {
-        "procedure": "Morello2014",
-        "output": {"low": None, "high": None},
-        "features": {
-            "spike": {"weight": 1, "low": [0.07, 0.2], "high": [2, 6]},
-            "woa_normbias": {"weight": 1, "low": [3, 4], "high": [5, 6]},
-            "gradient": {"weight": 1, "low": [0.5, 1.5], "high": [3, 4]},
-        },
-    }
-
     flags = {
         "morello2014": np.array(
             [0, 1, 1, 1, 1, 1, 2, 1, 1, 1, 2, 3, 1, 0, 0], dtype="i1"
@@ -32,7 +71,7 @@ def test_standard_dataset():
 
     profile = DummyData()
 
-    y = Morello2014(profile, "TEMP", cfg, autoflag=True)
+    y = Morello2014(profile, "TEMP", cfg=CFG["TEMP"]["morello2014"], autoflag=True)
 
     assert "morello2014" in y.flags
 
@@ -54,30 +93,6 @@ def test_morello_from_profileqc():
     -----
     - There is room to improve this and verify more stuff
     """
-    cfg = {
-        "TEMP": {
-            "morello2014": {
-                "procedure": "Morello2014",
-                "output": {"low": None, "high": None},
-                "features": {
-                    "spike": {"weight": 1, "low": [0.07, 0.2], "high": [2, 6]},
-                    "woa_normbias": {"weight": 1, "low": [3, 4], "high": [5, 6]},
-                    "gradient": {"weight": 1, "low": [0.5, 1.5], "high": [3, 4]},
-                },
-            }
-        },
-        "PSAL": {
-            "morello2014": {
-                "output": {"low": None, "high": None},
-                "features": {
-                    "spike": {"weight": 1, "low": [0.05, 0.15], "high": [0.5, 0.9]},
-                    "woa_normbias": {"weight": 1, "low": [3, 4], "high": [5, 6]},
-                    "gradient": {"weight": 1, "low": [1, 2], "high": [3, 4]},
-                },
-            }
-        },
-    }
-
     profile = DummyData()
     pqc = ProfileQC(profile, cfg="morello2014")
 

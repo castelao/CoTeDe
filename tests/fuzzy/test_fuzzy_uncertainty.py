@@ -7,6 +7,7 @@ from hypothesis import given, settings, strategies as st
 from hypothesis.extra.numpy import arrays, array_shapes
 import numpy as np
 from numpy.testing import assert_allclose
+import pytest
 
 from cotede.fuzzy import fuzzy_uncertainty
 from ..qctests.compare import compare_compound_feature_input_types
@@ -14,23 +15,28 @@ from ..qctests.compare import compare_compound_feature_input_types
 
 CFG = {
     "output": {
-        "low": [0.0, 0.225, 0.45],
-        "medium": [0.275, 0.5, 0.725],
-        "high": [0.55, 0.775],
+        "low": {"type": "trimf", "params": [0.0, 0.225, 0.45]},
+        "medium": {"type": "trimf", "params": [0.275, 0.5, 0.725]},
+        "high": {"type": "smf", "params": [0.55, 0.775]},
     },
     "features": {
         "f1": {
             "weight": 1,
-            "low": [0.07, 0.2],
-            "medium": [0.07, 0.2, 2, 6],
-            "high": [2, 6],
+            "low": {"type": "zmf", "params": [0.07, 0.2]},
+            "medium": {"type": "trapmf", "params": [0.07, 0.2, 2, 6]},
+            "high": {"type": "smf", "params": [2, 6]},
         },
-        "f2": {"weight": 1, "low": [3, 4], "medium": [3, 4, 5, 6], "high": [5, 6]},
+        "f2": {
+            "weight": 1,
+            "low": {"type": "zmf", "params": [3, 4]},
+            "medium": {"type": "trapmf", "params": [3, 4, 5, 6]},
+            "high": {"type": "smf", "params": [5, 6]},
+        },
         "f3": {
             "weight": 1,
-            "low": [0.5, 1.5],
-            "medium": [0.5, 1.5, 3, 4],
-            "high": [3, 4],
+            "low": {"type": "zmf", "params": [0.5, 1.5]},
+            "medium": {"type": "trapmf", "params": [0.5, 1.5, 3, 4]},
+            "high": {"type": "smf", "params": [3, 4]},
         },
     },
 }
@@ -73,7 +79,7 @@ def test_fuzzy_uncertainty_with_nan():
         elements=st.floats(allow_infinity=True, allow_nan=True),
     )
 )
-@settings(deadline=timedelta(milliseconds=300))
+@settings(deadline=timedelta(milliseconds=500))
 def test_feature_input_types(data):
     data = {"f1": data[:, 0], "f2": data[:, 1], "f3": data[:, 2]}
     compare_compound_feature_input_types(fuzzy_uncertainty, data=data, **CFG)
