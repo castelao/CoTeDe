@@ -139,11 +139,10 @@ def fix_config(cfg):
        This function allows backward compatibility with old config descriptos
        updating them to the current standard.
     """
-    if ("revision" in cfg) and (cfg["revision"] == "0.21"):
-        return cfg
-
     if "revision" not in cfg:
         cfg = convert_pre_to_021(cfg)
+    if cfg["revision"] < "0.22":
+        cfg = convert_021_to_022(cfg)
 
     return cfg
 
@@ -289,5 +288,47 @@ def fix_procedure(cfg):
     if "variables" in cfg:
         for v in cfg["variables"]:
             cfg["variables"][v] = fix_each_one(cfg["variables"][v])
+
+    return cfg
+
+
+def convert_021_to_022(cfg):
+    """Convert rev 0.21 to 0.22
+
+    The rev 0.22 only affected the fuzzy logic methods. The membership shape
+    is now explicit so that the user has the freedom to choose alternatives.
+    """
+    assert ("revision" in cfg) and (cfg["revision"] == "0.21")
+    cfg["revision"] = 0.22
+
+    for v in cfg["variables"]:
+        procedures = [f for f in cfg["variables"][v] if f in ("fuzzylogic", "morello2014")]
+        for procedure in procedures:
+            for o in cfg["variables"][v][procedure]["output"]:
+                f_cfg = cfg["variables"][v][procedure]["output"][o]
+                if isinstance(f_cfg, list):
+                    if (o == "high") and (len(f_cfg) == 2):
+                        f_cfg = {"type": "smf", "params": f_cfg}
+                    elif (len(f_cfg) == 3):
+                        f_cfg = {"type": "trimf", "params": f_cfg}
+                    else:
+                        assert (False), "Can't guess membership shape"
+                cfg["variables"][v][procedure]["output"][o] = f_cfg
+
+            for f in cfg["variables"][v][procedure]["features"]:
+                f_cfg = cfg["variables"][v][procedure]["features"][f]
+                if ("low" in f_cfg) and (isinstance(f_cfg["low"], list)):
+                    if len(f_cfg["low"]) == 2:
+                        f_cfg["low"] = {"type": "zmf", "params": f_cfg["low"]}
+                    elif len(f_cfg["low"]) == 3:
+                        f_cfg["low"] = {"type": "trimf", "params": f_cfg["low"]}
+                    else:
+                        assert False, "Can't guess membership shape"
+                if ("medium" in f_cfg) and (isinstance(f_cfg["medium"], list)):
+                    assert (len(f_cfg["medium"]) == 4), "Can't guess membership shape"
+                    f_cfg["medium"] = {"type": "trapmf", "params": f_cfg["medium"]}
+                if ("high" in f_cfg) and (isinstance(f_cfg["high"], list)):
+                    assert (len(f_cfg["high"]) == 2), "Can't guess membership shape"
+                    f_cfg["high"] = {"type": "smf", "params": f_cfg["high"]}
 
     return cfg

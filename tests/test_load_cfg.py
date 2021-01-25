@@ -8,6 +8,7 @@ import os.path
 import pkg_resources
 
 from cotede.utils import load_cfg, cotederc
+from cotede.utils.config import convert_021_to_022
 
 
 CFG = [f[:-5] for f in pkg_resources.resource_listdir('cotede', 'qc_cfg')
@@ -130,3 +131,38 @@ def test_inheritance_priority():
     except:
         failed = True
     assert failed, "It should fail in inverse priority"
+
+
+def test_convert_021_to_022():
+    cfg = {
+        "revision": "0.21",
+        "variables": {
+            "myvar": {
+                "fuzzylogic": {
+                "output": {
+                    "low": [0.0, 0.225, 0.45],
+                    "medium": [0.075, 0.4, 0.725],
+                    "high": [0.55, 0.775]
+                },
+                "features": {
+                    "spike": {
+                        "weight": 1,
+                        "low": [0.07, 0.2],
+                        "medium": [0.07, 0.2, 2, 6],
+                        "high": [2, 6]
+                    }
+                },
+                "uncertainty": [0.29, 0.34, 0.72]
+            } } }}
+    cfg = convert_021_to_022(cfg)
+
+    output = cfg["variables"]["myvar"]["fuzzylogic"]["output"]
+    for o in output:
+        assert "type" in output[o]
+        assert "params" in output[o]
+
+    features = cfg["variables"]["myvar"]["fuzzylogic"]["features"]
+    for f in features:
+        for m in ("low", "medium", "high"):
+            assert "type" in features[f][m]
+            assert "params" in features[f][m]
