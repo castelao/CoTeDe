@@ -2,7 +2,6 @@ name: cotede
 
 dependencies:
 - bokeh=2.2.3
-- cotede>=0.23
 - python=3.8.5
 - numpy=1.19.2
 - netcdf4=1.5.3
@@ -10,3 +9,6 @@ dependencies:
 - matplotlib=3.3.2
 - oceansdb=0.8.13
 - xarray=0.16.2
+- pip
+- pip:
+    - cotede
