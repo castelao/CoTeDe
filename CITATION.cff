@@ -1,0 +1,13 @@
+cff-version: 1.1.0
+message: If you use this software, please cite it using these metadata.
+title: 'A Framework to Quality Control Oceanographic Data'
+authors:
+- given-names: Guilherme
+  family-names: Castelao
+  affiliation: Scripps Institution of Oceanography - UC San Diego
+  orcid: https://orcid.org/0000-0002-6765-0708
+version: 0.23.7
+doi: 10.21105/joss.02063
+date-released: 2021-01-26
+repository-code: https://github.com/castelao/CoTeDe
+license: BSD-3 Clause
