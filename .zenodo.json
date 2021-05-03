@@ -6,5 +6,17 @@
       "affiliation": "Scripps Institution of Oceanography - UC San Diego",
       "orcid": "0000-0002-6765-0708"
     }
+  ],
+  "related_identifiers": [
+    {
+      "scheme": "doi",
+      "identifier": "10.21105/joss.02063",
+      "relation": "cites"
+    },
+    {
+      "scheme": "doi",
+      "identifier": "10.1016/j.cageo.2021.104803",
+      "relation": "cites"
+    }
   ]
 }
