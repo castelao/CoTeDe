@@ -8,6 +8,7 @@ from os.path import basename
 import re
 import json
 import logging
+from typing import Any, Dict
 
 import numpy as np
 from numpy import ma
@@ -64,18 +65,13 @@ class ProfileQC(object):
             self.name = None
         self.verbose = verbose
 
-        if attributes is None:
-            assert (hasattr(input, 'attributes'))
         assert (hasattr(input, 'keys')) and (len(input.keys()) > 0)
 
         self.cfg = load_cfg(cfg)
         module_logger.debug("Using cfg: {}".format(self.cfg))
 
         self.input = deepcopy(input)
-        if attributes is None:
-            self.attrs = input.attributes
-        else:
-            self.attrs = attributes
+        self._set_attrs(attributes)
         self.flags = {}
         self.saveauxiliary = saveauxiliary
         if saveauxiliary:
@@ -99,6 +95,30 @@ class ProfileQC(object):
                                             (self.name, v, c))
                     self.evaluate(v, self.cfg['variables'][c])
                     break
+
+    def _set_attrs(self, attrs: Dict[str, Any]):
+        """Define ProfileQC's attributes (attrs)
+
+        Parameters
+        ----------
+        attrs:
+            A dictionary like object with metadata for the dataset. Such as
+            nominal latitude or name of the station.
+
+        First try to extract attrs from input, then overwrite it with custom
+        attrs if that is given.
+        """
+        if hasattr(self.input, 'attrs'):
+            self.attrs = self.input.attrs
+        # For legacy compatibility
+        elif hasattr(self.input, 'attributes'):
+            self.attrs = self.input.attributes
+        else:
+            self.attrs = {}
+
+        if attrs is not None:
+            for a in attrs:
+                self.attrs[a] = attrs[a]
 
     @property
     def data(self):
