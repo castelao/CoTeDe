@@ -6,7 +6,7 @@ authors:
   family-names: Castelao
   affiliation: Scripps Institution of Oceanography - UC San Diego
   orcid: https://orcid.org/0000-0002-6765-0708
-version: 0.23.7
+version: 0.23.8
 doi: 10.21105/joss.02063
 date-released: 2021-01-26
 repository-code: https://github.com/castelao/CoTeDe
