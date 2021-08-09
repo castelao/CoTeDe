@@ -32,11 +32,6 @@
                         "qlimit": 1.707276,
                         "param": [5.960434, 0.336008, 1.705502, 0.04268]
                     },
-                    "cars_normbias": {
-                        "model": "exponweib",
-                        "qlimit": 1.809731,
-                        "param": [0.96774, 0.80382, 1.80973, 0.980883]
-                    },
                     "constant_cluster_size": {
                         "model": "exponweib",
                         "qlimit": 4.0,
