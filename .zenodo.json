@@ -18,5 +18,12 @@
       "identifier": "10.1016/j.cageo.2021.104803",
       "relation": "cites"
     }
+  ],
+  "contributors": [
+    {
+      "type": "Software Engineer",
+      "name": "Slater, Chris",
+      "affiliation": "Cooperative Institute for Research in Environmental Sciences (CIRES) at the University of Colorado Boulder"
+    }
   ]
 }
