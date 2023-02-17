@@ -71,7 +71,6 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
 
     depth = extract_depth(data)
 
-    db = WOA()
     # This must go away. This was a trick to handle Seabird CTDs, but
     # now that seabird is a different package it should be handled there.
     if isinstance(varname, str) and (varname[-1] == "2"):
@@ -96,10 +95,13 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
             raise IndexError
         elif not idx.all():
             valid_depth = depth[idx]
-    if mode == "track":
-        woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
-    else:
-        woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+
+    woa = None
+    with WOA() as db:
+        if mode == "track":
+            woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+        else:
+            woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
 
     if not np.all(depth == valid_depth):
         for v in woa.keys():

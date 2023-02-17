@@ -82,10 +82,11 @@ def location_at_sea(data, cfg=None):
         return flag_bad
 
     try:
-        ETOPO = oceansdb.ETOPO()
-        etopo = ETOPO["topography"].extract(
-            var="height", lat=data.attrs["LATITUDE"], lon=data.attrs["LONGITUDE"]
-        )
+        etopo = None
+        with oceansdb.ETOPO() as ETOPO:
+            etopo = ETOPO["topography"].extract(
+                var="height", lat=data.attrs["LATITUDE"], lon=data.attrs["LONGITUDE"]
+            )
         h = etopo["height"]
 
         flag = np.zeros(h.shape, dtype="i1")
@@ -105,10 +106,9 @@ def get_bathymetry(lat, lon, resolution="5min"):
     """
     assert np.shape(lat) == np.shape(lon), "Lat & Lon shape mismatch"
 
-    db = oceansdb.ETOPO(resolution=resolution)
-
-    etopo = db["topography"].track(var="height", lat=lat, lon=lon)
-    return {"bathymetry": -etopo["height"].astype("i")}
+    with oceansdb.ETOPO(resolution=resolution) as db:
+        etopo = db["topography"].track(var="height", lat=lat, lon=lon)
+        return {"bathymetry": -etopo["height"].astype("i")}
 
 
 class LocationAtSea(QCCheck):
