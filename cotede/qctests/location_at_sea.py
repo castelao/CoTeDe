@@ -109,7 +109,7 @@ def get_bathymetry(lat, lon, resolution="5min", etopo_dbs=None):
     assert np.shape(lat) == np.shape(lon), "Lat & Lon shape mismatch"
 
     etopo = None
-    if etopo_dbs is None or not etopo_dbs.get(resolution):
+    if etopo_dbs is None:
         with oceansdb.ETOPO(resolution=resolution) as db:
             etopo = _get_etopo(db, lat, lon)
     else:
