@@ -16,8 +16,15 @@ from ..utils import extract_coordinates, extract_time, day_of_year, extract_dept
 
 module_logger = logging.getLogger(__name__)
 
+def _get_cars(db, mode, vtype, cars_vars, doy, valid_depth, **kwargs):
+    cars = None
+    if mode == "track":
+        cars = db[vtype].track(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
+    else:
+        cars = db[vtype].extract(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
+    return cars
 
-def cars_normbias(data, varname, attrs=None, use_standard_error=False):
+def cars_normbias(data, varname, attrs=None, use_standard_error=False, cars_db=None):
     """
 
     Notes
@@ -89,11 +96,11 @@ def cars_normbias(data, varname, attrs=None, use_standard_error=False):
             valid_depth = depth[idx]
 
     cars = None
-    with CARS() as db:
-        if mode == "track":
-            cars = db[vtype].track(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
-        else:
-            cars = db[vtype].extract(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
+    if cars_db:
+        cars = _get_cars(cars_db, mode, vtype, cars_vars, doy, valid_depth, **kwargs)
+    else:
+        with CARS() as db:
+          cars = _get_cars(db, mode, vtype, cars_vars, doy, valid_depth, **kwargs)
 
     if not np.all(depth == valid_depth):
         for v in cars.keys():
@@ -156,7 +163,7 @@ class CARS_NormBias(QCCheckVar):
     # 3 is the possible minimum to estimate the std, but I shold use higher.
     min_samples = 3
 
-    def __init__(self, data, varname, cfg=None, autoflag=True):
+    def __init__(self, data, varname, cfg=None, autoflag=True, cars_db=None):
         try:
             self.use_standard_error = cfg["use_standard_error"]
         except (KeyError, TypeError):
@@ -165,12 +172,13 @@ class CARS_NormBias(QCCheckVar):
             self.min_samples = cfg["min_samples"]
         except (KeyError, TypeError):
             module_logger.debug("min_samples undefined. Using default value")
-
+        self.__cars_db = cars_db
         super().__init__(data, varname, cfg, autoflag)
+
 
     def set_features(self):
         try:
-            self.features = cars_normbias(self.data, self.varname, self.attrs)
+            self.features = cars_normbias(self.data, self.varname, self.attrs, cars_db=self.__cars_db)
         except LookupError:
             self.features = {}
 

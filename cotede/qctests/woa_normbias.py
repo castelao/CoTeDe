@@ -30,8 +30,15 @@ from ..utils import extract_coordinates, extract_time, day_of_year, extract_dept
 
 module_logger = logging.getLogger(__name__)
 
+def _get_woa(db, mode, vtype, woa_vars, doy, valid_depth, **kwargs):
+    woa = None
+    if mode == "track":
+        woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+    else:
+        woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+    return woa
 
-def woa_normbias(data, varname, attrs=None, use_standard_error=False):
+def woa_normbias(data, varname, attrs=None, use_standard_error=False, woa_db=None):
     """
 
     Notes
@@ -97,11 +104,11 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
             valid_depth = depth[idx]
 
     woa = None
-    with WOA() as db:
-        if mode == "track":
-            woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
-        else:
-            woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+    if woa_db:
+        woa = _get_woa(woa_db, mode, vtype, woa_vars, doy, valid_depth, **kwargs)
+    else:
+        with WOA() as db:
+            woa = _get_woa(db, mode, vtype, woa_vars, doy, valid_depth, **kwargs)
 
     if not np.all(depth == valid_depth):
         for v in woa.keys():
@@ -170,7 +177,7 @@ class WOA_NormBias(QCCheckVar):
     # 3 is the possible minimum to estimate the std, but I shold use higher.
     min_samples = 3
 
-    def __init__(self, data, varname, cfg=None, autoflag=True):
+    def __init__(self, data, varname, cfg=None, autoflag=True, woa_db=None):
         try:
             self.use_standard_error = cfg["use_standard_error"]
         except (KeyError, TypeError):
@@ -179,11 +186,13 @@ class WOA_NormBias(QCCheckVar):
             self.min_samples = cfg["min_samples"]
         except (KeyError, TypeError):
             module_logger.debug("min_samples undefined. Using default value")
+        self.__woa_db = woa_db
         super().__init__(data, varname, cfg, autoflag)
+
 
     def set_features(self):
         try:
-            self.features = woa_normbias(self.data, self.varname, self.attrs)
+            self.features = woa_normbias(self.data, self.varname, self.attrs, woa_db=self.__woa_db)
         except LookupError:
             self.features = {}
 

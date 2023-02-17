@@ -98,17 +98,24 @@ def location_at_sea(data, cfg=None):
     except:
         return 0
 
+def _get_etopo(db, lat, lon):
+    return db["topography"].track(var="height", lat=lat, lon=lon)
 
-def get_bathymetry(lat, lon, resolution="5min"):
+def get_bathymetry(lat, lon, resolution="5min", etopo_dbs=None):
     """Interpolate bathymetry from ETOPO
 
        For a given (lat, lon), interpolates the bathymetry from ETOPO
     """
     assert np.shape(lat) == np.shape(lon), "Lat & Lon shape mismatch"
 
-    with oceansdb.ETOPO(resolution=resolution) as db:
-        etopo = db["topography"].track(var="height", lat=lat, lon=lon)
-        return {"bathymetry": -etopo["height"].astype("i")}
+    etopo = None
+    if etopo_dbs is None or not etopo_dbs.get(resolution):
+        with oceansdb.ETOPO(resolution=resolution) as db:
+            etopo = _get_etopo(db, lat, lon)
+    else:
+        etopo = _get_etopo(etopo_dbs[resolution], lat, lon)
+
+    return {"bathymetry": -etopo["height"].astype("i")}
 
 
 class LocationAtSea(QCCheck):
@@ -116,7 +123,7 @@ class LocationAtSea(QCCheck):
     resolution = "5min"
     threshold = 0
 
-    def __init__(self, data, cfg=None, attrs=None):
+    def __init__(self, data, cfg=None, attrs=None, etopo_dbs=None):
         if cfg is None:
             cfg = {}
 
@@ -124,7 +131,7 @@ class LocationAtSea(QCCheck):
             cfg["threshold"] = self.threshold
         if "resolution" not in cfg:
             cfg["resolution"] = self.resolution
-
+        self.__etopo_dbs = etopo_dbs
         super().__init__(data, cfg=cfg, attrs=attrs)
 
     def set_features(self):
@@ -140,7 +147,7 @@ class LocationAtSea(QCCheck):
             return
 
         try:
-            self.features = get_bathymetry(lat=lat, lon=lon)
+            self.features = get_bathymetry(lat=lat, lon=lon, etopo_dbs=self.__etopo_dbs)
             # idx = np.isfinite(lat) & np.isfinite(lon)
             # self.features = get_bathymetry(lat=lat[idx], lon=lon[idx])
         except:
