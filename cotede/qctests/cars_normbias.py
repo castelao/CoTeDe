@@ -61,7 +61,6 @@ def cars_normbias(data, varname, attrs=None, use_standard_error=False):
 
     depth = extract_depth(data)
 
-    db = CARS()
     # This must go away. This was a trick to handle Seabird CTDs, but
     # now that seabird is a different package it should be handled there.
     if isinstance(varname, str) and (varname[-1] == "2"):
@@ -88,10 +87,13 @@ def cars_normbias(data, varname, attrs=None, use_standard_error=False):
             raise IndexError
         elif not idx.all():
             valid_depth = depth[idx]
-    if mode == "track":
-        cars = db[vtype].track(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
-    else:
-        cars = db[vtype].extract(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
+
+    cars = None
+    with CARS() as db:
+        if mode == "track":
+            cars = db[vtype].track(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
+        else:
+            cars = db[vtype].extract(var=cars_vars, doy=doy, depth=valid_depth, **kwargs)
 
     if not np.all(depth == valid_depth):
         for v in cars.keys():
