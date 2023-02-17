@@ -299,7 +299,7 @@ def convert_021_to_022(cfg):
     is now explicit so that the user has the freedom to choose alternatives.
     """
     assert ("revision" in cfg) and (cfg["revision"] == "0.21")
-    cfg["revision"] = 0.22
+    cfg["revision"] = "0.22"
 
     for v in cfg["variables"]:
         procedures = [f for f in cfg["variables"][v] if f in ("fuzzylogic", "morello2014")]
