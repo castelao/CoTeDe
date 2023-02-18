@@ -123,7 +123,7 @@ class LocationAtSea(QCCheck):
     resolution = "5min"
     threshold = 0
 
-    def __init__(self, data, cfg=None, attrs=None, etopo_dbs=None):
+    def __init__(self, data, cfg=None, attrs=None, cars_db=None, woa_db=None, etopo_dbs=None):
         if cfg is None:
             cfg = {}
 
@@ -131,8 +131,7 @@ class LocationAtSea(QCCheck):
             cfg["threshold"] = self.threshold
         if "resolution" not in cfg:
             cfg["resolution"] = self.resolution
-        self.__etopo_dbs = etopo_dbs
-        super().__init__(data, cfg=cfg, attrs=attrs)
+        super().__init__(data, cfg=cfg, attrs=attrs, cars_db=cars_db, woa_db=woa_db, etopo_dbs=etopo_dbs)
 
     def set_features(self):
         if not OCEANSDB_AVAILABLE:
@@ -147,7 +146,7 @@ class LocationAtSea(QCCheck):
             return
 
         try:
-            self.features = get_bathymetry(lat=lat, lon=lon, etopo_dbs=self.__etopo_dbs)
+            self.features = get_bathymetry(lat=lat, lon=lon, etopo_dbs=self._etopo_dbs)
             # idx = np.isfinite(lat) & np.isfinite(lon)
             # self.features = get_bathymetry(lat=lat[idx], lon=lon[idx])
         except:

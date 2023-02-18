@@ -245,9 +245,9 @@ class ProfileQC(object):
         for criterion in criteria:
             Procedure = qctests.catalog(cfg[criterion]["procedure"])
             if issubclass(Procedure, qctests.QCCheckVar):
-                y = Procedure(self.input, varname=v, cfg=cfg[criterion], autoflag=True)
+                y = Procedure(self.input, varname=v, cfg=cfg[criterion], autoflag=True, cars_db=self.__cars_db, woa_db=self.__woa_db, etopo_dbs=self.__etopo_dbs)
             elif issubclass(Procedure, qctests.QCCheck):
-                y = Procedure(self.input, cfg=cfg[criterion], autoflag=True)
+                y = Procedure(self.input, cfg=cfg[criterion], autoflag=True, cars_db=self.__cars_db, woa_db=self.__woa_db, etopo_dbs=self.__etopo_dbs)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -314,7 +314,7 @@ class ProfileQC(object):
                 self.features[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
-            y = qctests.Morello2014(self.input, v, cfg['morello2014'], autoflag=True)
+            y = qctests.Morello2014(self.input, v, cfg['morello2014'], autoflag=True, woa_db=self.__woa_db)
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features[v][f] = y.features[f]

@@ -44,19 +44,14 @@ def fuzzylogic(features, cfg, require="all"):
 
 
 class FuzzyLogic(QCCheckVar):
-    def __init__(self, data, varname, cfg=None, autoflag=True, attrs=None, woa_db=None):
-        self.__woa_db = woa_db
-        super().__init__(data, varname, cfg=cfg, autoflag=autoflag, attrs=attrs)
-
-
     def set_features(self):
         self.features = {}
         for v in [f for f in self.cfg["features"] if f not in self.features]:
             if v == "woa_bias":
-                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self.__woa_db)
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self._woa_db)
                 self.features[v] = woa_comparison["woa_bias"]
             elif v == "woa_normbias":
-                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self.__woa_db)
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self._woa_db)
                 self.features[v] = woa_comparison["woa_normbias"]
             elif v == "spike":
                 self.features[v] = spike(self.data[self.varname])

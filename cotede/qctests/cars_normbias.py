@@ -163,7 +163,7 @@ class CARS_NormBias(QCCheckVar):
     # 3 is the possible minimum to estimate the std, but I shold use higher.
     min_samples = 3
 
-    def __init__(self, data, varname, cfg=None, autoflag=True, cars_db=None):
+    def __init__(self, data, varname, cfg=None, autoflag=True, cars_db=None, woa_db=None, etopo_dbs=None):
         try:
             self.use_standard_error = cfg["use_standard_error"]
         except (KeyError, TypeError):
@@ -172,13 +172,12 @@ class CARS_NormBias(QCCheckVar):
             self.min_samples = cfg["min_samples"]
         except (KeyError, TypeError):
             module_logger.debug("min_samples undefined. Using default value")
-        self.__cars_db = cars_db
-        super().__init__(data, varname, cfg, autoflag)
+        super().__init__(data, varname, cfg, autoflag, cars_db=cars_db, woa_db=woa_db, etopo_dbs=etopo_dbs)
 
 
     def set_features(self):
         try:
-            self.features = cars_normbias(self.data, self.varname, self.attrs, cars_db=self.__cars_db)
+            self.features = cars_normbias(self.data, self.varname, self.attrs, cars_db=self._cars_db)
         except LookupError:
             self.features = {}
 

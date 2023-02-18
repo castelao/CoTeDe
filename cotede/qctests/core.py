@@ -19,8 +19,11 @@ class QCCheck(object):
     flag_good = 1
     flag_bad = 4
 
-    def __init__(self, data, *, cfg=None, autoflag=True, attrs=None):
+    def __init__(self, data, *, cfg=None, autoflag=True, attrs=None, cars_db=None, woa_db=None, etopo_dbs=None):
         self.data = data
+        self._cars_db = cars_db
+        self._woa_db = woa_db
+        self._etopo_dbs = etopo_dbs
         if (cfg is not None):
             self.cfg = cfg
         elif not hasattr(self, 'cfg'):
@@ -70,6 +73,6 @@ class QCCheckVar(QCCheck):
     """Template for a QC check of a specific variable
     """
 
-    def __init__(self, data, varname, cfg=None, autoflag=True, attrs=None):
+    def __init__(self, data, varname, cfg=None, autoflag=True, attrs=None, cars_db=None, woa_db=None, etopo_dbs=None):
         self.varname = varname
-        super().__init__(data=data, cfg=cfg, autoflag=autoflag, attrs=attrs)
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag, attrs=attrs, cars_db=cars_db, woa_db=woa_db, etopo_dbs=etopo_dbs)
