@@ -49,12 +49,12 @@ def densitystep(SA, t, p, auto_rotate=False):
 
 
 class DensityInversion(QCCheck):
-    def __init__(self, data, cfg, autoflag=True):
+    def __init__(self, data, cfg, autoflag=True, cars_db=None, woa_db=None, etopo_dbs=None):
         assert "TEMP" in data.keys(), "Missing TEMP"
         assert "PSAL" in data.keys(), "Missing PSAL"
         assert "PRES" in data.keys(), "Missing PRES"
 
-        super().__init__(data=data, cfg=cfg, autoflag=autoflag)
+        super().__init__(data=data, cfg=cfg, autoflag=autoflag, cars_db=cars_db, woa_db=woa_db, etopo_dbs=etopo_dbs)
 
     def set_features(self):
         if not GSW_AVAILABLE:

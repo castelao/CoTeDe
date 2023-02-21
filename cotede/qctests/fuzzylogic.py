@@ -48,10 +48,10 @@ class FuzzyLogic(QCCheckVar):
         self.features = {}
         for v in [f for f in self.cfg["features"] if f not in self.features]:
             if v == "woa_bias":
-                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self._woa_db)
                 self.features[v] = woa_comparison["woa_bias"]
             elif v == "woa_normbias":
-                woa_comparison = woa_normbias(self.data, self.varname, self.attrs)
+                woa_comparison = woa_normbias(self.data, self.varname, self.attrs, woa_db=self._woa_db)
                 self.features[v] = woa_comparison["woa_normbias"]
             elif v == "spike":
                 self.features[v] = spike(self.data[self.varname])

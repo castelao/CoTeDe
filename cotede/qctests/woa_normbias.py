@@ -30,8 +30,15 @@ from ..utils import extract_coordinates, extract_time, day_of_year, extract_dept
 
 module_logger = logging.getLogger(__name__)
 
+def _get_woa(db, mode, vtype, woa_vars, doy, valid_depth, **kwargs):
+    woa = None
+    if mode == "track":
+        woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+    else:
+        woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+    return woa
 
-def woa_normbias(data, varname, attrs=None, use_standard_error=False):
+def woa_normbias(data, varname, attrs=None, use_standard_error=False, woa_db=None):
     """
 
     Notes
@@ -71,7 +78,6 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
 
     depth = extract_depth(data)
 
-    db = WOA()
     # This must go away. This was a trick to handle Seabird CTDs, but
     # now that seabird is a different package it should be handled there.
     if isinstance(varname, str) and (varname[-1] == "2"):
@@ -96,10 +102,13 @@ def woa_normbias(data, varname, attrs=None, use_standard_error=False):
             raise IndexError
         elif not idx.all():
             valid_depth = depth[idx]
-    if mode == "track":
-        woa = db[vtype].track(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+
+    woa = None
+    if woa_db:
+        woa = _get_woa(woa_db, mode, vtype, woa_vars, doy, valid_depth, **kwargs)
     else:
-        woa = db[vtype].extract(var=woa_vars, doy=doy, depth=valid_depth, **kwargs)
+        with WOA() as db:
+            woa = _get_woa(db, mode, vtype, woa_vars, doy, valid_depth, **kwargs)
 
     if not np.all(depth == valid_depth):
         for v in woa.keys():
@@ -168,7 +177,7 @@ class WOA_NormBias(QCCheckVar):
     # 3 is the possible minimum to estimate the std, but I shold use higher.
     min_samples = 3
 
-    def __init__(self, data, varname, cfg=None, autoflag=True):
+    def __init__(self, data, varname, cfg=None, autoflag=True, cars_db=None, woa_db=None, etopo_dbs=None):
         try:
             self.use_standard_error = cfg["use_standard_error"]
         except (KeyError, TypeError):
@@ -177,11 +186,12 @@ class WOA_NormBias(QCCheckVar):
             self.min_samples = cfg["min_samples"]
         except (KeyError, TypeError):
             module_logger.debug("min_samples undefined. Using default value")
-        super().__init__(data, varname, cfg, autoflag)
+        super().__init__(data, varname, cfg, autoflag, cars_db=cars_db, woa_db=woa_db, etopo_dbs=etopo_dbs)
+
 
     def set_features(self):
         try:
-            self.features = woa_normbias(self.data, self.varname, self.attrs)
+            self.features = woa_normbias(self.data, self.varname, self.attrs, woa_db=self._woa_db)
         except LookupError:
             self.features = {}
 

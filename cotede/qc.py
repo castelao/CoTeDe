@@ -26,7 +26,7 @@ class ProfileQC(object):
     """
 
     def __init__(self, input, cfg=None, saveauxiliary=True, verbose=True,
-            attributes=None):
+            attributes=None, cars_db=None, woa_db=None, etopo_dbs=None):
         """A procedure to QC a hydrographic profile
 
         Parameters
@@ -58,7 +58,9 @@ class ProfileQC(object):
         keys(self): List of input contents
         """
         # self.logger = logging.getLogger(logger or 'cotede.ProfileQC')
-
+        self.__cars_db = cars_db
+        self.__woa_db = woa_db
+        self.__etopo_dbs = etopo_dbs
         try:
             self.name = input.filename
         except:
@@ -169,7 +171,7 @@ class ProfileQC(object):
             self.flags['common']['datetime_range'] = f
 
         if 'location_at_sea' in self.cfg['common']:
-            y = qctests.LocationAtSea(self.input, cfg['common']['location_at_sea'])
+            y = qctests.LocationAtSea(self.input, cfg['common']['location_at_sea'], etopo_dbs=self.__etopo_dbs)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -243,9 +245,9 @@ class ProfileQC(object):
         for criterion in criteria:
             Procedure = qctests.catalog(cfg[criterion]["procedure"])
             if issubclass(Procedure, qctests.QCCheckVar):
-                y = Procedure(self.input, varname=v, cfg=cfg[criterion], autoflag=True)
+                y = Procedure(self.input, varname=v, cfg=cfg[criterion], autoflag=True, cars_db=self.__cars_db, woa_db=self.__woa_db, etopo_dbs=self.__etopo_dbs)
             elif issubclass(Procedure, qctests.QCCheck):
-                y = Procedure(self.input, cfg=cfg[criterion], autoflag=True)
+                y = Procedure(self.input, cfg=cfg[criterion], autoflag=True, cars_db=self.__cars_db, woa_db=self.__woa_db, etopo_dbs=self.__etopo_dbs)
 
             if self.saveauxiliary:
                 for f in y.features.keys():
@@ -294,11 +296,11 @@ class ProfileQC(object):
                     elif f == 'rate_of_change':
                         features['rate_of_change'] = qctests.rate_of_change(self.input[v])
                     elif (f == 'woa_normbias'):
-                        y = qctests.WOA_NormBias(self.input, v, {}, autoflag=False)
+                        y = qctests.WOA_NormBias(self.input, v, {}, autoflag=False, woa_db=self.__woa_db)
                         features['woa_normbias'] = \
                                 np.abs(y.features['woa_normbias'])
                     elif (f == 'cars_normbias'):
-                        y = qctests.CARS_NormBias(self.input, v, {}, autoflag=False)
+                        y = qctests.CARS_NormBias(self.input, v, {}, autoflag=False, cars_db=self.__cars_db)
                         features['cars_normbias'] = \
                                 np.abs(y.features['cars_normbias'])
                     else:
@@ -312,7 +314,7 @@ class ProfileQC(object):
                 self.features[v]['anomaly_detection'] = prob
 
         if 'morello2014' in cfg:
-            y = qctests.Morello2014(self.input, v, cfg['morello2014'], autoflag=True)
+            y = qctests.Morello2014(self.input, v, cfg['morello2014'], autoflag=True, woa_db=self.__woa_db)
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features[v][f] = y.features[f]
@@ -320,7 +322,7 @@ class ProfileQC(object):
                 self.flags[v][f] = y.flags[f]
 
         if "fuzzylogic" in  cfg:
-            y = qctests.FuzzyLogic(self.input, v, cfg["fuzzylogic"], autoflag=True)
+            y = qctests.FuzzyLogic(self.input, v, cfg["fuzzylogic"], autoflag=True, woa_db=self.__woa_db)
             if self.saveauxiliary:
                 for f in y.features.keys():
                     self.features[v][f] = y.features[f]
