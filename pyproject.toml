@@ -69,7 +69,7 @@ repository = "https://github.com/castelao/cotede"
 line-length = 88
 
 [tool.setuptools_scm]
-write_to = "seabird/version.py"
+write_to = "cotede/version.py"
 git_describe_command = "git describe --dirty --tags --long --match 'v*' --first-parent"
 
 [tool.ruff]
