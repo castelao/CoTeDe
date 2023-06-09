@@ -23,13 +23,8 @@ with open('requirements.txt') as requirements_file:
 
 
 setup(
-    name='cotede',
     version='0.23.8',
-    description='Quality Control of Oceanographic Data',
     long_description=readme + '\n\n' + history,
-    author='Guilherme Castelão',
-    author_email='guilherme@castelao.net',
-    url='http://cotede.castelao.net',
     packages=[
         'cotede',
         'cotede.qctests',
@@ -42,21 +37,6 @@ setup(
                    'cotede'},
     license='3-clause BSD',
     install_requires=requirements,
-    classifiers=[
-        'Development Status :: 4 - Beta',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'License :: OSI Approved :: BSD License',
-        ],
-    keywords='CTD TSG SeaBird ARGO Quality Control oceanography hydrography',
     include_package_data=True,
     zip_safe=False,
-    extras_require = {
-        'GSW': ["gsw>=3.0.6"],
-        'OceansDB': ["oceansdb>=0.8.13"],
-        'manualqc': ["matplotlib"],
-        'regional': ["Shapely>=1.6.4"]
-    }
 )

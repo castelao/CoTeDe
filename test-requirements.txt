@@ -1,9 +1,0 @@
-wheel>=0.23
-pytest>=4.4
-pytest-xdist>=1.29
-pandas
-netCDF4
-matplotlib>=2.0
-Sphinx>=1.8
-tox
-hypothesis>=5.43
