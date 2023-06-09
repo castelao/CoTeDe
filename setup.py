@@ -16,12 +16,6 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
-with open('requirements.txt') as requirements_file:
-    requirements = requirements_file.read()
-    if sys.version_info[0] == 2:
-        requirements.replace('gsw>=3.0.6', 'gsw==3.0.6')
-
-
 setup(
     version='0.23.8',
     long_description=readme + '\n\n' + history,
@@ -36,7 +30,6 @@ setup(
     package_dir = {'cotede':
                    'cotede'},
     license='3-clause BSD',
-    install_requires=requirements,
     include_package_data=True,
     zip_safe=False,
 )

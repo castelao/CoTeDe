@@ -33,14 +33,14 @@ classifiers=[
 dependencies = [
   "Click>=6.6",
   "numpy>=1.16",
-  "oceansdb >= 0.8.13"
+  "oceansdb >= 0.8.13",
   "scipy >= 0.18.0",
 ]
 
 [project.optional-dependencies]
 GSW = ["gsw>=3.0.6"]
-OceansDB = ["oceansdb>=0.8.13"],
-manualqc = ["matplotlib"],
+OceansDB = ["oceansdb>=0.8.13"]
+manualqc = ["matplotlib"]
 regional = ["Shapely>=1.6.4"]
 test = [
   "hypothesis >= 6.29.3",
@@ -62,8 +62,6 @@ test = [
 
 [project.urls]
 repository = "https://github.com/castelao/cotede"
-[project.scripts]
-"seabird" = "seabird.cli:cli"
 
 [tool.black]
 line-length = 88
