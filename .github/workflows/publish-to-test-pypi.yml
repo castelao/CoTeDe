@@ -1,6 +1,9 @@
 name: Publish distributions to PyPI and TestPyPI
 
 on:
+  push:
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
