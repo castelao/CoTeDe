@@ -32,7 +32,7 @@ jobs:
         pip install hypothesis
         pip install pandas
         pip install xarray
-        pip install -e .
+        pip install -e .[test]
 
     - name: Cache ETOPO
       id: cache-etopo
