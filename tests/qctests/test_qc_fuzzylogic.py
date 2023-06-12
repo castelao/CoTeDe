@@ -74,7 +74,7 @@ def test_feature_input_types():
     compare_compound_feature_input_types(fuzzylogic, features, cfg=CFG)
 
 
-@given(data=arrays(dtype=np.float, shape=array_shapes(min_dims=2, max_dims=2, min_side=3), elements=st.floats(allow_infinity=True, allow_nan=True)))
+@given(data=arrays(dtype=float, shape=array_shapes(min_dims=2, max_dims=2, min_side=3), elements=st.floats(allow_infinity=True, allow_nan=True)))
 @settings(deadline=timedelta(milliseconds=500))
 def test_feature_input_types(data):
     data = {"spike": data[:,0], "woa_normbias": data[:,1], "gradient": data[:,2]}

@@ -74,7 +74,7 @@ def test_fuzzy_uncertainty_with_nan():
 
 @given(
     data=arrays(
-        dtype=np.float,
+        dtype=float,
         shape=array_shapes(min_dims=2, max_dims=2, min_side=3),
         elements=st.floats(allow_infinity=True, allow_nan=True),
     )
