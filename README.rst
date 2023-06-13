@@ -12,8 +12,8 @@ CoTeDe
    :target: https://cotede.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-.. image:: https://img.shields.io/travis/castelao/CoTeDe.svg
-   :target: https://travis-ci.org/castelao/CoTeDe
+.. image:: https://github.com/castelao/CoTeDe/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/castelao/CoTeDe/actions/workflows/ci.yml)
 
 .. image:: https://codecov.io/gh/castelao/CoTeDe/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/castelao/CoTeDe
