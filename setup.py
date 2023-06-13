@@ -21,5 +21,4 @@ setup(
     ],
     package_dir = {'cotede':
                    'cotede'},
-    include_package_data=True,
 )
