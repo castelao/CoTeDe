@@ -62,6 +62,7 @@ test = [
 ]
 
 [project.urls]
+documentation = "https://cotede.readthedocs.io"
 repository = "https://github.com/castelao/cotede"
 
 [tool.black]
