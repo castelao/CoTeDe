@@ -1,0 +1,104 @@
+[build-system]
+requires = [
+  "setuptools >= 48",
+  "setuptools_scm[toml] >= 6.2",
+  "setuptools_scm_git_archive",
+  "wheel >= 0.29.0",
+]
+build-backend = 'setuptools.build_meta'
+
+[project]
+name="cotede"
+dynamic = ["version"]
+description="Quality Control of Oceanographic Data"
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+keywords = ["oceanography", "ocean data", "Quality Control", "CTD"]
+authors = [
+  {email = "guilherme@castelao.net"},
+  {name = "Guilherme Castelão"}
+]
+classifiers=[
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering"
+]
+dependencies = [
+  "Click>=6.6",
+  "numpy>=1.20",
+  "oceansdb >= 0.8.13",
+  "scipy >= 1.0.0",
+]
+
+[project.optional-dependencies]
+GSW = ["gsw>=3.0.6"]
+OceansDB = ["oceansdb>=0.8.13"]
+manualqc = ["matplotlib"]
+regional = ["Shapely>=1.6.4"]
+test = [
+  "hypothesis >= 6.29.3",
+  "pytest >= 5.0.0",
+  "pytest-cov[all]",
+  "pytest-xdist >= 1.29",
+  "pip >= 9.0.1",
+  "flake8 >= 3.2.1",
+  "tox >= 2.3.3",
+  "coverage >= 4.2",
+  "matplotlib >= 3.0",
+  "netCDF4>=1.5",
+  "pandas>=1.3",
+  "supportdata >= 0.1.2",
+  "twine >= 1.8.1",
+  "xarray>=2022.0",
+  "Sphinx >= 1.8"
+]
+
+[project.urls]
+documentation = "https://cotede.readthedocs.io"
+repository = "https://github.com/castelao/cotede"
+
+[tool.black]
+line-length = 88
+
+[tool.setuptools_scm]
+write_to = "cotede/version.py"
+git_describe_command = "git describe --dirty --tags --long --match 'v*' --first-parent"
+
+[tool.ruff]
+select = ["A", "I", "W"]
+ignore = []
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = []
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".ruff_cache",
+    ".tox",
+    "__pypackages__",
+    "_build",
+    "build",
+    "dist",
+]
+per-file-ignores = {}
+
+line-length = 88
+
+# Assume Python 3.8.
+target-version = "py38"
+
+[tool.ruff.pydocstyle]
+convention = "numpy"

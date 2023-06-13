@@ -50,12 +50,12 @@ def test_trapmf():
 
 @given(
     x=arrays(
-        dtype=np.float,
+        dtype=float,
         shape=array_shapes(),
         elements=st.floats(allow_infinity=True, allow_nan=True),
     ),
     p=arrays(
-        dtype=np.float,
+        dtype=float,
         shape=4,
         elements=st.floats(allow_infinity=False, allow_nan=False),
         unique=True,
