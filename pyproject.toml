@@ -13,7 +13,7 @@ dynamic = ["version"]
 description="Quality Control of Oceanographic Data"
 readme = "README.rst"
 requires-python = ">=3.8"
-license = {file = "LICENSE"}
+license = {file = "LICENSE.rst"}
 keywords = ["oceanography", "ocean data", "Quality Control", "CTD"]
 authors = [
   {email = "guilherme@castelao.net"},
