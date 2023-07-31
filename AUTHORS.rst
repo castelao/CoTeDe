@@ -15,3 +15,4 @@ Contributors
 * @BillMills: - PR #47, re-introduce Argo density inversion as inherited QCCheck.
               - PR #53, update fuzzy logic to handle edge-case NaNs rather than masks.
               - Reported bug that resulted on PR #61.
+* @alkis05: Reported bug #72, outdated fuzzy logic notebook.
